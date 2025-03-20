@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "es2020",
+        "declaration": true,
+        "outDir": "lib",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "lib": [
+            "es2020",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@kysion/utils": [
+                "../utils/src"
+            ],
+            "@kysion/types": [
+                "../types/src"
+            ]
+        }
+    },
+    "include": [
+        "src",
+        "./**/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "lib",
+        "es"
+    ]
+}

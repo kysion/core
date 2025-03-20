@@ -1,0 +1,46 @@
+{
+  "name": "@kysion/core",
+  "version": "1.0.7",
+  "description": "Kysion Admin 核心功能包，提供基础组件、布局、主题等核心功能",
+  "main": "lib/core/src/index.js",
+  "module": "es/core/src/index.js",
+  "types": "lib/core/src/index.d.ts",
+  "files": [
+    "lib",
+    "es",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm clean && pnpm build:lib && pnpm build:es",
+    "build:lib": "tsc -p tsconfig.json",
+    "build:es": "tsc -p tsconfig.es.json",
+    "clean": "rm -rf lib es",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "typescript",
+    "kysion",
+    "core",
+    "api"
+  ],
+  "author": "SupenBysz",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@iconify/types": "^2.0.0",
+    "@kysion/types": "workspace:*",
+    "@kysion/utils": "workspace:*",
+    "axios": "^1.8.3",
+    "zustand": "^5.0.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  }
+}
