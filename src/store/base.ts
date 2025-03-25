@@ -8,6 +8,8 @@ import { Funs, LocalStorageOptions, LocalStorageWrapper } from '@kysion/utils';
 export function createLocalStore<S>(options: LocalStorageOptions): PersistStorage<S> {
     const storage = new LocalStorageWrapper<S>(options);
 
+    console.log('storage', storage);
+
     const getItem = (name: string): StorageValue<S> | null => {
         const data = storage.get(name);
         if (!data) return null;

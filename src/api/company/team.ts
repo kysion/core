@@ -2,59 +2,22 @@ import { http } from "../base";
 import { InviteCodeType, Query, Records, TeamType } from "@kysion/types";
 
 export class Team {
-    protected urlPrefix: string;
-
-    constructor(params: { urlPrefix: string }) {
-        this.urlPrefix = params.urlPrefix || 'company';
+    private urlPrefix: string;
+    public constructor(params: { urlPrefix: string }) {
+        this.urlPrefix = params.urlPrefix;
     }
 
-    /**
-     * 查询团队列表
-     */
-    public queryTeamList(params: Query) {
-        return http.post<Records<TeamType>>(`/${this.urlPrefix}/queryTeamList`, params);
-    }
-
-    /**
-     * 创建团队
-     */
-    public createTeam(data: Partial<TeamType> & { name: string }) {
-        return http.post<TeamType>(`/${this.urlPrefix}/createTeam`, data);
-    }
-
-    /**
-     * 更新团队信息
-     */
-    public updateTeam(data: Partial<TeamType> & { id: string | number }) {
-        return http.post<TeamType>(`/${this.urlPrefix}/updateTeam`, data);
-    }
-
-    /**
-     * 获取团队基本信息
-     */
-    public getTeamById(id: string | number) {
-        return http.post<TeamType>(`/${this.urlPrefix}/getTeamById`, { id });
-    }
-
-    /**
-     * 获取团队详细信息
-     */
-    public getTeamDetail(id: string | number) {
-        return http.post<TeamType>(`/${this.urlPrefix}/getTeamDetail`, { id, include: ['*'] });
-    }
-
-    /**
-     * 设置团队状态
-     */
-    public setTeamState(data: { id: string | number; state: number }) {
-        return http.post<boolean>(`/${this.urlPrefix}/setTeamState`, data);
-    }
-
-    /**
-     * 获取团队成员列表
-     */
-    public getTeamMembers(teamId: string | number) {
-        return http.post(`/${this.urlPrefix}/getTeamMembers`, { teamId });
+    // 创建团队或小组｜信息
+    public createTeam(data: {
+        id: string | number;
+        name?: string;
+        ownerEmployeeId?: string | number;
+        captainEmployeeId?: string | number;
+        parentId?: string | number;
+        remark?: string;
+        include?: string[];
+    }) {
+        return http.post<TeamType>(`/${this.urlPrefix}/team/createTeam`, data);
     }
 
     // 删除团队或小组｜信息
@@ -70,6 +33,11 @@ export class Team {
         return http.post<any>(`/${this.urlPrefix}/team/getEmployeeListByTeamId`, params);
     }
 
+    // 根据ID获取团队或小组｜信息
+    public getTeamById(data: { id: string | number; include?: string[] }) {
+        return http.post<TeamType>(`/${this.urlPrefix}/team/getTeamById`, data);
+    }
+
     // 查看团队邀约码
     public getTeamInviteCode(data: { teamId: string | number }) {
         return http.post<{ team: TeamType; inviteRes: InviteCodeType }>(`/${this.urlPrefix}/team/getTeamInviteCode`, data);
@@ -83,6 +51,11 @@ export class Team {
     // 通过邀请码加入团队
     public joinTeamByInviteCode(data: { inviteCode: string }) {
         return http.post<boolean>(`/${this.urlPrefix}/team/joinTeamByInviteCode`, data);
+    }
+
+    // 查询团队或小组｜列表
+    public queryTeamList(params: Query) {
+        return http.post<Records<TeamType>>(`/${this.urlPrefix}/team/queryTeamList`, params);
     }
 
     // 移除团队成员
@@ -115,5 +88,10 @@ export class Team {
             id: data.teamId,
             employeeId: data.employeeId
         });
+    }
+
+    // 更新团队或小组｜信息
+    public updateTeam(data: { id: string | number; name?: string; remark?: string; include?: string[] }) {
+        return http.post<TeamType>(`/${this.urlPrefix}/team/updateTeam`, data);
     }
 } 

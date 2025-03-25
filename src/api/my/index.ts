@@ -68,15 +68,14 @@ export class My {
     /**
      * 获取设置
      */
-    public static getSettingByName<T>(data: { name: string, unionMainId?: React.Key, userId?: React.Key }) {
-        const myProfile = useUserState.use;
+    public static getSettingByName<T>(data: { name: string, unionMainId?: React.Key, userId: React.Key }) {
 
         const response = http.post<SettingType<T>>('/system/frontSettings/getFrontSetting',
             {
                 ...data,
                 name: `${data.name}`,
-                unionMainId: data.unionMainId ?? myProfile.employee().unionMainId,
-                userId: data.userId ?? myProfile.user().id,
+                unionMainId: data.unionMainId ?? 0,
+                userId: data.userId
             },
             {
                 skipErrorHandler: true
@@ -97,16 +96,15 @@ export class My {
     /**
      * 更新设置
      */
-    public static setSettingByName<T>(data: Partial<SettingType<T> & { name: string }>) {
-        const myProfile = useUserState.use;
+    public static setSettingByName<T>(data: Partial<SettingType<T> & { name: string, unionMainId?: React.Key, userId: React.Key }>) {
 
         return http.post<SettingType<T>>('/system/frontSettings/saveFrontSetting',
             {
                 name: `${data.name}`,
                 values: data.values,
                 desc: data.desc,
-                unionMainId: data.unionMainId ?? myProfile.employee().unionMainId,
-                userId: data.userId ?? myProfile.user().id,
+                unionMainId: data.unionMainId ?? 0,
+                userId: data.userId,
             }
         );
     }

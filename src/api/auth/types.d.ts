@@ -26,14 +26,6 @@ export interface LoginByMailParams {
     captchaId: string;
 }
 
-// 登录响应结果
-export interface LoginResult {
-    token: string;
-    refreshToken: string;
-    tokenExpire: number;
-    user: any;
-}
-
 // 刷新令牌请求参数
 export interface RefreshTokenParams {
     refreshToken: string;

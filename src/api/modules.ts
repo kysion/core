@@ -17,8 +17,6 @@ export * from './settings';
 export * from './member-level';
 export * from './role';
 export * from './my';
-export * from './employee';
-export * from './team';
 
 // 组织结构
 export * from './org';

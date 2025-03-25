@@ -14,7 +14,6 @@ import { Comment } from './comment';
 import { Common } from './common';
 import { Company, companyMap } from './company';
 import { DeliveryCompany } from './delivery';
-import { Employee } from './employee';
 import { Iconify } from './iconify';
 import { License } from './license';
 import { Menu } from './menu';
@@ -24,7 +23,6 @@ import { Org } from './org';
 import { Permission } from './permission';
 import { Role } from './role';
 import { Settings } from './settings';
-import { Team } from './team';
 import { User } from './user';
 
 /**
@@ -50,7 +48,6 @@ export const KysionApis = {
     Comment,
     Common,
     DeliveryCompany,
-    Employee,
     Iconify,
     Menu,
     Message,
@@ -58,6 +55,5 @@ export const KysionApis = {
     Permission,
     Role,
     Settings,
-    Team,
     User
 };

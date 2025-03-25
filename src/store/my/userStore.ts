@@ -9,7 +9,10 @@ export interface ProfileState {
     user: UserInfoType;
     isAdmin: boolean;
     isSuperAdmin: boolean;
-    isLogined: boolean;
+
+    token: string | null;
+    expireAt: string;
+    isLoggedIn: boolean;
 }
 
 const initialState: ProfileState = {
@@ -18,14 +21,14 @@ const initialState: ProfileState = {
     employee: new EmployeeType(),
     isAdmin: false,
     isSuperAdmin: false,
-    isLogined: false,
+    token: null,
+    expireAt: '',
+    isLoggedIn: false,
 }
-
-const IsDebug = Funs.getEnv('APP_DEBUG_MODE', 'false')?.toString() === 'false' || false;
 
 export const useUserStore = createKyStore<ProfileState>(initialState, {
     storageKey: 'myProfile',
-    crypto: IsDebug ? undefined : true
+    crypto: Funs.getEnv('APP_DEBUG_MODE', false)
 });
 
 export const useUserState = createSelectors(useUserStore);
@@ -35,8 +38,8 @@ export const useUserActions = () => {
     const get = useUserStore.getState;
 
     return {
-        login: (user: UserInfoType) => set({ user, isLogined: true }),
-        logout: () => set({ user: new UserInfoType(), isLogined: false }),
+        login: (user: UserInfoType, token: string, expireAt: string) => set({ user, token, expireAt, isLoggedIn: true }),
+        logout: () => set({ user: new UserInfoType(), token: null, expireAt: '', isLoggedIn: false }),
         setCompany: (company: CompanyType) => set({ company }),
         setEmployee: (employee: EmployeeType) => set({ employee }),
         setPermission: (permission: PermissionType) => set({ permission }),

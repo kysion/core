@@ -6,7 +6,6 @@ import {
     AllowNegativeBalanceSet,
     BankCardType,
     CompanyType,
-    EmployeeType,
     InvoiceInfoType,
     PermissionType,
     PermissionTypeSet,
@@ -17,10 +16,9 @@ import {
 } from "@kysion/types";
 
 export class My {
-    protected urlPrefix: string;
-
+    private urlPrefix: string;
     constructor(params: { urlPrefix: string }) {
-        this.urlPrefix = params.urlPrefix || 'company';
+        this.urlPrefix = params.urlPrefix;
     }
 
     // 我的账单|列表
@@ -55,60 +53,9 @@ export class My {
         return http.post<boolean>(`/${this.urlPrefix}/my/updateAccount`, data);
     }
 
-    /**
-     * 获取我的企业信息
-     */
-    public getMyCompany() {
-        return http.post<CompanyType>(`/${this.urlPrefix}/getMyCompany`, {});
-    }
-
-    /**
-     * 获取我的企业详情
-     */
-    public getMyCompanyDetail() {
-        return http.post<CompanyType>(`/${this.urlPrefix}/getMyCompanyDetail`, { include: ['*'] });
-    }
-
-    /**
-     * 更新我的企业信息
-     */
-    public updateMyCompany(data: Partial<CompanyType>) {
-        return http.post<CompanyType>(`/${this.urlPrefix}/updateMyCompany`, data);
-    }
-
-    /**
-     * 获取我的员工信息
-     */
-    public getMyEmployee() {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/getMyEmployee`, {});
-    }
-
-    /**
-     * 获取我的员工详情
-     */
-    public getMyEmployeeDetail() {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/getMyEmployeeDetail`, { include: ['*'] });
-    }
-
-    /**
-     * 更新我的员工信息
-     */
-    public updateMyEmployee(data: Partial<EmployeeType>) {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/updateMyEmployee`, data);
-    }
-
-    /**
-     * 获取我的团队列表
-     */
-    public getMyTeams() {
-        return http.post(`/${this.urlPrefix}/getMyTeams`, {});
-    }
-
-    /**
-     * 上传企业Logo
-     */
-    public uploadLogo(fileData: File | Blob) {
-        return http.upload<{ id: string | number; url: string }>(`/${this.urlPrefix}/uploadLogo`, fileData);
+    // 获取当前用户公司信息
+    public getCompany() {
+        return http.post<CompanyType>(`/${this.urlPrefix}/my/getCompany`);
     }
 
     public getMyCompanyPermissionList(data?: { permissionType: PermissionTypeSet }) {

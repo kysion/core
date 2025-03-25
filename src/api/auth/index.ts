@@ -56,7 +56,7 @@ export class Auth {
      * @returns Promise
      */
     public static login(params: LoginParams) {
-        return http.post<ApiResponse<LoginResult>>(`/auth/login`, params);
+        return http.post<TokenType & { user: UserInfoType }>(`/auth/login`, params);
     }
 
     /**
@@ -65,7 +65,7 @@ export class Auth {
      * @returns Promise
      */
     public static loginByMobile(params: LoginByMobileParams) {
-        return http.post<ApiResponse<LoginResult>>(`/auth/loginByMobile`, params);
+        return http.post<TokenType & { user: UserInfoType }>(`/auth/loginByMobile`, params);
     }
     /**
      * 邮箱登录
@@ -73,7 +73,7 @@ export class Auth {
      * @returns Promise
      */
     public static loginByMail(params: LoginByMailParams) {
-        return http.post<ApiResponse<LoginResult>>(`/auth/loginByMail`, params);
+        return http.post<TokenType & { user: UserInfoType }>(`/auth/loginByMail`, params);
     }
 
     /**

@@ -17,66 +17,9 @@ import {
 } from "@kysion/types";
 
 export class Financial {
-    protected urlPrefix: string;
-
+    private urlPrefix: string;
     constructor(params: { urlPrefix: string }) {
-        this.urlPrefix = params.urlPrefix || 'company';
-    }
-
-    /**
-     * 查询账单列表
-     */
-    public queryBillList(params: Query) {
-        return http.post<Records<any>>(`/${this.urlPrefix}/queryBillList`, params);
-    }
-
-    /**
-     * 获取账单详情
-     */
-    public getBillDetail(id: string | number) {
-        return http.post<any>(`/${this.urlPrefix}/getBillDetail`, { id, include: ['*'] });
-    }
-
-    /**
-     * 创建提现申请
-     */
-    public createWithdrawal(data: { amount: number; accountId: string | number; remark?: string }) {
-        return http.post<any>(`/${this.urlPrefix}/createWithdrawal`, data);
-    }
-
-    /**
-     * 查询提现记录列表
-     */
-    public queryWithdrawalList(params: Query) {
-        return http.post<Records<any>>(`/${this.urlPrefix}/queryWithdrawalList`, params);
-    }
-
-    /**
-     * 查询收支明细列表
-     */
-    public queryTransactionList(params: Query) {
-        return http.post<Records<any>>(`/${this.urlPrefix}/queryTransactionList`, params);
-    }
-
-    /**
-     * 获取账户余额
-     */
-    public getAccountBalance() {
-        return http.post<{ balance: number }>(`/${this.urlPrefix}/getAccountBalance`, {});
-    }
-
-    /**
-     * 获取账户列表
-     */
-    public queryAccountList(params: Query) {
-        return http.post<Records<any>>(`/${this.urlPrefix}/queryAccountList`, params);
-    }
-
-    /**
-     * 添加银行账户
-     */
-    public addBankAccount(data: { bankName: string; accountName: string; accountNumber: string; branch?: string }) {
-        return http.post<any>(`/${this.urlPrefix}/addBankAccount`, data);
+        this.urlPrefix = params.urlPrefix;
     }
 
     // 审核发票
@@ -92,6 +35,11 @@ export class Financial {
     // 删除发票抬头
     public deleteInvoiceById(data: { invoiceId: string | number }) {
         return http.post<boolean>(`/${this.urlPrefix}/financial/deleteInvoiceById`, data);
+    }
+
+    // 查看账户余额
+    public getAccountBalance(params: { accountId: string | number }) {
+        return http.post<number>(`/${this.urlPrefix}/financial/getAccountBalance`, params);
     }
 
     // 获取财务账号详细数据
