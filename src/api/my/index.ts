@@ -1,3 +1,4 @@
+import { Funs } from "@kysion/utils";
 import { useUserState } from "../../store";
 import { http } from "../base";
 import { MenuItemType, PermissionType, SettingType } from "@kysion/types";
@@ -53,7 +54,9 @@ export class My {
      * 心跳检测
      */
     public static heartbeat() {
-        return http.post<boolean>('/my/heartbeat', null, {
+        return http.post<boolean>('/my/heartbeat', {
+            flagCode: Funs.getEnv('VITE_APP_CLIENT_TYPE', 'web')
+        }, {
             skipErrorHandler: true
         });
     }

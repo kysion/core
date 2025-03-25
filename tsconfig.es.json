@@ -1,1 +1,16 @@
-{"extends":"./tsconfig.json","compilerOptions":{"module":"esnext","outDir":"es","declaration":true},"include":["src"],"exclude":["node_modules","lib","es","src/api/_pending"]}
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "esnext",
+        "outDir": "dist/es",
+        "declaration": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@kysion/utils": ["../utils/src"],
+            "@kysion/types": ["../types/src"]
+        }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "dist", "src/api/_pending"]
+}

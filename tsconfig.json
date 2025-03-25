@@ -3,7 +3,7 @@
         "target": "es2020",
         "module": "es2020",
         "declaration": true,
-        "outDir": "lib",
+        "outDir": "dist/lib",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -15,30 +15,14 @@
         "noUnusedParameters": false,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "lib": [
-            "es2020",
-            "dom"
-        ],
+        "lib": ["es2020", "dom"],
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "src/*"
-            ],
-            "@kysion/utils": [
-                "../utils/src"
-            ],
-            "@kysion/types": [
-                "../types/src"
-            ]
+            "@/*": ["src/*"],
+            "@kysion/utils": ["../utils/src"],
+            "@kysion/types": ["../types/src"]
         }
     },
-    "include": [
-        "src",
-        "./**/*.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "lib",
-        "es"
-    ]
+    "include": ["src", "./**/*.d.ts"],
+    "exclude": ["node_modules", "dist"]
 }
