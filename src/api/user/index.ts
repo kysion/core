@@ -1,5 +1,5 @@
 import { http } from "../base";
-import { Query, UserInfoType, UserStatusSet } from "@kysion/types";
+import { Query, Records, UserInfoType, UserStatusSet } from "@kysion/types";
 
 export class User {
     // 查看详情
@@ -14,7 +14,7 @@ export class User {
 
     // 获取用户|列表
     public static queryUserList(params: Query & { include?: string[] }) {
-        return http.post<UserInfoType>('/user/queryUserList', params);
+        return http.post<Records<UserInfoType>>('/user/queryUserList', params);
     }
 
     // 重置用户密码
