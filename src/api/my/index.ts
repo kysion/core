@@ -1,4 +1,4 @@
-import { Funs } from "@kysion/utils";
+import { ApiResponse, Funs } from "@kysion/utils";
 import { useUserState } from "../../store";
 import { http } from "../base";
 import { MenuItemType, PermissionType, SettingType } from "@kysion/types";
@@ -101,7 +101,7 @@ export class My {
      */
     public static setSettingByName<T>(data: Partial<SettingType<T> & { name: string, unionMainId?: React.Key, userId: React.Key }>) {
 
-        return http.post<SettingType<T>>('/system/frontSettings/saveFrontSetting',
+        return http.post<ApiResponse<SettingType<T>>>('/system/frontSettings/saveFrontSetting',
             {
                 name: `${data.name}`,
                 values: data.values,
