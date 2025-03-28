@@ -1,11 +1,11 @@
 import React from 'react';
 import type { DescriptionsProps } from 'antd';
-import { Avatar, Card, Descriptions, Flex, Skeleton, Space, Tag } from 'antd';
+import { Avatar, Card, Descriptions, Divider, Flex, Skeleton, Space, Tag } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { EmployeeType, UserInfoType, userStatusSet, UserStatusTypeArr } from '@kysion/types';
+import { AuthStateMap, authStateSet, CompanyType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr } from '@kysion/types';
 import { useTranslation } from 'react-i18next';
 
 export interface AuthRef {
@@ -15,6 +15,7 @@ export interface AuthRef {
 
 export interface CardInfoProps {
   userId: React.Key;
+  company?: CompanyType;
   employee?: EmployeeType | undefined;
   userinfo?: UserInfoType;
   isAdmin?: boolean;
@@ -25,7 +26,7 @@ export interface CardInfoProps {
   autoReload?: boolean;
 }
 
-export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => {
+export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => {
   if (!props.userinfo && props.employee && props.employee.user) {
     props.userinfo = props.employee.user;
   }
@@ -36,40 +37,82 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
 
   const { t } = useTranslation();
 
+  const [company, _setCompany] = useState<CompanyType | undefined>(props.company ?? new CompanyType());
   const [employee, _setEmployee] = useState<EmployeeType | undefined>(
     props.employee ?? new EmployeeType(),
   );
   const [userinfo, _setUserinfo] = useState<UserInfoType | undefined>(props.userinfo);
   const [loading, _setLoading] = useState(!props.userinfo && !props.employee);
 
+  const unsetLabel = t('kysion.common.state.unset');
+
+  let companyName = <Skeleton.Input size="small" active={loading} />;
+  let companyAddr = <Skeleton.Input size="small" active={loading} />;
+  let companyState = <Skeleton.Input size="small" active={loading} />;
+  let companyLicenseState = <Skeleton.Input size="small" active={loading} />;
+  let companyContactName = <Skeleton.Input size="small" active={loading} />;
+  let companyContactMobile = <Skeleton.Input size="small" active={loading} />;
+
+  function makeCompany() {
+    if (!company) return;
+
+    companyName = <>{company.name}</>;
+    if (company.name === '') {
+      companyName = <span className="text-gray-300">{unsetLabel}</span>;
+    }
+    companyAddr = <>{company.address || unsetLabel}</>;
+    if (company.address === '') {
+      companyAddr = <span className="text-gray-300">{unsetLabel}</span>;
+    }
+    companyState = <><Tag color="default">{t(EnabledStateMap.get(enabledStateSet.Enabled)!.i18nLabel)}</Tag></>;
+    if (company.state === 1) {
+      companyState = <><Tag color="success">{t(EnabledStateMap.get(enabledStateSet.Enabled)!.i18nLabel)}</Tag></>;
+    }
+    companyLicenseState = <><Tag color="default">{t(AuthStateMap.get(authStateSet.Invalid)!.i18nLabel)}</Tag></>;
+    if (company.licenseState === authStateSet.Normal) {
+      companyLicenseState = <><Tag color="success">{t(AuthStateMap.get(authStateSet.Normal)!.i18nLabel)}</Tag></>;
+    }
+    if(company.licenseId === 0) {
+      companyLicenseState = <><Tag color="volcano">{t(AuthStateMap.get(authStateSet.UnVerified)!.i18nLabel)}</Tag></>;
+    }
+    companyContactName = <>{company.contactName || unsetLabel}</>;
+    if (company.contactName === '') {
+      companyContactName = <span className="text-gray-300">{unsetLabel}</span>;
+    }
+    companyContactMobile = <>{company.contactMobile || unsetLabel}</>;
+    if (company.contactMobile === '') {
+      companyContactMobile = <span className="text-gray-300">{unsetLabel}</span>;
+    }
+  };
+  makeCompany();
+  
   let sex = <Skeleton.Input size="small" active={loading} />;
   let mobile = <Skeleton.Input size="small" active={loading} />;
   let realname = <Skeleton.Input size="small" active={loading} />;
   let hiredAt = <Skeleton.Input size="small" active={loading} />;
 
-  const unsetLabel = t('kysion.common.state.unset');
 
   function makeEmployee() {
-    if (employee) {
-      sex = employee.sex === 1 ? <>男</> : <>女</>;
-      if (employee.sex === 2 || !props.employee) {
-        sex = <span className="text-gray-300">{unsetLabel}</span>;
-      }
+    if (!employee) return;
+  
+    sex = employee.sex === 1 ? <>男</> : <>女</>;
+    if (employee.sex === 2 || !props.employee) {
+      sex = <span className="text-gray-300">{unsetLabel}</span>;
+    }
 
-      mobile = <>{employee.mobile}</>;
-      if (employee.mobile === '' || !employee.mobile) {
-        mobile = <span className="text-gray-300">{unsetLabel}</span>;
-      }
+    mobile = <>{employee.mobile}</>;
+    if (employee.mobile === '' || !employee.mobile) {
+      mobile = <span className="text-gray-300">{unsetLabel}</span>;
+    }
 
-      realname = <>{employee.name}</>;
-      if (employee.name === '') {
-        realname = <span className="text-gray-300">{unsetLabel}</span>;
-      }
+    realname = <>{employee.name}</>;
+    if (employee.name === '') {
+      realname = <span className="text-gray-300">{unsetLabel}</span>;
+    }
 
-      hiredAt = <span className="text-gray-300">{unsetLabel}</span>;
-      if (employee.hiredAt !== '') {
-        hiredAt = <>{dayjs(employee.hiredAt).format('YYYY-MM-DD')}</>;
-      }
+    hiredAt = <span className="text-gray-300">{unsetLabel}</span>;
+    if (employee.hiredAt !== '') {
+      hiredAt = <>{dayjs(employee.hiredAt).format('YYYY-MM-DD')}</>;
     }
   }
   makeEmployee();
@@ -145,7 +188,86 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
   }
   makeUserInfo();
 
-  function makeDescriptionsItem() {
+  const emptyItem = {
+    label: '',
+    children: '',
+  };
+
+  function makeCompanyDescriptionsItem() {
+    const companyNameItem = {
+      label: t('kysion.company.column.name'),
+      children: companyName,
+    };
+    const companyAddrItem = {
+      label: t('kysion.company.column.addr'),
+      children: companyAddr,
+    };
+    const companyStateItem = {
+      label: t('kysion.company.column.state'),
+      children: companyState,
+    };
+    const companyLicenseStateItem = {
+      label: t('kysion.company.column.licenseState'),
+      children: companyLicenseState,
+    };
+    const companyContactNameItem = {
+      label: t('kysion.company.column.contactName'),
+      children: companyContactName,
+    };
+    const companyContactMobileItem = {
+      label: t('kysion.company.column.contactMobile'),
+      children: companyContactMobile,
+    };
+
+    function makeResultItems() {
+      let items: DescriptionsProps['items'] = [];
+      if (props.column === 4) {
+        items = [
+          companyNameItem,
+          companyContactNameItem,
+          companyContactMobileItem,
+          emptyItem,
+          companyStateItem,
+          companyLicenseStateItem,
+          emptyItem,
+          companyAddrItem,
+        ];
+      } else if (props.column === 1) {
+        items = [
+          companyNameItem,
+          companyContactNameItem,
+          companyContactMobileItem,
+          companyStateItem,
+          companyLicenseStateItem,
+          companyAddrItem,
+        ];
+      } else if (props.column === 2) {
+        items = [
+          companyNameItem,
+          emptyItem,
+          companyStateItem,
+          companyLicenseStateItem,
+          companyContactNameItem,
+          companyContactMobileItem,
+          companyAddrItem,
+        ];
+      } else if (props.column === 3) {
+        items = [
+          companyNameItem,
+          companyStateItem,
+          companyLicenseStateItem,
+          companyContactNameItem,
+          companyContactMobileItem,
+          emptyItem,
+          companyAddrItem,
+        ];
+      }
+      return items;
+    }
+    return makeResultItems();
+  }
+
+  function makeProfileDescriptionsItem() {
     const realnameItem = {
       label: t('kysion.user.column.name'),
       children: realname,
@@ -204,7 +326,7 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
       children: lastLoginArea,
     };
 
-    function makeItems() {
+    function makeResultItems() {
       let items: DescriptionsProps['items'] = [];
 
       if (props.column === 4) {
@@ -267,7 +389,7 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
       return items;
     }
 
-    return makeItems();
+    return makeResultItems();
   }
 
   function refresh() {
@@ -316,18 +438,26 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
     );
   }
 
-  console.log('makeDescriptionsItem', makeDescriptionsItem());
-
   return (
-    <Card className="h-170px w-full flex justify-start bg-container">
-      <Flex gap={24}>
+    <Card className="h-auto w-full flex justify-start bg-container">
+      <Flex className="w-full" gap={24}>
         {makeAvatar()}
         <Descriptions
           size="small"
           column={props.column}
-          items={makeDescriptionsItem()}
+          items={makeProfileDescriptionsItem()}
         ></Descriptions>
       </Flex>
+      { props.userinfo && props.company && <Divider /> }
+      {props.company && <>
+        <Flex className="w-full" gap={24}>
+          <Descriptions
+            size="small"
+            column={props.column}
+            items={makeCompanyDescriptionsItem()}
+          ></Descriptions>
+        </Flex>
+      </>}
     </Card>
   );
 });

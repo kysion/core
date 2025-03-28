@@ -18,7 +18,6 @@ export class Common {
         return http.get<ApiResponse<{ captchaId: string; captchaImg: string }>>(`/common/captcha`);
     }
 
-
     /**
      * 上传文件
      * @param params 上传参数

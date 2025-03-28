@@ -18,7 +18,7 @@ import { Iconify } from './iconify';
 import { License } from './license';
 import { Menu } from './menu';
 import { Message } from './message';
-import { My } from './my';
+import { MyProfile, MyCompany } from './my';
 import { Org } from './org';
 import { Permission } from './permission';
 import { Role } from './role';
@@ -51,7 +51,8 @@ export const KysionApis = {
     Iconify,
     Menu,
     Message,
-    My,
+    MyProfile,
+    MyCompany,
     Permission,
     Role,
     Settings,

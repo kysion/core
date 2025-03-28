@@ -1,3 +1,4 @@
+import { useActionState } from "react";
 import { http } from "../base";
 import {
     AccountBillDetailType,
@@ -14,6 +15,7 @@ import {
     Records,
     TeamType,
 } from "@kysion/types";
+import { useUserActions } from "../../store";
 
 export class My {
     private urlPrefix: string;
@@ -55,7 +57,13 @@ export class My {
 
     // 获取当前用户公司信息
     public getCompany() {
-        return http.post<CompanyType>(`/${this.urlPrefix}/my/getCompany`);
+        return http.post<CompanyType>(`/${this.urlPrefix}/my/getCompany`).then(res => {
+            const company = res as CompanyType;
+            if (company) {
+                useUserActions().setCompany(company);
+            }
+            return res;
+        });
     }
 
     public getMyCompanyPermissionList(data?: { permissionType: PermissionTypeSet }) {
@@ -64,7 +72,16 @@ export class My {
 
     public getProfile(data?: { include?: string[] }) {
         data = data || { include: ['*'] };
-        return http.post<ProfileType>(`/${this.urlPrefix}/my/getProfile`, data);
+        return http.post<ProfileType>(`/${this.urlPrefix}/my/getProfile`, data).then(res => {
+            const profile = res as ProfileType;
+            if (profile) {
+                useUserActions().setEmployee(profile.employee!);
+                useUserActions().setUser(profile.user!);
+                useUserActions().setIsAdmin(profile.isAdmin);
+                useUserActions().setIsSuperAdmin(profile.isSuperAdmin);
+            }
+            return res;
+        });
     }
 
     public getTeams(data?: { include?: string[] }) {

@@ -13,7 +13,7 @@ const initialState: IMyTableStateType = {
 }
 
 export const useTableStore = createKyStore<IMyTableStateType>(initialState, {
-    storageKey: 'myProfile',
+    storageKey: 'myTablePreference',
     crypto: Funs.getEnv('APP_DEBUG_MODE', false)
 });
 
@@ -61,14 +61,14 @@ export const useTableActions = () => {
         },
         async refresh() {
             const { user } = useUserState();
-            return await KysionApis.My.getSettingByName<IMyTableStateType>({ name: 'my_table_setting', userId: user.id }).then(res => {
+            return await KysionApis.MyProfile.getSettingByName<IMyTableStateType>({ name: 'my_table_setting', userId: user.id }).then(res => {
                 if (res) {
                     set({ tableColumnOptionArr: res.values?.tableColumnOptionArr || [] });
                 }
             })
         },
         save() {
-            return KysionApis.My.setSettingByName<IMyTableStateType>({
+            return KysionApis.MyProfile.setSettingByName<IMyTableStateType>({
                 name: 'my_table_setting',
                 values: get(),
                 desc: '我的表格设置'

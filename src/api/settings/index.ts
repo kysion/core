@@ -1,3 +1,4 @@
+import { useUserActions } from "../../store";
 import { http } from "../base";
 import { Query, Records, SettingType } from "@kysion/types";
 
@@ -18,5 +19,15 @@ export class Settings {
 
     public static saveSetting<T>(data: SettingType<T>) {
         return http.post<SettingType<T>>('/system/settings/saveSetting', data);
+    }
+
+    public static getModuleConfInfo() {
+        return http.post<{ moduleName: string, moduleType: number }>('/system/config/moduleTypeInfo').then(res => {
+            let data = res as { moduleName: string, moduleType: number };
+            if (data) {
+                useUserActions().setModuleConf(data);
+            }
+            return res;
+        });
     }
 }

@@ -1,6 +1,7 @@
 import { CompanyType, EmployeeType, PermissionType, UserInfoType } from '@kysion/types';
 import { createKyStore, createSelectors } from '../base';
 import { Funs } from '@kysion/utils';
+import { KysionApis } from '../../api';
 
 export interface ProfileState {
     company: CompanyType;
@@ -13,6 +14,7 @@ export interface ProfileState {
     token: string | null;
     expireAt: string;
     isLoggedIn: boolean;
+    moduleConf: { moduleName: string, moduleType: number };
 }
 
 const initialState: ProfileState = {
@@ -24,11 +26,12 @@ const initialState: ProfileState = {
     token: null,
     expireAt: '',
     isLoggedIn: false,
-}
+    moduleConf: { moduleName: '', moduleType: 0 },
+};
 
 export const useUserStore = createKyStore<ProfileState>(initialState, {
     storageKey: 'myProfile',
-    crypto: Funs.getEnv('APP_DEBUG_MODE', false)
+    crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'true')
 });
 
 export const useUserState = createSelectors(useUserStore);
@@ -38,7 +41,19 @@ export const useUserActions = () => {
     const get = useUserStore.getState;
 
     return {
-        login: (user: UserInfoType, token: string, expireAt: string) => set({ user, token, expireAt, isLoggedIn: true }),
+        login: async (user: UserInfoType, token: string, expireAt: string) => {
+            set({ user, token, expireAt, isLoggedIn: true });
+            await useUserActions().reload();
+        },
+        reload: async () => {
+            await KysionApis.Settings.getModuleConfInfo();
+            await Promise.all([
+                KysionApis.MyCompany.my.getCompany(),
+                KysionApis.MyCompany.my.getProfile(),
+                KysionApis.MyCompany.my.getTeams(),
+                KysionApis.MyCompany.my.getMyCompanyPermissionList(),
+            ]);
+        },
         logout: () => set({ user: new UserInfoType(), token: null, expireAt: '', isLoggedIn: false }),
         setCompany: (company: CompanyType) => set({ company }),
         setEmployee: (employee: EmployeeType) => set({ employee }),
@@ -46,5 +61,6 @@ export const useUserActions = () => {
         setUser: (user: UserInfoType) => set({ user }),
         setIsAdmin: (isAdmin: boolean) => set({ isAdmin }),
         setIsSuperAdmin: (isSuperAdmin: boolean) => set({ isSuperAdmin }),
+        setModuleConf: (moduleConf: { moduleName: string, moduleType: number }) => set({ moduleConf }),
     };
 };
