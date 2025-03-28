@@ -37,7 +37,6 @@ import type { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
 import { Icon } from '@iconify/react';
 import { debounce } from 'lodash';
 import type { ColumnsType } from 'antd/lib/table';
-import { useStore } from 'zustand';
 import { Filter, LikeWhereSet, Order, Query } from '@kysion/types';
 import {
   KyTableColumnType,
@@ -53,7 +52,7 @@ import {
   WhereSet,
 } from '@kysion/types';
 
-import { useTableStore, useTableActions, useUserState } from '@/store';
+import { useTableActions, useUserState } from '@/store';
 import {
   FilterDropdownProps,
   FilterValue,

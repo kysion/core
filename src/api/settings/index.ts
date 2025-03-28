@@ -1,3 +1,4 @@
+import { KysionApis } from "..";
 import { useUserActions } from "../../store";
 import { http } from "../base";
 import { Query, Records, SettingType } from "@kysion/types";
@@ -26,6 +27,7 @@ export class Settings {
             let data = res as { moduleName: string, moduleType: number };
             if (data) {
                 useUserActions().setModuleConf(data);
+                KysionApis.MyCompany.setUrlPrefix(data.moduleName);
             }
             return res;
         });

@@ -31,7 +31,7 @@ const initialState: ProfileState = {
 
 export const useUserStore = createKyStore<ProfileState>(initialState, {
     storageKey: 'myProfile',
-    crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'true')
+    crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
 });
 
 export const useUserState = createSelectors(useUserStore);
@@ -47,6 +47,7 @@ export const useUserActions = () => {
         },
         reload: async () => {
             await KysionApis.Settings.getModuleConfInfo();
+
             await Promise.all([
                 KysionApis.MyCompany.my.getCompany(),
                 KysionApis.MyCompany.my.getProfile(),

@@ -5,7 +5,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { AuthStateMap, authStateSet, CompanyType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr } from '@kysion/types';
+import { AuthStateMap, authStateSet, CompanyType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr, SexMap, sexSet } from '@kysion/types';
 import { useTranslation } from 'react-i18next';
 
 export interface AuthRef {
@@ -27,6 +27,7 @@ export interface CardInfoProps {
 }
 
 export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => {
+
   if (!props.userinfo && props.employee && props.employee.user) {
     props.userinfo = props.employee.user;
   }
@@ -95,7 +96,7 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
   function makeEmployee() {
     if (!employee) return;
   
-    sex = employee.sex === 1 ? <>男</> : <>女</>;
+    sex = employee.sex === 1 ? <>{ t(SexMap.get(sexSet.Male)!.i18nLabel) }</> : <>{ t(SexMap.get(sexSet.Female)!.i18nLabel) }</>;
     if (employee.sex === 2 || !props.employee) {
       sex = <span className="text-gray-300">{unsetLabel}</span>;
     }

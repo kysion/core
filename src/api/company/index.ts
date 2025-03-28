@@ -33,6 +33,14 @@ export class Company {
     }
 
     /**
+     * 设置URL前缀
+     * @param urlPrefix 
+     */
+    public setUrlPrefix(urlPrefix: string) {
+        this.urlPrefix = urlPrefix;
+    }
+
+    /**
      * 查询企业列表
      */
     public fetchCompanyList(params: Query) {
