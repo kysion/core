@@ -164,7 +164,7 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
     };
     const hiredAtItem = {
       label: t('kysion.user.column.hiredAt'),
-      children: hiredAt.toString(),
+      children: hiredAt,
     };
     const lastLoginAtItem = {
       label: t('kysion.user.column.lastLoginAt'),
