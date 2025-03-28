@@ -30,6 +30,10 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
     props.userinfo = props.employee.user;
   }
 
+  if(props.column === undefined) {
+    props.column = 3;
+  }
+
   const { t } = useTranslation();
 
   const [employee, _setEmployee] = useState<EmployeeType | undefined>(
@@ -311,6 +315,8 @@ export const EmployeeInfoCard = forwardRef<AuthRef, CardInfoProps>((props, ref) 
       </Flex>
     );
   }
+
+  console.log('makeDescriptionsItem', makeDescriptionsItem());
 
   return (
     <Card className="h-170px w-full flex justify-start bg-container">
