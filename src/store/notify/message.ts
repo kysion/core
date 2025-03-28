@@ -1,12 +1,10 @@
 // 导入必要的类型定义
-import { TableParams } from "@/types/table";
+import { TableParams } from "../../types/table";
 import { Query, Records, MessageType } from "@kysion/types";
 // 导入创建store的函数
-import { createKyStore } from "..";
-// 导入创建选择器的函数
-import { createSelectors } from "../base";
+import { createKyStore, createSelectors } from "../base";
 // 导入API接口
-import { KysionApis } from "@/api";
+import { KysionApis } from "../../api";
 
 // 定义消息通知模块的状态接口
 export interface IMessageNotifyStateType {

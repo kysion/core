@@ -43,7 +43,7 @@ import {
   FixedStateArr,
   FixedStateMap,
   fixedStateSet
-} from '@/types/table';
+} from '../types/table';
 import {
   LikeWhereMap,
   SortMap,
@@ -52,7 +52,7 @@ import {
   WhereSet,
 } from '@kysion/types';
 
-import { useTableActions, useUserState } from '@/store';
+import { useTableActions, useUserState } from '../store';
 import {
   FilterDropdownProps,
   FilterValue,
@@ -79,8 +79,8 @@ export interface ColumnsTypeProps<T> {
   onMaskValueText?: (text: string) => string;
   copyable?: boolean | CopyConfig;
   filterDropDown?:
-    | React.ReactNode
-    | ((props: FilterDropdownProps & { title?: string; dataIndex: keyof T }) => React.ReactNode);
+  | React.ReactNode
+  | ((props: FilterDropdownProps & { title?: string; dataIndex: keyof T }) => React.ReactNode);
 }
 
 export function useColumnSearchProps<T>({
@@ -123,8 +123,8 @@ export function useColumnSearchProps<T>({
 
       const searchTextArr = searchOptionConf
         ? [searchOptionConf.searchText].map((item) => {
-            return onMaskValueText ? onMaskValueText(item) : item;
-          })
+          return onMaskValueText ? onMaskValueText(item) : item;
+        })
         : [];
 
       return searchOptionConf && searchOptionConf.searchColumn === dataIndex ? (
@@ -137,9 +137,9 @@ export function useColumnSearchProps<T>({
             textToHighlight={
               contentText.length > 0
                 ? (onMaskValueText
-                    ? onMaskValueText(contentText.toString())
-                    : contentText
-                  ).toString()
+                  ? onMaskValueText(contentText.toString())
+                  : contentText
+                ).toString()
                 : contentText
             }
           />
@@ -760,7 +760,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
                   onClick={(e) => e.preventDefault()}
                 >
                   <Flex align="center">
-                    { t(SortMap[(defaultValue as SortSet) ?? SortSet.None] ||'kysion.query.Sort.None')}
+                    {t(SortMap[(defaultValue as SortSet) ?? SortSet.None] || 'kysion.query.Sort.None')}
                   </Flex>
                 </Button>
               </Dropdown>
@@ -807,7 +807,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         render: (v, row) => (
           <Flex align="center" className="flex justify-center">
             <Tooltip
-              title={t('kysion.table.column.cell.tooltip')+row.title}
+              title={t('kysion.table.column.cell.tooltip') + row.title}
             >
               <Switch
                 checkedChildren={t('kysion.common.yes')}
@@ -864,27 +864,27 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
               props.customHeader === true
                 ? undefined
                 : () => {
-                    if (typeof props.customHeader === 'function') return props.customHeader();
-                    if (props.customHeader) return props.customHeader;
+                  if (typeof props.customHeader === 'function') return props.customHeader();
+                  if (props.customHeader) return props.customHeader;
 
-                    return (
-                      <Flex align="center" className="justify-between">
-                        <Checkbox
-                          checked={enablePreview || true}
-                          disabled
-                          className="font-size-16px m-l-2px"
-                          onChange={(e) => {
-                            canPreview = e.target.checked;
-                            setEnablePreview(e.target.checked);
-                            updateDataSource();
-                          }}
-                        >
-                          {t('kysion.table.column.setting.preview')}
-                        </Checkbox>
-                        <span>{actions ?? makeActions()}</span>
-                      </Flex>
-                    );
-                  }
+                  return (
+                    <Flex align="center" className="justify-between">
+                      <Checkbox
+                        checked={enablePreview || true}
+                        disabled
+                        className="font-size-16px m-l-2px"
+                        onChange={(e) => {
+                          canPreview = e.target.checked;
+                          setEnablePreview(e.target.checked);
+                          updateDataSource();
+                        }}
+                      >
+                        {t('kysion.table.column.setting.preview')}
+                      </Checkbox>
+                      <span>{actions ?? makeActions()}</span>
+                    </Flex>
+                  );
+                }
             }
             components={{
               body: { row: Row },

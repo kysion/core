@@ -1,8 +1,7 @@
 // 导入必要的类型和工具函数
-import { TableParams } from "@/types/table";
+import { TableParams } from "../../types/table";
 import { Query, Records, AnnouncementType } from "@kysion/types";
-import { createKyStore } from "..";
-import { createSelectors } from "../base";
+import { createKyStore, createSelectors } from "../base";
 import { KysionApis } from "../../api";
 
 // 定义公告通知状态的接口
