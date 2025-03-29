@@ -72,8 +72,23 @@ export type SearchOption<T> = {
   searchColumn?: keyof T;
 };
 
+type BaseNamePath = string | number | boolean | (string | number | boolean)[];
+export type SpecialString<T> = T | (string & {});
+
+export type DeepNamePath<Store = any, ParentNamePath extends any[] = []> = ParentNamePath['length'] extends 3 ? never : true extends (Store extends BaseNamePath ? true : false) ? ParentNamePath['length'] extends 0 ? Store | BaseNamePath : Store extends any[] ? [...ParentNamePath, number] : never : Store extends any[] ? // Connect path. e.g. { a: { b: string }[] }
+  [
+    ...ParentNamePath,
+    number
+  ] | DeepNamePath<Store[number], [...ParentNamePath, number]> : keyof Store extends never ? Store : {
+    [FieldKey in keyof Store]: Store[FieldKey] extends Function ? never : (ParentNamePath['length'] extends 0 ? FieldKey : never) | [...ParentNamePath, FieldKey] | DeepNamePath<Required<Store>[FieldKey], [...ParentNamePath, FieldKey]>;
+  }[keyof Store];
+export { };
+
+
+export type DataIndex<T = any> = DeepNamePath<T> | SpecialString<T> | number | (SpecialString<T> | number)[];
+
 export interface ColumnsTypeProps<T> {
-  dataIndex: keyof T;
+  dataIndex: DataIndex<keyof T>;
   searchOption?: () => SearchOption<T>;
   title?: ColumnTitle<T>;
   render?: (v: any, row: T) => ReactNode;
@@ -486,10 +501,12 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
 
       if (active.id !== over?.id) {
         const activeIndex = mySettingStateArr.findIndex((record) => {
-          return (record as any).key === active?.id;
+          const recordKey = (record as any).key || record.title;
+          return recordKey === active.id;
         });
         const overIndex = mySettingStateArr.findIndex((record) => {
-          return (record as any).key === over?.id;
+          const recordKey = (record as any).key || record.title;
+          return recordKey === over?.id;
         });
 
         console.log('Drag details:', {
@@ -498,7 +515,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
           activeIndex,
           overIndex,
           mySettingStateArr: mySettingStateArr.map(item => ({
-            key: (item as any).key,
+            key: (item as any).key || item.title,
             title: item.title,
             sort: item.sort
           }))
@@ -886,11 +903,10 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
       if (posIndex >= 0) columnItems.splice(posIndex, 1);
     }
 
-    console.log('mySettingStateArr', mySettingStateArr);
     return (
       <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
         <SortableContext
-          items={mySettingStateArr.map(item => (item as any).key)}
+          items={mySettingStateArr.map(item => (item as any).key || item.title)}
           strategy={verticalListSortingStrategy}
         >
           <Table
@@ -923,7 +939,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             columns={columnItems}
             dataSource={mySettingStateArr}
             pagination={false}
-            rowKey={(record) => record.title}
+            rowKey={(record) => (record as any).key || record.title}
           />
         </SortableContext>
       </DndContext>
