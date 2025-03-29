@@ -273,7 +273,7 @@ const DragHandle: React.FC = () => {
           <Icon icon="tabler:drag-drop" />
         </>
       }
-      style={{ cursor: 'move' }}
+      style={{ cursor: 'grab', touchAction: 'none' }}
       ref={setActivatorNodeRef}
       {...listeners}
     />
@@ -302,8 +302,8 @@ const Row = forwardRef<RowRef, RowProps>((props, ref) => {
     ...props.style,
     transform: CSS.Translate.toString(transform),
     transition,
-    ...(isDragging ? { position: 'relative', zIndex: 9999 } : {}),
-    ...{ cursor: 'default' },
+    ...(isDragging ? { position: 'relative', zIndex: 9999, cursor: 'grabbing' } : {}),
+    cursor: 'default',
   };
 
   const contextValue = useMemo<RowContextProps>(
@@ -378,7 +378,8 @@ export function makeTableColumnOption<T, K extends string>(
   const newDataSource = data
     .filter((item) => item.columnOption && item.key !== 'operation')
     .map((item) => {
-      const info = state.find((v) => v.title === item.title);
+      const info = state.find((v: any) => v.key === (item.key || item.dataIndex));
+
       if (info) {
         item.columnOptionState = {
           ...item.columnOptionState,
@@ -457,11 +458,11 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     function makeActions() {
       return (
         <Flex gap={8}>
-          <Button type="primary" icon={<Icon icon={'ant-design:save-outlined'} />} onClick={save}>
+          {/* <Button type="primary" icon={<Icon icon={'ant-design:save-outlined'} />} onClick={save}>
             {t('kysion.common.save')}
-          </Button>
+          </Button> */}
           <Button
-            type="dashed"
+            type="primary"
             icon={<Icon icon={'mdi:cog-refresh-outline'} />}
             disabled={!props.getDefaultDataSource}
             onClick={() => {
@@ -481,9 +482,33 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     }));
 
     const onDragEnd = ({ active, over }: DragEndEvent) => {
+      console.log('Drag event:', { active, over });
+
       if (active.id !== over?.id) {
-        const activeIndex = mySettingStateArr.findIndex((record) => record.title === active?.id);
-        const overIndex = mySettingStateArr.findIndex((record) => record.title === over?.id);
+        const activeIndex = mySettingStateArr.findIndex((record) => {
+          return (record as any).key === active?.id;
+        });
+        const overIndex = mySettingStateArr.findIndex((record) => {
+          return (record as any).key === over?.id;
+        });
+
+        console.log('Drag details:', {
+          activeId: active.id,
+          overId: over?.id,
+          activeIndex,
+          overIndex,
+          mySettingStateArr: mySettingStateArr.map(item => ({
+            key: (item as any).key,
+            title: item.title,
+            sort: item.sort
+          }))
+        });
+
+        if (activeIndex === -1 || overIndex === -1) {
+          console.warn('Could not find indices for drag operation');
+          return;
+        }
+
         updateSettingStateArr(
           arrayMove(mySettingStateArr, activeIndex, overIndex).map((item, index) => {
             item.sort = index;
@@ -714,7 +739,6 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         align: 'center',
         render: (text, row) => {
           const sortByArr = Array.isArray(row.conf?.sortBy) ? row.conf?.sortBy : [row.conf?.sortBy];
-
           const items = sortByArr
             .filter((item) => item)
             .map((item) => {
@@ -747,13 +771,18 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
 
           const defaultValue = text === true ? 'auto' : text;
 
+          let isDisabled = sortByArr.length <= 1;
+          if (sortByArr.length === 1 && sortByArr[0] === true) {
+            isDisabled = false;
+          }
+
           return (
             <Flex align="center" className="flex justify-center">
               <Dropdown
                 menu={{ items, selectable: true, selectedKeys: [text] }}
                 trigger={['click']}
                 arrow
-                disabled={sortByArr.length <= 1}
+                disabled={isDisabled}
               >
                 <Button
                   icon={<Icon icon={'tabler:chevron-down'} />}
@@ -806,10 +835,10 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         minWidth: 100,
         width: 100,
         align: 'center',
-        render: (v, row) => (
+        render: (v, row: any) => (
           <Flex align="center" className="flex justify-center">
             <Tooltip
-              title={t('kysion.table.column.cell.tooltip') + row.title}
+              title={t('kysion.table.column.cell.tooltip') + (typeof row.title === 'string' ? row.title : row.title.props?.localeKey ? row.title.props.localeKey : row.title)}
             >
               <Switch
                 checkedChildren={t('kysion.common.yes')}
@@ -817,7 +846,10 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
                 checked={v === true}
                 defaultChecked={v === true}
                 onClick={(checked) => {
-                  const colIndex = mySettingStateArr.findIndex((item) => item.title === row.title);
+                  const colIndex = mySettingStateArr.findIndex((item) => {
+
+                    return (item as any).key === row.key;
+                  });
 
                   if (colIndex >= 0) {
                     mySettingStateArr[colIndex] = {
@@ -854,10 +886,11 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
       if (posIndex >= 0) columnItems.splice(posIndex, 1);
     }
 
+    console.log('mySettingStateArr', mySettingStateArr);
     return (
       <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
         <SortableContext
-          items={mySettingStateArr?.map((item, index) => `setting-row-${index}`) ?? []}
+          items={mySettingStateArr.map(item => (item as any).key)}
           strategy={verticalListSortingStrategy}
         >
           <Table
@@ -890,7 +923,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             columns={columnItems}
             dataSource={mySettingStateArr}
             pagination={false}
-            rowKey={(row, index) => `setting-row-${index}`}
+            rowKey={(record) => record.title}
           />
         </SortableContext>
       </DndContext>
