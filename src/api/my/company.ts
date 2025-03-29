@@ -1,4 +1,4 @@
-import { useUserStore } from "../../store";
+import { useMyProfileStore } from "../../store";
 import { Company } from "../company";
 import { MyBase } from "./base";
 
@@ -6,7 +6,7 @@ class myCompany extends MyBase {
     private static instance: myCompany | null = null;
 
     private constructor() {
-        const { moduleConf } = useUserStore.getState();
+        const { moduleConf } = useMyProfileStore.getState();
 
         super(new Company({ urlPrefix: moduleConf.moduleName }));
     }

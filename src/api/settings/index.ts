@@ -1,5 +1,5 @@
 import { KysionApis } from "..";
-import { useUserActions } from "../../store";
+import { useMyProfileActions } from "../../store";
 import { http } from "../base";
 import { Query, Records, SettingType } from "@kysion/types";
 
@@ -26,7 +26,7 @@ export class Settings {
         return http.post<{ moduleName: string, moduleType: number }>('/system/config/moduleTypeInfo').then(res => {
             let data = res as { moduleName: string, moduleType: number };
             if (data) {
-                useUserActions().setModuleConf(data);
+                useMyProfileActions().setModuleConf(data);
                 KysionApis.MyCompany.setUrlPrefix(data.moduleName);
             }
             return res;

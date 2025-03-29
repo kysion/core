@@ -15,7 +15,7 @@ import {
     Records,
     TeamType,
 } from "@kysion/types";
-import { useUserActions } from "../../store";
+import { useMyProfileActions } from "../../store";
 
 export class My {
     private urlPrefix: string;
@@ -60,7 +60,7 @@ export class My {
         return http.post<CompanyType>(`/${this.urlPrefix}/my/getCompany`).then(res => {
             const company = res as CompanyType;
             if (company) {
-                useUserActions().setCompany(company);
+                useMyProfileActions().setCompany(company);
             }
             return res;
         });
@@ -75,10 +75,10 @@ export class My {
         return http.post<ProfileType>(`/${this.urlPrefix}/my/getProfile`, data).then(res => {
             const profile = res as ProfileType;
             if (profile) {
-                useUserActions().setEmployee(profile.employee!);
-                useUserActions().setUser(profile.user!);
-                useUserActions().setIsAdmin(profile.isAdmin);
-                useUserActions().setIsSuperAdmin(profile.isSuperAdmin);
+                useMyProfileActions().setEmployee(profile.employee!);
+                useMyProfileActions().setUser(profile.user!);
+                useMyProfileActions().setIsAdmin(profile.isAdmin);
+                useMyProfileActions().setIsSuperAdmin(profile.isSuperAdmin);
             }
             return res;
         });
