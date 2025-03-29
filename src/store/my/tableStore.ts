@@ -14,7 +14,7 @@ const initialState: IMyTableStateType = {
 
 export const useTableStore = createKyStore<IMyTableStateType>(initialState, {
     storageKey: 'myTablePreference',
-    crypto: Funs.getEnv('APP_DEBUG_MODE', false)
+    crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
 });
 
 export const useTableState = createSelectors(useTableStore);

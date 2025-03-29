@@ -25,6 +25,8 @@
   "kysion.table.column.defaultSort": "默认排序",
   "kysion.table.column.fixedSide": "侧边冻结",
   "kysion.table.column.fixedState.None": "无",
+  "kysion.table.column.fixedState.Left": "左侧",
+  "kysion.table.column.fixedState.Right": "右侧",
   "kysion.table.column.groupSort": "按组排序",
   "kysion.table.column.hidden": "隐藏",
   "kysion.table.column.isDisabled": "是否禁用",

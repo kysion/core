@@ -54,6 +54,7 @@ import {
 
 import { useTableActions, useUserState } from '../store';
 import {
+  ColumnTitle,
   FilterDropdownProps,
   FilterValue,
   SorterResult,
@@ -64,6 +65,7 @@ import { CopyConfig } from 'antd/es/typography/Base';
 import { SearchOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { ApiResponse } from '@kysion/utils';
+import KyTranslate from './KyTranslate';
 
 export type SearchOption<T> = {
   searchText: string;
@@ -73,7 +75,7 @@ export type SearchOption<T> = {
 export interface ColumnsTypeProps<T> {
   dataIndex: keyof T;
   searchOption?: () => SearchOption<T>;
-  title?: string;
+  title?: ColumnTitle<T>;
   render?: (v: any, row: T) => ReactNode;
   onFilter?: (value: React.Key | boolean, record: T) => boolean;
   onMaskValueText?: (text: string) => string;
@@ -517,7 +519,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         align: 'center',
         render: (text) => (
           <Flex align="center" className="flex justify-center">
-            {text}
+            {typeof text === 'string' ? text : text.props?.localeKey ? <KyTranslate localeKey={text.props.localeKey} /> : text}
           </Flex>
         ),
       },
@@ -542,7 +544,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             if (item === WhereSet.Like) {
               const subMenu = Object.keys(LikeWhereMap).map((likeItem, likeIndex) => {
                 return {
-                  key: `${index}-${likeIndex}`,
+                  key: `where-${index}-${likeIndex}`,
                   label: t(LikeWhereMap[likeItem as LikeWhereSet] || 'kysion.query.Like.Contain'),
                   onClick: () => {
                     const colIndex = mySettingStateArr.findIndex((v) => v.title === row.title);
@@ -561,13 +563,13 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
               });
 
               return {
-                key: `${index}`,
+                key: `where-${index}`,
                 label: t(WhereMap[item as WhereSet]),
                 children: subMenu,
               };
             }
             return {
-              key: index,
+              key: `where-${index}`,
               label: t(WhereMap[item as WhereSet]),
               onClick: () => {
                 const colIndex = mySettingStateArr.findIndex((v) => v.title === row.title);
@@ -636,9 +638,9 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             );
           }
 
-          const items = FixedStateArr.map((item) => {
+          const items = FixedStateArr.map((item, index) => {
             return {
-              key: item,
+              key: index,
               label: t(item[1] || 'kysion.table.column.fixedState.None'),
               onClick: () => {
                 const colIndex = mySettingStateArr.findIndex((v) => v.title === row.title);
@@ -722,9 +724,9 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
               return item;
             })
             .flat()
-            .map((item) => {
+            .map((item, index) => {
               const result = {
-                key: item?.toString() ?? '',
+                key: `sort-${item?.toString()}-${index}`,
                 label: SortMap[item as SortSet],
                 checked: item === row.sortBy,
                 onClick: () => {
@@ -855,37 +857,32 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     return (
       <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
         <SortableContext
-          items={mySettingStateArr?.map((item) => item.title) ?? []}
+          items={mySettingStateArr?.map((item, index) => `setting-row-${index}`) ?? []}
           strategy={verticalListSortingStrategy}
         >
           <Table
             className="h-auto w-full flex-1"
-            title={
-              props.customHeader === true
-                ? undefined
-                : () => {
-                  if (typeof props.customHeader === 'function') return props.customHeader();
-                  if (props.customHeader) return props.customHeader;
-
-                  return (
-                    <Flex align="center" className="justify-between">
-                      <Checkbox
-                        checked={enablePreview || true}
-                        disabled
-                        className="font-size-16px m-l-2px"
-                        onChange={(e) => {
-                          canPreview = e.target.checked;
-                          setEnablePreview(e.target.checked);
-                          updateDataSource();
-                        }}
-                      >
-                        {t('kysion.table.column.setting.preview')}
-                      </Checkbox>
-                      <span>{actions ?? makeActions()}</span>
-                    </Flex>
-                  );
-                }
-            }
+            title={props.customHeader === true ? undefined : () => {
+              if (typeof props.customHeader === 'function') return props.customHeader();
+              if (props.customHeader) return props.customHeader;
+              return (
+                <Flex align="center" className="justify-between">
+                  <Checkbox
+                    checked={enablePreview || true}
+                    disabled
+                    className="font-size-16px m-l-2px"
+                    onChange={(e) => {
+                      canPreview = e.target.checked;
+                      setEnablePreview(e.target.checked);
+                      updateDataSource();
+                    }}
+                  >
+                    {t('kysion.table.column.setting.preview')}
+                  </Checkbox>
+                  <span>{actions ?? makeActions()}</span>
+                </Flex>
+              );
+            }}
             components={{
               body: { row: Row },
             }}
@@ -893,7 +890,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             columns={columnItems}
             dataSource={mySettingStateArr}
             pagination={false}
-            rowKey={(row) => row.title as string}
+            rowKey={(row, index) => `setting-row-${index}`}
           />
         </SortableContext>
       </DndContext>

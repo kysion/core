@@ -24,6 +24,8 @@
   "kysion.table.column.defaultSort": "Default Sort",
   "kysion.table.column.fixedSide": "Fixed Side",
   "kysion.table.column.fixedState.None": "None",
+  "kysion.table.column.fixedState.Left": "Left",
+  "kysion.table.column.fixedState.Right": "Right",
   "kysion.table.column.groupSort": "Group Sort",
   "kysion.table.column.hidden": "Hidden",
   "kysion.table.column.isDisabled": "Disabled",
