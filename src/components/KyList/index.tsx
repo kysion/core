@@ -15,7 +15,7 @@ export interface KyListProps<T = any> extends Omit<TableProps<T>, 'columns' | 't
     // 基础属性
     title?: ReactNode;
     identifier: string;
-    extraActions?: ReactNode[];
+    extraActions?: ReactNode[] | ((items: ReactNode[]) => ReactNode[]);
 
     // 列配置
     columns: KyTableColumnType<T, any>[];
@@ -154,9 +154,7 @@ export const KyList: FC<KyListProps> = ({
                 />
             </Tooltip>
         ),
-        // 额外的操作按钮
-        ...extraActions,
-    ].filter(Boolean);
+    ];
 
     const curColumns = columns.map((col: any) => {
         const title = col.title as any;
@@ -176,7 +174,7 @@ export const KyList: FC<KyListProps> = ({
     return (
         <PageContainer
             title={title}
-            extra={actionButtons}
+            extra={(Array.isArray(extraActions) ? extraActions : extraActions(actionButtons)).filter(Boolean)}
             className={className}
         >
             <Flex vertical className="relative size-full flex">
