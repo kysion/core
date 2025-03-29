@@ -66,6 +66,7 @@ export class My {
         });
     }
 
+    // 获取当前用户公司权限树
     public getMyCompanyPermissionList(data?: { permissionType: PermissionTypeSet }) {
         return http.post<PermissionType[]>(`/${this.urlPrefix}/my/getMyCompanyPermissionList`, data);
     }
