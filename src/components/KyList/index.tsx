@@ -137,9 +137,10 @@ export const KyList: FC<KyListProps> = ({
         onRefresh && (
             <Tooltip key="refresh" title={t('kysion.common.refresh.tooltip')} placement="bottom">
                 <Button
-                    type="dashed"
+                    color="primary"
+                    variant="filled"
                     loading={refreshLoading}
-                    icon={<KyIcon fontSize={28} icon="bitcoin-icons:refresh-filled" />}
+                    icon={<KyIcon fontSize={24} icon="bitcoin-icons:refresh-filled" />}
                     onClick={onRefresh}
                 />
             </Tooltip>
@@ -148,8 +149,9 @@ export const KyList: FC<KyListProps> = ({
         settingDrawer && (
             <Tooltip key="setting" title={t('kysion.table.column.setting.title')} placement="bottom">
                 <Button
-                    type="dashed"
-                    icon={<KyIcon fontSize={22} icon="ant-design:setting-outlined" />}
+                    color="primary"
+                    variant="filled"
+                    icon={<KyIcon fontSize={18} icon="ant-design:setting-outlined" />}
                     onClick={() => setSettingVisible(true)}
                 />
             </Tooltip>

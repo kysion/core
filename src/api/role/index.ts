@@ -1,10 +1,10 @@
 import { http } from "../base";
-import { Query, Records, RoleType } from "@kysion/types";
+import { Query, Records, RoleInfoType, UserInfoType } from "@kysion/types";
 
 export class Role {
     // 新增角色|信息
     public static createRole(data: { id?: string | number; name: string; isSystem?: boolean; description?: string; }) {
-        return http.post<RoleType>('/role/createRole', data);
+        return http.post<RoleInfoType>('/role/createRole', data);
     }
 
     // 删除角色
@@ -14,12 +14,12 @@ export class Role {
 
     // 根据ID获取角色
     public static getRoleById(data: { id: string | number }) {
-        return http.post<RoleType>('/role/getRoleById', data);
+        return http.post<RoleInfoType>('/role/getRoleById', data);
     }
 
     // 根据用户ID获取所有关联角色|列表
     public static getRoleByUserIdList(data: { userId: string | number }) {
-        return http.post<Records<RoleType>>('/role/getRoleByUserIdList', data);
+        return http.post<Records<RoleInfoType>>('/role/getRoleByUserIdList', data);
     }
 
     // 获取角色成员Ids|列表
@@ -29,7 +29,7 @@ export class Role {
 
     // 获取角色成员|列表
     public static getRoleMemberList(data: { roleId: string | number }) {
-        return http.post<Records<RoleType>>('/role/getRoleMemberList', data);
+        return http.post<Records<UserInfoType>>('/role/getRoleMemberList', data);
     }
 
     // 获取角色权限Ids
@@ -39,7 +39,7 @@ export class Role {
 
     // 获取所有角色|列表
     public static queryRoleList(params: Query) {
-        return http.post<Records<RoleType>>('/role/queryRoleList', params);
+        return http.post<Records<RoleInfoType>>('/role/queryRoleList', params);
     }
 
     // 移除角色成员
