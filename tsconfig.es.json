@@ -11,6 +11,6 @@
             "@kysion/types": ["../types/src"]
         }
     },
-    "include": ["src"],
+    "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx"],
     "exclude": ["node_modules", "dist", "src/api/_pending"]
 }
