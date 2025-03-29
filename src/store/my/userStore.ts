@@ -29,21 +29,21 @@ const initialState: ProfileState = {
     moduleConf: { moduleName: '', moduleType: 0 },
 };
 
-export const useUserStore = createKyStore<ProfileState>(initialState, {
+export const useMyProfileStore = createKyStore<ProfileState>(initialState, {
     storageKey: 'myProfile',
     crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
 });
 
-export const useUserState = createSelectors(useUserStore);
+export const useMyProfileState = createSelectors(useMyProfileStore);
 
-export const useUserActions = () => {
-    const set = useUserStore.setState;
-    const get = useUserStore.getState;
+export const useMyProfileActions = () => {
+    const set = useMyProfileStore.setState;
+    const get = useMyProfileStore.getState;
 
     return {
         login: async (user: UserInfoType, token: string, expireAt: string) => {
             set({ user, token, expireAt, isLoggedIn: true });
-            await useUserActions().reload();
+            await useMyProfileActions().reload();
         },
         reload: async () => {
             await KysionApis.Settings.getModuleConfInfo();

@@ -4,3 +4,4 @@ export const createKyStore = createStore;
 
 export * from './my';
 export * from './notify';
+export * from './user';

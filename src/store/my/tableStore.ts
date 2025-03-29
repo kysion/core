@@ -2,7 +2,7 @@ import { TableColumnOption } from "@/types/table";
 import { createKyStore, createSelectors } from "../base";
 import { Funs } from "@kysion/utils";
 import { KysionApis } from "../../api";
-import { useUserState } from "./userStore";
+import { useMyProfileState } from "./userStore";
 
 export interface IMyTableStateType {
     tableColumnOptionArr: TableColumnOption[];
@@ -60,7 +60,7 @@ export const useTableActions = () => {
             set({ tableColumnOptionArr: get().tableColumnOptionArr });
         },
         async refresh() {
-            const { user } = useUserState();
+            const { user } = useMyProfileState();
             return await KysionApis.MyProfile.getSettingByName<IMyTableStateType>({ name: 'my_table_setting', userId: user.id }).then(res => {
                 if (res) {
                     set({ tableColumnOptionArr: res.values?.tableColumnOptionArr || [] });
