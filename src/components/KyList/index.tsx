@@ -181,6 +181,10 @@ export const KyList: FC<KyListProps> = ({
         >
             <Flex vertical className="relative size-full flex">
                 <Table
+                    locale={{
+                        filterConfirm: t('common.confirm'),
+                        filterReset: t('common.reset')
+                    }}
                     {...tableProps}
                     size="small"
                     bordered
