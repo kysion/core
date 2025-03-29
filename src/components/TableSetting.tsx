@@ -52,7 +52,7 @@ import {
   WhereSet,
 } from '@kysion/types';
 
-import { useTableActions, useUserState } from '../store';
+import { useTableActions, useMyProfileState } from '../store';
 import {
   ColumnTitle,
   FilterDropdownProps,
@@ -65,7 +65,7 @@ import { CopyConfig } from 'antd/es/typography/Base';
 import { SearchOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { ApiResponse } from '@kysion/utils';
-import KyTranslate from './KyTranslate';
+import { KyTranslate } from './KyTranslate';
 
 export type SearchOption<T> = {
   searchText: string;
@@ -360,7 +360,7 @@ export interface SettingTableProps<T, K extends string> {
 }
 
 export function makeTableColumnState<T, K extends string>(data: KyTableColumnType<T, K>[]) {
-  return data.map((item) => {
+  const newDataSource = data.filter((item) => item.columnOption && item.key !== 'operation').map((item) => {
     const state = item.columnOptionState;
 
     if (state?.fixed === fixedStateSet.Left) item.fixed = 'left';
@@ -385,10 +385,18 @@ export function makeTableColumnState<T, K extends string>(data: KyTableColumnTyp
 
     return item;
   });
+
+
+  const operation = data.find((item) => item.key === 'operation');
+  if (operation) {
+    newDataSource.push(operation);
+  }
+
+  return newDataSource;
 }
 export function makeTableColumnOption<T, K extends string>(
   data: KyTableColumnType<T, K>[],
-  state: TableColumn[],
+  state: TableColumn[] = [],
 ) {
   const newDataSource = data
     .filter((item) => item.columnOption && item.key !== 'operation')
@@ -423,7 +431,7 @@ let mySettingStateArrCache: TableColumn[] = [];
 export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, any>>(
   (props, ref) => {
     const { t } = useTranslation();
-    const { isAdmin, isSuperAdmin } = useUserState();
+    const { isAdmin, isSuperAdmin } = useMyProfileState();
 
     const [enablePreview, setEnablePreview] = useState(true);
     const [mySettingStateArr, setMySettingStateArr] = useState<TableColumn[]>([]);

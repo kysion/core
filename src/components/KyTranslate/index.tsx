@@ -41,4 +41,4 @@ const KyTranslate: FC<KyTranslateProps> = memo(({ localeKey, tip }) => {
 
 KyTranslate.displayName = 'KyTranslate';
 
-export default KyTranslate; 
+export { KyTranslate }; 
