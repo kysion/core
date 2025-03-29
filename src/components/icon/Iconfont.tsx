@@ -1,6 +1,7 @@
 import { createFromIconfontCN } from '@ant-design/icons';
 import { IconFontProps } from '@ant-design/icons/lib/components/IconFont';
 import classNames from 'classnames';
+import React from 'react';
 import { memo } from 'react';
 
 export const KysionIconFont = createFromIconfontCN({

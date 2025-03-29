@@ -1,4 +1,5 @@
 import { Icon } from '@iconify/react';
+import React from 'react';
 
 interface IconifyIconProps {
   icon: string;

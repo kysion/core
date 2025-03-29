@@ -3,6 +3,7 @@ import { IconFont } from './Iconfont';
 import { Icon as Iconify, IconProps } from '@iconify/react';
 import { IconFontProps } from '@ant-design/icons/lib/components/IconFont';
 import { IconLocal } from './IconLocal';
+import React from 'react';
 
 type BaseIconProps = {
   className?: string;
