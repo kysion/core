@@ -1,0 +1,107 @@
+.custom-draggable-modal {
+    .ant-modal {
+        padding: 0;
+        margin: 0;
+        
+        .ant-modal-content {
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            
+            .ant-modal-header {
+                margin: 0;
+                padding: 16px 24px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+                
+                .draggable-modal-title {
+                    cursor: move;
+                    -webkit-user-select: none;
+                    user-select: none;
+                    color: #1f2937;
+                    font-weight: 500;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    margin: 0;
+                }
+            }
+            
+            .ant-modal-body {
+                padding: 24px;
+                background: #ffffff;
+                max-height: calc(90vh - 200px);
+                overflow-y: auto;
+                margin: 0;
+                
+                &::-webkit-scrollbar {
+                    width: 6px;
+                    height: 6px;
+                }
+                
+                &::-webkit-scrollbar-thumb {
+                    background: #d1d5db;
+                    border-radius: 3px;
+                    
+                    &:hover {
+                        background: #9ca3af;
+                    }
+                }
+                
+                &::-webkit-scrollbar-track {
+                    background: #f3f4f6;
+                    border-radius: 3px;
+                }
+            }
+            
+            .ant-modal-footer {
+                margin: 0;
+                padding: 16px 24px;
+                background: #f8f9fa;
+                border-top: 1px solid #e9ecef;
+                
+                .ant-btn {
+                    height: 32px;
+                    padding: 4px 16px;
+                    border-radius: 4px;
+                    font-weight: 500;
+                    
+                    &-primary {
+                        background: #1890ff;
+                        border-color: #1890ff;
+                        
+                        &:hover {
+                            background: #40a9ff;
+                            border-color: #40a9ff;
+                        }
+                    }
+                    
+                    &-default {
+                        background: #ffffff;
+                        border-color: #d9d9d9;
+                        
+                        &:hover {
+                            color: #40a9ff;
+                            border-color: #40a9ff;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // 遮罩层样式
+    .ant-modal-mask {
+        background-color: rgba(0, 0, 0, 0.45);
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+    }
+
+    // 移除关闭按钮的外边距
+    .ant-modal-close {
+        margin: 0;
+        padding: 0;
+        top: 16px;
+        right: 16px;
+    }
+} 

@@ -4,3 +4,6 @@ export * from './KyList';
 export * from './icon';
 export * from './KyTranslate';
 export * from './PageContainer';
+export * from './Common';
+export * from './MyProfileCard';
+export * from './DraggableModal';
