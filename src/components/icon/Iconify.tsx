@@ -11,7 +11,7 @@ interface IconifyIconProps {
   onClick?: () => void;
 }
 
-const IconifyIcon = ({
+export const IconifyIcon = ({
   icon,
   width = 20,
   height = 20,
@@ -32,5 +32,3 @@ const IconifyIcon = ({
     />
   );
 };
-
-export default IconifyIcon;

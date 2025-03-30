@@ -5,6 +5,11 @@ import { IconFontProps } from '@ant-design/icons/lib/components/IconFont';
 import { IconLocal } from './IconLocal';
 import React from 'react';
 
+export * from './IconSelect';
+export * from './IconLocal';
+export * from './Iconfont';
+export * from './Iconify';
+
 type BaseIconProps = {
   className?: string;
   style?: React.CSSProperties;
