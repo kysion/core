@@ -34,8 +34,8 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@iconify/json": "^2.2.321",
-    "@iconify/react": "^5.2.0",
+    "@iconify/json": "^2.2.322",
+    "@iconify/react": "^5.2.1",
     "@iconify/types": "^2.0.0",
     "@kysion/types": "workspace:*",
     "@kysion/utils": "workspace:*",
@@ -61,6 +61,6 @@
     "@types/react": "^19.0.12",
     "@types/react-highlight-words": "^0.20.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.9"
+    "vitest": "^3.1.1"
   }
 }
