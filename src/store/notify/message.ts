@@ -2,9 +2,10 @@
 import { TableParams } from "../../types/table";
 import { Query, Records, MessageType } from "@kysion/types";
 // 导入创建store的函数
-import { createKyStore, createSelectors } from "../base";
+import { createKyStore, createSelectors } from "@kysion/utils";
 // 导入API接口
 import { KysionApis } from "../../api";
+import { StoreApi, UseBoundStore } from "zustand";
 
 // 定义消息通知模块的状态接口
 export interface IMessageNotifyStateType {
@@ -31,9 +32,9 @@ const initialState: IMessageNotifyStateType = {
 };
 
 // 创建消息通知模块的store
-export const useMessageNotifyStore = createKyStore<IMessageNotifyStateType>(initialState);
+export const useMessageNotifyStore: UseBoundStore<StoreApi<IMessageNotifyStateType>> = createKyStore<IMessageNotifyStateType>(initialState);
 // 创建消息通知模块的状态选择器
-export const useMessageNotifyState = createSelectors(useMessageNotifyStore);
+export const useMessageNotifyState: UseBoundStore<StoreApi<IMessageNotifyStateType>> = createSelectors(useMessageNotifyStore);
 
 // 创建消息通知模块的动作
 export const useMessageNotifyActions = () => {

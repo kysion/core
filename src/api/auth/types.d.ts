@@ -48,7 +48,6 @@ export interface RegisterByMobileOrMailParams {
     confirmPassword: string;
     mobileOrMail?: string;
     captcha: string;
-    captchaId: string;
     inviteCode?: string;
 }
 

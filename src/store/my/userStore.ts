@@ -1,8 +1,8 @@
 import { CompanyType, EmployeeType, PermissionType, UserInfoType } from '@kysion/types';
-import { createKyStore, createSelectors } from '../base';
+import { createKyStore, createSelectors } from '@kysion/utils';
 import { Funs } from '@kysion/utils';
 import { KysionApis } from '../../api';
-
+import { StoreApi, UseBoundStore } from 'zustand';
 export interface ProfileState {
     company: CompanyType;
     employee: EmployeeType;
@@ -29,7 +29,7 @@ const initialState: ProfileState = {
     moduleConf: { moduleName: '', moduleType: 0 },
 };
 
-export const useMyProfileStore = createKyStore<ProfileState>(initialState, {
+export const useMyProfileStore: UseBoundStore<StoreApi<ProfileState>> = createKyStore<ProfileState>(initialState, {
     storageKey: 'myProfile',
     crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
 });

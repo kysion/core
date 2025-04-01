@@ -1,9 +1,9 @@
 // 导入必要的类型和工具函数
 import { TableParams } from "../../types/table";
 import { Query, Records, AnnouncementType } from "@kysion/types";
-import { createKyStore, createSelectors } from "../base";
+import { createKyStore, createSelectors } from "@kysion/utils";
 import { KysionApis } from "../../api";
-
+import { StoreApi, UseBoundStore } from "zustand";
 // 定义公告通知状态的接口
 export interface IAnnouncementNotifyStateType {
     isLoading: boolean; // 是否正在加载数据
@@ -29,10 +29,10 @@ const initialState: IAnnouncementNotifyStateType = {
 };
 
 // 创建公告通知的状态管理 Store
-export const useAnnouncementNotifyStore = createKyStore<IAnnouncementNotifyStateType>(initialState);
+export const useAnnouncementNotifyStore: UseBoundStore<StoreApi<IAnnouncementNotifyStateType>> = createKyStore<IAnnouncementNotifyStateType>(initialState);
 
 // 创建状态选择器，用于获取状态
-export const useAnnouncementNotifyState = createSelectors(useAnnouncementNotifyStore);
+export const useAnnouncementNotifyState: UseBoundStore<StoreApi<IAnnouncementNotifyStateType>> = createSelectors(useAnnouncementNotifyStore);
 
 // 定义公告通知的操作方法
 export const useAnnouncementNotifyActions = () => {

@@ -11,7 +11,7 @@ interface IconifyIconProps {
   onClick?: () => void;
 }
 
-export const IconifyIcon = ({
+export const IconifyIcon: React.FC<IconifyIconProps> = ({
   icon,
   width = 20,
   height = 20,

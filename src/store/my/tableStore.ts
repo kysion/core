@@ -1,5 +1,5 @@
-import { TableColumnOption } from "@/types/table";
-import { createKyStore, createSelectors } from "../base";
+import { TableColumnOption } from "../../types/table";
+import { createKyStore, createSelectors } from "@kysion/utils";
 import { Funs } from "@kysion/utils";
 import { KysionApis } from "../../api";
 import { useMyProfileState } from "./userStore";

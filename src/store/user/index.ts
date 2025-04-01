@@ -1,8 +1,8 @@
-import { TableParams } from "@/types/table";
+import { TableParams } from "../../types/table";
 import { Query, Records, UserInfoType } from "@kysion/types";
 import { KysionApis } from "../../api";
-import { createSelectors, createKyStore } from "../base";
-
+import { createSelectors, createKyStore } from "@kysion/utils";
+import { StoreApi, UseBoundStore } from "zustand";
 export interface IUsertStateType {
     isLoading: boolean;
     queryParams: Query;
@@ -25,9 +25,9 @@ const initialState: IUsertStateType = {
     dataArr: new Records<UserInfoType>()
 };
 
-export const useUserStore = createKyStore<IUsertStateType>(initialState);
+export const useUserStore: UseBoundStore<StoreApi<IUsertStateType>> = createKyStore<IUsertStateType>(initialState);
 
-export const useUserState = createSelectors(useUserStore);
+export const useUserState: UseBoundStore<StoreApi<IUsertStateType>> = createSelectors(useUserStore);
 
 export const useUserActions = () => {
     const set = useUserStore.setState;

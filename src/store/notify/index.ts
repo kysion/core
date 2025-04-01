@@ -1,7 +1,7 @@
 // 导入必要的API和工具函数
 import { KysionApis } from "../../api";
-import { createKyStore, createSelectors } from "../base";
-
+import { createKyStore, createSelectors } from "@kysion/utils";
+import { StoreApi, UseBoundStore } from "zustand";
 export * from './announcement';
 export * from './message';
 
@@ -24,10 +24,10 @@ const initialState: INotifyStateType = {
 };
 
 // 创建通知状态的存储钩子
-export const useNotifyStore = createKyStore<INotifyStateType>(initialState);
+export const useNotifyStore: UseBoundStore<StoreApi<INotifyStateType>> = createKyStore<INotifyStateType>(initialState);
 
 // 创建并导出通知状态的选择器钩子
-export const useNotifyState = createSelectors(useNotifyStore);
+export const useNotifyState: UseBoundStore<StoreApi<INotifyStateType>> = createSelectors(useNotifyStore);
 
 /**
  * 创建并导出通知相关的操作函数

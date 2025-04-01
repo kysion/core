@@ -1,4 +1,4 @@
-import { createKyStore as createStore } from './base';
+import { createKyStore as createStore } from '@kysion/utils';
 
 export const createKyStore = createStore;
 

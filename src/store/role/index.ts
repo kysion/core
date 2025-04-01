@@ -1,8 +1,8 @@
-import { TableParams } from "@/types/table";
+import { TableParams } from "../../types/table";
 import { Query, Records, RoleInfoType } from "@kysion/types";
 import { KysionApis } from "../../api";
-import { createSelectors, createKyStore } from "../base";
-
+import { createSelectors, createKyStore } from "@kysion/utils";
+import { StoreApi, UseBoundStore } from "zustand";
 export interface IRoletStateType {
     isLoading: boolean;
     queryParams: Query;
@@ -25,9 +25,9 @@ const initialState: IRoletStateType = {
     dataArr: new Records<RoleInfoType>()
 };
 
-export const useRoleStore = createKyStore<IRoletStateType>(initialState);
+export const useRoleStore: UseBoundStore<StoreApi<IRoletStateType>> = createKyStore<IRoletStateType>(initialState);
 
-export const useRoleState = createSelectors(useRoleStore);
+export const useRoleState: UseBoundStore<StoreApi<IRoletStateType>> = createSelectors(useRoleStore);
 
 export const useRoleActions = () => {
     const set = useRoleStore.setState;
