@@ -24,6 +24,9 @@ export interface TableColumnOption {
     name: React.Key;
     pageSize?: number;
     columnOptionArr: any[];
+    version?: string;
+    updatedAt?: number;
+    source?: 'local' | 'remote' | 'default';
 }
 
 export interface TableParams {

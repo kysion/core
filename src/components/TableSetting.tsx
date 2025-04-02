@@ -21,6 +21,7 @@ import {
   Table,
   Tooltip,
   Typography,
+  Empty,
 } from 'antd';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { DndContext } from '@dnd-kit/core';
@@ -359,149 +360,276 @@ export interface SettingTableProps<T, K extends string> {
   customHeader?: (() => React.ReactNode) | React.ReactNode | true;
 }
 
-export function makeTableColumnState<T, K extends string>(data: KyTableColumnType<T, K>[]): KyTableColumnType<T, K>[] {
-  const newDataSource = data.filter((item) => item.columnOption && item.key !== 'operation').map((item) => {
-    const newItem = { ...item };
-    const state = item.columnOptionState;
+export function makeTableColumnState<T = any>(data: KyTableColumnType<T, string>[]): KyTableColumnType<T, any>[] {
+  try {
+    console.log(`makeTableColumnState调用: data=${data?.length || 0}项`);
 
-    if (state?.fixed === fixedStateSet.Left) {
-      newItem.fixed = 'left';
-      if (!newItem.width) {
-        newItem.width = 150;
-      }
-    }
-    else if (state?.fixed === fixedStateSet.Right) {
-      newItem.fixed = 'right';
-      if (!newItem.width) {
-        newItem.width = 150;
-      }
-    }
-    else {
-      newItem.fixed = undefined;
+    // 检查data是否有效数组
+    if (!data || !Array.isArray(data)) {
+      console.error('makeTableColumnState: data不是有效数组');
+      return [];
     }
 
-    console.log(`列 ${newItem.key} 的fixed设置:`, {
-      stateFixed: state?.fixed,
-      resultFixed: newItem.fixed,
-      width: newItem.width
+    // 过滤无效项
+    const validData = data.filter(item => !!item);
+    if (validData.length === 0) {
+      console.warn('makeTableColumnState: 没有有效的列配置项');
+      return [];
+    }
+
+    console.log(`makeTableColumnState: 有效列配置项${validData.length}项`);
+
+    const newDataSource = validData.map((item, index) => {
+      try {
+        const newItem = { ...item };
+
+        // 确保有columnOptionState
+        if (!newItem.columnOptionState) {
+          console.log(`makeTableColumnState: 列 ${newItem.key || newItem.dataIndex || index} 缺少columnOptionState，创建默认值`);
+          newItem.columnOptionState = {
+            where: undefined, // 添加必需的where属性
+          };
+        }
+
+        // 确保有key
+        const key = newItem.key || newItem.dataIndex;
+        if (!key) {
+          console.warn(`makeTableColumnState: 列缺少key和dataIndex，使用索引${index}作为key`);
+          newItem.key = `column_${index}`;
+        }
+
+        return newItem;
+      } catch (e) {
+        console.error(`makeTableColumnState: 处理列配置项时出错:`, e);
+        return item; // 出错时返回原始项
+      }
     });
 
-    if (state?.sortBy === SortSet.Asc) newItem.sortOrder = 'ascend';
-    else if (state?.sortBy === SortSet.Desc) newItem.sortOrder = 'descend';
-    else newItem.sortOrder = undefined;
-
-    const hasSortAbility = state?.sortBy !== SortSet.None && state?.sortBy !== undefined;
-
-    if (hasSortAbility) {
-      newItem.sorter = true;
-
-      if (state?.sorter === true) {
-        newItem.sorter = {
-          multiple: 1,
-        };
+    // 尝试按columnSort排序
+    try {
+      if (newDataSource.some(item => typeof item.columnSort === 'number')) {
+        newDataSource.sort((a, b) => {
+          // 安全地访问columnSort，确保有默认值
+          const aSort = typeof a?.columnSort === 'number' ? a.columnSort : 0;
+          const bSort = typeof b?.columnSort === 'number' ? b.columnSort : 0;
+          return aSort - bSort;
+        });
       }
-    } else {
-      newItem.sorter = false;
+    } catch (e) {
+      console.error('makeTableColumnState: 排序失败:', e);
     }
 
-    if ((newItem?.key as string) === 'operation') newItem.sorter = false;
-
-    if (state?.hidden === true || state?.disabled === true) newItem.hidden = true;
-    else newItem.hidden = false;
-
-    return newItem;
-  });
-
-  const operation = data.find((item) => item.key === 'operation');
-  if (operation) {
-    newDataSource.push({ ...operation });
+    console.log(`makeTableColumnState完成: 返回${newDataSource.length}项配置`);
+    return newDataSource;
+  } catch (e) {
+    console.error('makeTableColumnState函数出错:', e);
+    // 出错时返回原始数据
+    return data;
   }
-
-  return newDataSource;
 }
 
 export function makeTableColumnOption<T, K extends string>(
   data: KyTableColumnType<T, K>[],
   state: TableColumn[] = [],
 ): KyTableColumnType<T, K>[] {
-  const newDataSource = data
-    .filter((item) => item.columnOption && item.key !== 'operation')
-    .map((item) => {
-      const newItem = { ...item };
+  try {
+    console.log(`makeTableColumnOption调用: data=${data?.length || 0}项, state=${state?.length || 0}项`);
 
-      const info = state.find((v: any) => v.key === (item.key || item.dataIndex));
+    // 确保data是数组
+    if (!data || !Array.isArray(data)) {
+      console.error('makeTableColumnOption: data不是有效数组');
+      return [];
+    }
 
-      if (info) {
-        newItem.columnOptionState = {
-          ...newItem.columnOptionState,
-          ...info,
-        } as any;
+    // 确保state是数组
+    if (!state || !Array.isArray(state)) {
+      console.warn('makeTableColumnOption: state不是有效数组，使用空数组');
+      state = [];
+    }
 
-        if (info.conf !== item.columnOption) {
-          info.conf = item.columnOption;
-        }
+    // 筛选有效的列配置
+    const validData = data.filter((item) => {
+      if (!item) {
+        console.warn('makeTableColumnOption: 发现无效的列配置项');
+        return false;
+      }
+      return item.columnOption && item.key !== 'operation';
+    });
 
-        newItem.columnSort = info.sort!;
+    if (validData.length === 0) {
+      console.warn('makeTableColumnOption: 没有有效的列配置项');
+      return [];
+    }
 
-        newItem.hidden = info.hidden || info.disabled;
+    console.log(`makeTableColumnOption: 有效列配置项${validData.length}项`);
 
-        if (info.fixed === fixedStateSet.Left) {
-          newItem.fixed = 'left';
-          if (!newItem.width) {
-            newItem.width = 150;
+    const newDataSource = validData.map((item) => {
+      try {
+        const newItem = { ...item };
+
+        // 查找该列的用户配置
+        const info = state.find((v: any) => {
+          // 确保key值有效
+          const vKey = v?.key || v?.dataIndex;
+          const itemKey = item?.key || item?.dataIndex;
+
+          if (!vKey || !itemKey) {
+            console.warn(`makeTableColumnOption: 列配置缺少key: v=${vKey}, item=${itemKey}`);
+            return false;
           }
-        } else if (info.fixed === fixedStateSet.Right) {
-          newItem.fixed = 'right';
-          if (!newItem.width) {
-            newItem.width = 150;
-          }
-        } else {
-          newItem.fixed = undefined;
-        }
 
-        console.log(`makeTableColumnOption: 列 ${newItem.key} 的fixed设置:`, {
-          infoFixed: info.fixed,
-          resultFixed: newItem.fixed,
-          width: newItem.width
+          return vKey === itemKey;
         });
 
-        const hasSortAbility = newItem.columnOptionState?.sortBy !== SortSet.None &&
-          newItem.columnOptionState?.sortBy !== undefined;
+        // 如果找到用户配置，应用它
+        if (info) {
+          // 安全地合并状态
+          newItem.columnOptionState = {
+            ...(newItem.columnOptionState || {}),
+            ...(info || {}),
+          } as any;
 
-        if (hasSortAbility) {
-          newItem.sorter = true;
+          // 确保配置引用一致
+          if (info.conf !== item.columnOption) {
+            info.conf = item.columnOption;
+          }
 
-          if (newItem.columnOptionState?.sortBy === SortSet.Asc) {
-            newItem.sortOrder = 'ascend';
-          } else if (newItem.columnOptionState?.sortBy === SortSet.Desc) {
-            newItem.sortOrder = 'descend';
+          // 设置排序
+          if (typeof info.sort === 'number') {
+            newItem.columnSort = info.sort;
           } else {
+            console.warn(`makeTableColumnOption: 列 ${newItem.key} 缺少有效sort值，使用默认索引`);
+            newItem.columnSort = 0;
+          }
+
+          // 设置隐藏状态
+          newItem.hidden = info.hidden || info.disabled;
+
+          // 处理列固定
+          try {
+            console.log(`列 ${newItem.key} 固定状态检查:`, {
+              原始固定值: info.fixed,
+              列选项状态: newItem.columnOptionState
+            });
+
+            // 使用字符串值比较，避免类型错误
+            const fixedValue = String(info.fixed);
+
+            if (fixedValue === 'left') {
+              newItem.fixed = 'left';
+              // 确保固定列有宽度
+              if (!newItem.width) {
+                newItem.width = 150;
+              }
+              console.log(`列 ${newItem.key} 设置为左固定`);
+            } else if (fixedValue === 'right') {
+              newItem.fixed = 'right';
+              // 确保固定列有宽度
+              if (!newItem.width) {
+                newItem.width = 150;
+              }
+              console.log(`列 ${newItem.key} 设置为右固定`);
+            } else {
+              // 明确移除fixed属性
+              newItem.fixed = undefined;
+              console.log(`列 ${newItem.key} 取消固定`);
+            }
+
+            // 直接设置columnOptionState中的fixed
+            if (newItem.columnOptionState) {
+              newItem.columnOptionState.fixed = info.fixed;
+            }
+
+            console.log(`makeTableColumnOption: 列 ${newItem.key} 的fixed设置:`, {
+              infoFixed: info.fixed,
+              resultFixed: newItem.fixed,
+              width: newItem.width
+            });
+          } catch (e) {
+            console.error(`makeTableColumnOption: 处理列 ${newItem.key} 的fixed设置时出错:`, e);
+            // 出错时移除固定属性
+            newItem.fixed = undefined;
+          }
+
+          // 处理排序
+          try {
+            const hasSortAbility = newItem.columnOptionState?.sortBy !== SortSet.None &&
+              newItem.columnOptionState?.sortBy !== undefined;
+
+            if (hasSortAbility) {
+              newItem.sorter = true;
+
+              if (newItem.columnOptionState?.sortBy === SortSet.Asc) {
+                newItem.sortOrder = 'ascend';
+              } else if (newItem.columnOptionState?.sortBy === SortSet.Desc) {
+                newItem.sortOrder = 'descend';
+              } else {
+                newItem.sortOrder = undefined;
+              }
+
+              if (newItem.columnOptionState?.sorter === true) {
+                newItem.sorter = {
+                  multiple: 1,
+                };
+              }
+            } else {
+              newItem.sorter = false;
+              newItem.sortOrder = undefined;
+            }
+          } catch (e) {
+            console.error(`makeTableColumnOption: 处理列 ${newItem.key} 的排序设置时出错:`, e);
+            newItem.sorter = false;
             newItem.sortOrder = undefined;
           }
-
-          if (newItem.columnOptionState?.sorter === true) {
-            newItem.sorter = {
-              multiple: 1,
-            };
-          }
         } else {
-          newItem.sorter = false;
-          newItem.sortOrder = undefined;
+          // 没有找到用户配置，使用默认配置
+          console.log(`makeTableColumnOption: 列 ${newItem.key} 没有找到用户配置，使用默认配置`);
+          newItem.sorter = newItem.sorter ?? false;
         }
-      } else {
-        newItem.sorter = newItem.sorter ?? false;
+
+        return newItem;
+      } catch (e) {
+        console.error(`makeTableColumnOption: 处理列配置项时出错:`, e);
+        return item; // 出错时返回原始项
       }
+    });
 
-      return newItem;
-    })
-    .sort((a, b) => a.columnSort! - b.columnSort!);
+    // 确保所有项都有columnSort
+    const validDataSource = newDataSource.filter(item => item && item.columnSort !== undefined);
 
-  const operation = data.find((item) => item.key === 'operation');
-  if (operation) {
-    newDataSource.push({ ...operation });
+    if (validDataSource.length === 0) {
+      console.warn('makeTableColumnOption: 所有项都缺少columnSort，添加默认索引');
+      // 添加默认排序
+      newDataSource.forEach((item, index) => {
+        if (item) item.columnSort = index;
+      });
+    }
+
+    // 尝试排序
+    try {
+      newDataSource.sort((a, b) => {
+        // 安全地访问columnSort，确保有默认值
+        const aSort = typeof a?.columnSort === 'number' ? a.columnSort : 0;
+        const bSort = typeof b?.columnSort === 'number' ? b.columnSort : 0;
+        return aSort - bSort;
+      });
+    } catch (e) {
+      console.error('makeTableColumnOption: 排序失败:', e);
+    }
+
+    // 添加操作列
+    const operation = data.find((item) => item && item.key === 'operation');
+    if (operation) {
+      newDataSource.push({ ...operation });
+    }
+
+    console.log(`makeTableColumnOption完成: 返回${newDataSource.length}项配置`);
+    return newDataSource;
+  } catch (e) {
+    console.error('makeTableColumnOption函数出错:', e);
+    // 出错时返回原始数据
+    return data;
   }
-
-  return newDataSource;
 }
 
 let canPreview = true;
@@ -511,9 +639,15 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
   (props, ref) => {
     const { t } = useTranslation();
     const { isAdmin, isSuperAdmin } = useMyProfileState();
+    const tableActions = useTableActions();
 
     const [enablePreview, setEnablePreview] = useState(true);
     const [mySettingStateArr, setMySettingStateArr] = useState<TableColumn[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // 规范化表格标识符
+    const normalizedIdentifier = props.identifier.replace(/_column_conf$/, '');
+    const standardIdentifier = `${normalizedIdentifier}_column_conf`;
 
     const updateDataSource = debounce((data?: TableColumn[]) => {
       if (!canPreview) return;
@@ -526,12 +660,12 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     function updateSettingStateArr(data: TableColumn[], delay?: number) {
       setMySettingStateArr([...data]);
 
-      useTableActions().setTableColumnOption(
+      tableActions.setTableColumnOption(
         {
           name: props.identifier,
           columnOptionArr: data,
         },
-        false,
+        true,
       );
 
       if (!delay) updateDataSource(data);
@@ -541,7 +675,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     mySettingStateArrCache = mySettingStateArr;
 
     function save() {
-      useTableActions()
+      tableActions
         .setTableColumnOption(
           {
             name: props.identifier,
@@ -550,7 +684,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
           true,
         )
         .then((response) => {
-          const { data } = response as ApiResponse<any>;
+          const { data } = (response as unknown) as ApiResponse<any>;
           if (data === true) {
             message.success(t('kysion.common.saveSuccess'));
           }
@@ -568,38 +702,52 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             icon={<Icon icon={'mdi:cog-refresh-outline'} />}
             disabled={!props.getDefaultDataSource}
             onClick={() => {
+              // 先获取默认设置
               const defaultSetting = props.getDefaultDataSource!(true);
-              updateSettingStateArr(defaultSetting);
+
+              // 确认是否重置
+              message.info(t('kysion.common.resetConfirm'), 1, async () => {
+                // 显示加载状态
+                setIsLoading(true);
+
+                try {
+                  // 创建默认配置
+                  const defaultConfig = {
+                    name: standardIdentifier,
+                    columnOptionArr: defaultSetting,
+                    pageSize: 20 // 默认页面大小
+                  };
+
+                  // 重置表格配置
+                  const result = await tableActions.resetTableConfig(standardIdentifier, defaultConfig);
+
+                  if (result && result.success) {
+                    // 检查返回的数据是否有效
+                    if (Array.isArray(result.data) && result.data.length > 0) {
+                      setMySettingStateArr(result.data);
+                    } else {
+                      // 如果返回的数据无效，使用默认设置
+                      setMySettingStateArr(defaultSetting);
+                    }
+
+                    message.success(t('kysion.common.resetSuccess'));
+                  } else {
+                    // 出错时使用默认设置
+                    setMySettingStateArr(defaultSetting);
+                    message.warning(t('kysion.common.partialResetSuccess'));
+                  }
+                } catch (error) {
+                  console.error('重置表格配置失败:', error);
+                  // 出错时仍使用默认设置
+                  setMySettingStateArr(defaultSetting);
+                  message.error(t('kysion.common.resetFailed'));
+                } finally {
+                  setIsLoading(false);
+                }
+              });
             }}
           >
             {t('kysion.common.restoreDefault')}
-          </Button>
-
-          {/* 添加缓存清理按钮 */}
-          <Button
-            type="default"
-            danger
-            icon={<Icon icon={'material-symbols:cleaning-services'} />}
-            onClick={() => {
-              // 清除当前identifier的表格列设置缓存
-              try {
-                const storageKey = `tableColumnOption_${props.identifier}`;
-                localStorage.removeItem(storageKey);
-                console.log(`已清除表格设置缓存: ${storageKey}`);
-
-                // 重新加载默认设置
-                if (props.getDefaultDataSource) {
-                  const defaultSetting = props.getDefaultDataSource(true);
-                  updateSettingStateArr(defaultSetting);
-                  message.success(t('kysion.common.clearCacheSuccess'));
-                }
-              } catch (e) {
-                console.error('清除缓存失败:', e);
-                message.error(t('kysion.common.clearCacheFailed'));
-              }
-            }}
-          >
-            {t('kysion.common.clearCache')}
           </Button>
         </Flex>
       );
@@ -651,17 +799,84 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     };
 
     useEffect(() => {
-      const dataSourceArr = useTableActions().getTableColumnOption(props.identifier);
-      setMySettingStateArr(dataSourceArr);
-      props.onInited?.();
-    }, []);
+      const loadTableConfig = async () => {
+        setIsLoading(true);
+        try {
+          // 先尝试清理冗余配置
+          tableActions.cleanDuplicateConfigs();
+
+          // 从本地获取配置
+          let dataSourceArr = tableActions.getTableColumnOption(standardIdentifier);
+
+          // 如果本地没有配置，尝试创建默认配置并初始化
+          if (!dataSourceArr || dataSourceArr.length === 0) {
+            console.log(`表格设置: 本地无配置[${standardIdentifier}]，尝试初始化`);
+
+            // 创建默认配置
+            if (props.getDefaultDataSource) {
+              const defaultSetting = props.getDefaultDataSource(true);
+
+              // 准备默认配置对象
+              const defaultConfig = {
+                name: standardIdentifier,
+                columnOptionArr: defaultSetting,
+                pageSize: 20
+              };
+
+              // 初始化配置（会尝试从后端加载）
+              const columns = await tableActions.initTableConfig(standardIdentifier, defaultConfig);
+
+              if (columns && columns.length > 0) {
+                dataSourceArr = columns;
+                console.log(`表格设置: 初始化完成，获取到${columns.length}个列配置`);
+              } else {
+                dataSourceArr = defaultSetting;
+                console.log(`表格设置: 初始化失败，使用默认配置`);
+              }
+            }
+          }
+
+          setMySettingStateArr(dataSourceArr);
+          props.onInited?.();
+        } catch (error) {
+          console.error('加载表格配置失败:', error);
+          // 如果出错且有默认数据源，使用默认配置
+          if (props.getDefaultDataSource) {
+            setMySettingStateArr(props.getDefaultDataSource(true));
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      loadTableConfig();
+    }, [standardIdentifier]);
 
     const { actions } = props;
+
+    if (isLoading) {
+      return (
+        <Flex align="center" className="size-full justify-center">
+          <Spin tip={t('kysion.common.loading')} />
+        </Flex>
+      );
+    }
 
     if (mySettingStateArr.length === 0) {
       return (
         <Flex align="center" className="size-full justify-center">
-          <Spin />
+          <Empty description={t('kysion.common.noData')} />
+          {props.getDefaultDataSource && (
+            <Button
+              type="primary"
+              onClick={() => {
+                const defaultSetting = props.getDefaultDataSource!(true);
+                updateSettingStateArr(defaultSetting);
+              }}
+            >
+              {t('kysion.common.restoreDefault')}
+            </Button>
+          )}
         </Flex>
       );
     }

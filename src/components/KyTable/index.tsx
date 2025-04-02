@@ -172,17 +172,6 @@ export const KyTable: FC<KyTableProps> = ({
         }
     };
 
-    // 打印所有列的fixed状态
-    console.log('KyTable所有列状态:',
-        propColumns.map(col => ({
-            key: col.key || col.dataIndex,
-            title: col.title,
-            fixed: col.fixed,
-            hidden: col.hidden,
-            columnOptionState: col.columnOptionState
-        }))
-    );
-
     // 创建一个保留所有排序功能的列数组，同时修复fixed属性
     const allColumns = forceApplyFixedColumns([...propColumns]);
 
@@ -336,30 +325,31 @@ export const KyTable: FC<KyTableProps> = ({
                 })
                 .reduce((a, b) => a + b, 0),
             // 设置一个较大的最小值，确保出现横向滚动条
-            1200
+            2000 // 增大最小宽度，确保足够触发横向滚动
         ),
         // 设置垂直方向的滚动区域，确保表格不会过高
         y: 500
     };
 
     // 对所有列最后的处理，特别关注用户名列
-    const finalColumns = columns.map(col => {
-        // 已处理过的列，直接返回
-        if (col.key !== 'username' && col.dataIndex !== 'username') {
-            return col;
-        }
+    const finalColumns = forceApplyFixedColumns(columns);
 
-        // 特殊处理用户名列，确保其固定属性与操作列一样能生效
-        if (col.columnOptionState?.fixed === 'right' || String(col.columnOptionState?.fixed) === 'right') {
-            col.fixed = 'right';
-            // 确保有足够宽度
-            if (!col.width || +col.width < 150) {
-                col.width = 150;
-            }
-        }
+    // 检测是否有固定列
+    const hasFixedColumns = finalColumns.some(col => col.fixed === 'left' || col.fixed === 'right');
 
-        return col;
-    });
+    // 打印固定列信息，便于调试
+    if (hasFixedColumns) {
+        console.log('表格包含固定列:',
+            finalColumns
+                .filter(col => col.fixed)
+                .map(col => ({
+                    key: col.key || col.dataIndex,
+                    title: col.title,
+                    fixed: col.fixed,
+                    width: col.width
+                }))
+        );
+    }
 
     return (
         <PageContainer
@@ -374,7 +364,7 @@ export const KyTable: FC<KyTableProps> = ({
                 */}
                 <div style={{
                     position: 'absolute',
-                    width: '2000px',
+                    width: tableScrollProps.x + 'px', // 使用计算出的宽度
                     height: '1px',
                     opacity: 0,
                     pointerEvents: 'none',
@@ -408,6 +398,7 @@ export const KyTable: FC<KyTableProps> = ({
                         }
                     } : false}
                     scroll={tableScrollProps}
+                    sticky // 添加sticky属性，可以帮助固定表头和固定列
                 />
                 {settingDrawer && (
                     <SettingTableDrawer

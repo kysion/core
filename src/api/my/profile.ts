@@ -86,9 +86,7 @@ export class MyProfile {
         );
         return response.then(res => {
             res = res as SettingType<T>;
-
             if (!res || res?.values === null) return null;
-            res.values = JSON.parse(res.values as string) as T;
             return res;
         }).catch((err) => {
             console.log('err', err);

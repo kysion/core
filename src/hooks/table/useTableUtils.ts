@@ -245,38 +245,119 @@ export function convertFixedStateToString(fixedValue: any): 'left' | 'right' | u
 export function forceApplyFixedColumns<T = any, K extends string = string>(
     columns: KyTableColumnType<T, K>[]
 ): KyTableColumnType<T, K>[] {
-    // 克隆列，避免修改原始对象
-    const fixedColumns = [...columns];
+    try {
+        console.log('强制应用固定列函数开始：列数量', columns.length);
 
-    // 遍历所有列，检查并应用fixed属性
-    for (const col of fixedColumns) {
-        // 先检查列自身的fixed属性
-        if (col.fixed) {
-            // 使用辅助函数转换fixed值，以确保格式正确
-            const convertedFixed = convertFixedStateToString(col.fixed);
-            if (convertedFixed) {
-                col.fixed = convertedFixed;
-                // 确保固定列有宽度
-                if (!col.width || (typeof col.width === 'number' && col.width < 100)) {
-                    col.width = 150;
+        // 克隆列，避免修改原始对象
+        const fixedColumns = [...columns];
+
+        // 记录左侧固定列、中间普通列和右侧固定列
+        const leftFixedCols: KyTableColumnType<T, K>[] = [];
+        const normalCols: KyTableColumnType<T, K>[] = [];
+        const rightFixedCols: KyTableColumnType<T, K>[] = [];
+        const operationCols: KyTableColumnType<T, K>[] = [];
+
+        // 遍历所有列，检查并应用fixed属性，然后分类
+        for (const col of fixedColumns) {
+            // 创建列的副本
+            const newCol = { ...col };
+
+            // 是否为操作列
+            const isOperationCol = newCol.key === 'operation' ||
+                (typeof newCol.title === 'string' &&
+                    (newCol.title.includes('操作') || newCol.title.includes('operation')));
+
+            if (isOperationCol) {
+                // 操作列总是固定在右侧
+                newCol.fixed = 'right';
+                if (!newCol.width || (typeof newCol.width === 'number' && newCol.width < 150)) {
+                    newCol.width = 200; // 操作列给更多宽度
+                }
+                operationCols.push(newCol);
+                console.log('识别到操作列：', newCol.key || newCol.dataIndex);
+                continue;
+            }
+
+            // 先检查列自身的fixed属性
+            if (newCol.fixed) {
+                // 使用辅助函数转换fixed值，以确保格式正确
+                const convertedFixed = convertFixedStateToString(newCol.fixed);
+                if (convertedFixed) {
+                    newCol.fixed = convertedFixed;
+                    // 确保固定列有宽度
+                    if (!newCol.width || (typeof newCol.width === 'number' && newCol.width < 100)) {
+                        newCol.width = 150;
+                    }
+
+                    // 根据fixed值分类
+                    if (newCol.fixed === 'left') {
+                        leftFixedCols.push(newCol);
+                    } else if (newCol.fixed === 'right') {
+                        rightFixedCols.push(newCol);
+                    }
+                    continue;
                 }
             }
-        }
-        // 检查columnOptionState中的fixed属性
-        else if (col.columnOptionState?.fixed) {
-            // 使用辅助函数转换fixed值
-            const convertedFixed = convertFixedStateToString(col.columnOptionState.fixed);
-            if (convertedFixed) {
-                col.fixed = convertedFixed;
-                // 确保固定列有宽度
-                if (!col.width || (typeof col.width === 'number' && col.width < 100)) {
-                    col.width = 150;
+
+            // 检查columnOptionState中的fixed属性
+            if (newCol.columnOptionState?.fixed) {
+                // 使用辅助函数转换fixed值
+                const convertedFixed = convertFixedStateToString(newCol.columnOptionState.fixed);
+                if (convertedFixed) {
+                    newCol.fixed = convertedFixed;
+                    // 确保固定列有宽度
+                    if (!newCol.width || (typeof newCol.width === 'number' && newCol.width < 100)) {
+                        newCol.width = 150;
+                    }
+
+                    // 根据fixed值分类
+                    if (newCol.fixed === 'left') {
+                        leftFixedCols.push(newCol);
+                    } else if (newCol.fixed === 'right') {
+                        rightFixedCols.push(newCol);
+                    }
+                    continue;
                 }
             }
+
+            // 如果执行到这里，说明列不是固定列
+            normalCols.push(newCol);
         }
+
+        // 排序各个分类内的列（可以根据columnSort或其他规则）
+        const sortColumns = (cols: KyTableColumnType<T, K>[]) => {
+            return cols.sort((a, b) => {
+                // 如果有columnSort属性，按照它排序
+                if (typeof a.columnSort === 'number' && typeof b.columnSort === 'number') {
+                    return a.columnSort - b.columnSort;
+                }
+                // 否则保持原顺序
+                return 0;
+            });
+        };
+
+        // 合并所有列，保持固定列位置正确
+        const result = [
+            ...sortColumns(leftFixedCols),
+            ...sortColumns(normalCols),
+            ...sortColumns(rightFixedCols),
+            ...sortColumns(operationCols) // 操作列放在最后
+        ];
+
+        console.log('强制应用固定列后的结果：', {
+            左固定列: leftFixedCols.length,
+            普通列: normalCols.length,
+            右固定列: rightFixedCols.length,
+            操作列: operationCols.length,
+            总列数: result.length
+        });
+
+        return result;
+    } catch (e) {
+        console.error('强制应用固定列时出错:', e);
+        // 出错时返回原始列表
+        return columns;
     }
-
-    return fixedColumns;
 }
 
 /**
@@ -340,53 +421,95 @@ export function applyColumnFixed<T = any, K extends string = string>(
     // 创建列的副本，避免修改原始对象
     const newColumn = { ...column };
 
-    // 检查列的fixed设置
-    if (newColumn.columnOptionState?.fixed) {
-        // 1. 从columnOptionState中获取fixed值
-        const fixedValue = newColumn.columnOptionState.fixed;
+    try {
+        // 记录原始fixed状态，便于调试
+        const originalFixed = {
+            columnFixed: newColumn.fixed,
+            optionStateFixed: newColumn.columnOptionState?.fixed,
+        };
 
-        // 2. 根据fixed值设置列的fixed属性
-        if (String(fixedValue) === 'right' || String(fixedValue) === String(fixedStateSet.Right)) {
-            // 参考操作列的实现方式，直接设置fixed属性
-            newColumn.fixed = 'right';
-        } else if (String(fixedValue) === 'left' || String(fixedValue) === String(fixedStateSet.Left)) {
-            newColumn.fixed = 'left';
-        } else {
-            newColumn.fixed = undefined;
-        }
+        console.log(`应用列固定: ${newColumn.key || newColumn.dataIndex}`, originalFixed);
 
-        // 3. 如果是fixed列，确保有足够宽度
-        if (newColumn.fixed) {
-            if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
-                // 设置足够的宽度，与操作列保持一致
-                newColumn.width = 150;
+        // 检查列的fixed设置
+        if (newColumn.columnOptionState?.fixed) {
+            // 1. 从columnOptionState中获取fixed值
+            const fixedValue = String(newColumn.columnOptionState.fixed);
+
+            // 2. 根据fixed值设置列的fixed属性
+            if (fixedValue === 'right' || fixedValue === String(fixedStateSet.Right)) {
+                // 参考操作列的实现方式，直接设置fixed属性
+                newColumn.fixed = 'right';
+                console.log(`列 ${newColumn.key || newColumn.dataIndex} 设置为右固定`);
+            } else if (fixedValue === 'left' || fixedValue === String(fixedStateSet.Left)) {
+                newColumn.fixed = 'left';
+                console.log(`列 ${newColumn.key || newColumn.dataIndex} 设置为左固定`);
+            } else {
+                newColumn.fixed = undefined;
+                console.log(`列 ${newColumn.key || newColumn.dataIndex} 取消固定`);
+            }
+
+            // 3. 如果是fixed列，确保有足够宽度
+            if (newColumn.fixed) {
+                if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
+                    // 设置足够的宽度，与操作列保持一致
+                    newColumn.width = 150;
+                }
             }
         }
-    }
+        // 直接检查列本身的fixed属性
+        else if (newColumn.fixed) {
+            // 确保fixed属性格式正确
+            const fixedStr = String(newColumn.fixed);
 
-    // 4. 特殊处理：如果是操作列，总是固定在右侧
-    if (newColumn.key === 'operation') {
-        newColumn.fixed = 'right';
-        if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 150)) {
-            newColumn.width = 200;
-        }
-    }
-
-    // 5. 特殊处理：如果是用户名列，确保固定属性与操作列一致
-    if (
-        newColumn.key === 'username' ||
-        newColumn.dataIndex === 'username' ||
-        (typeof newColumn.title === 'string' && newColumn.title.includes('用户名'))
-    ) {
-        // 如果设置为右侧固定但没有生效，强制应用
-        if (newColumn.columnOptionState?.fixed === 'right' || String(newColumn.columnOptionState?.fixed) === 'right') {
-            newColumn.fixed = 'right';
+            if (fixedStr === 'right') {
+                newColumn.fixed = 'right';
+                console.log(`列 ${newColumn.key || newColumn.dataIndex} 保留右固定`);
+            } else if (fixedStr === 'left') {
+                newColumn.fixed = 'left';
+                console.log(`列 ${newColumn.key || newColumn.dataIndex} 保留左固定`);
+            }
 
             // 确保有足够宽度
             if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
                 newColumn.width = 150;
             }
         }
+
+        // 4. 特殊处理：如果是操作列，总是固定在右侧
+        if (newColumn.key === 'operation') {
+            newColumn.fixed = 'right';
+            if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 150)) {
+                newColumn.width = 200;
+            }
+            console.log('操作列固定在右侧');
+        }
+
+        // 5. 特殊处理：如果是用户名列，确保固定属性与操作列一致
+        if (
+            newColumn.key === 'username' ||
+            newColumn.dataIndex === 'username' ||
+            (typeof newColumn.title === 'string' && newColumn.title.includes('用户名'))
+        ) {
+            // 如果设置为右侧固定但没有生效，强制应用
+            if (newColumn.columnOptionState?.fixed === 'right' || String(newColumn.columnOptionState?.fixed) === 'right') {
+                newColumn.fixed = 'right';
+
+                // 确保有足够宽度
+                if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
+                    newColumn.width = 150;
+                }
+                console.log('用户名列固定在右侧');
+            }
+        }
+
+        // 记录最终fixed状态，便于比较
+        console.log(`列 ${newColumn.key || newColumn.dataIndex} 最终固定状态:`, {
+            原始: originalFixed,
+            最终: newColumn.fixed,
+            宽度: newColumn.width
+        });
+    } catch (e) {
+        console.error(`应用列固定属性时出错:`, e);
     }
 
     return newColumn;

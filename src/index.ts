@@ -98,7 +98,7 @@ export {
     createSettingDrawerConfig
 } from './hooks/table/useTableUtils';
 export type {
-    TableColumnOption,
+    TableColumnSettings,
     UseTableOptions
 } from './hooks/table/useTable';
 export type {
