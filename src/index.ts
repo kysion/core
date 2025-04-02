@@ -68,4 +68,15 @@ export class ApiClient {
 export const api = new ApiClient();
 
 // 导出类型
-export type { AxiosRequestConfig, AxiosInstance }; 
+export type { AxiosRequestConfig, AxiosInstance };
+
+// 导出类型
+export * from './types/route';
+
+// 导出组件
+export { ErrorBoundary, withErrorBoundary } from './components/ErrorBoundary';
+export { RouteGuard, withRouteGuard } from './components/RouteGuard';
+export { KeepAliveRoute, KeepAliveProvider, withKeepAlive, useKeepAliveCache } from './components/KeepAliveRoute';
+export { RoutePreloader, withRoutePreloader } from './components/RoutePreloader';
+export { buildRoutes, RouterConfig, RouteProvider, useRoutes, RouteContext } from './components/RouteConfig';
+export { LazyImport } from './components/LazyImport'; 

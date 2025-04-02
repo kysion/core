@@ -7,3 +7,5 @@ export * from './PageContainer';
 export * from './Common';
 export * from './MyProfileCard';
 export * from './DraggableModal';
+export * from './LazyImport';
+export * from './RouteConfig';
