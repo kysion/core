@@ -3,6 +3,8 @@ import { createKyStore, createSelectors } from "@kysion/utils";
 import { Funs } from "@kysion/utils";
 import { KysionApis } from "../../api";
 import { useMyProfileState } from "./userStore";
+import { StoreApi } from "zustand/vanilla";
+import { UseBoundStore } from "zustand/react";
 
 export interface IMyTableStateType {
     tableColumnOptionArr: TableColumnOption[];
@@ -12,7 +14,7 @@ const initialState: IMyTableStateType = {
     tableColumnOptionArr: []
 }
 
-export const useTableStore = createKyStore<IMyTableStateType>(initialState, {
+export const useTableStore: UseBoundStore<StoreApi<IMyTableStateType>> = createKyStore<IMyTableStateType>(initialState, {
     storageKey: 'myTablePreference',
     crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
 });

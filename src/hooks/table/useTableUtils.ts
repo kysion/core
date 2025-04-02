@@ -1,4 +1,4 @@
-import { KyTableColumnType } from '../../types/table';
+import { KyTableColumnType, fixedStateSet } from '../../types/table';
 import { TableOnChangeFunc } from '../../components/TableSetting';
 
 /**
@@ -135,7 +135,8 @@ export function ensureTableSortingConsistency<T = any, K extends string = string
     // 记录原始列配置中的排序状态
     const originalSortState = originalColumns.find(col => col.sortOrder);
 
-    return originalColumns.map(originalCol => {
+    // 先处理排序和更新基本属性
+    const columnsWithUpdates = originalColumns.map(originalCol => {
         // 查找对应的新配置
         const newColConfig = updatedColumnsConfig.find(item =>
             (item.key === originalCol.key) ||
@@ -173,17 +174,231 @@ export function ensureTableSortingConsistency<T = any, K extends string = string
                 }
             }
 
+            // 只进行基本设置，后面会用applyColumnFixed统一处理fixed属性
             return updatedColumn;
         }
 
         // 如果没找到对应配置，返回原始列
         return originalCol;
     });
+
+    // 然后统一应用fixed属性
+    const finalColumns = columnsWithUpdates.map(col => applyColumnFixed(col));
+
+    return finalColumns;
+}
+
+export function convertFixedStateToString(fixedValue: any): 'left' | 'right' | undefined {
+    // 空值处理
+    if (fixedValue === null || fixedValue === undefined || fixedValue === '') {
+        return undefined;
+    }
+
+    // 直接是字符串"left"或"right"
+    if (fixedValue === 'left' || fixedValue === 'right') {
+        return fixedValue;
+    }
+
+    // 是枚举值
+    if (fixedValue === fixedStateSet.Left) {
+        return 'left';
+    }
+    if (fixedValue === fixedStateSet.Right) {
+        return 'right';
+    }
+    if (fixedValue === fixedStateSet.None) {
+        return undefined;
+    }
+
+    // 是字符串但大小写不同
+    if (typeof fixedValue === 'string') {
+        const lowerValue = fixedValue.toLowerCase();
+        if (lowerValue === 'left') {
+            return 'left';
+        }
+        if (lowerValue === 'right') {
+            return 'right';
+        }
+        if (lowerValue === 'none') {
+            return undefined;
+        }
+    }
+
+    // 是对象且有可能包含信息
+    if (typeof fixedValue === 'object' && fixedValue !== null) {
+        // 检查对象是否有指示fixed的属性
+        if ('fixed' in fixedValue) {
+            return convertFixedStateToString(fixedValue.fixed);
+        }
+        if ('type' in fixedValue && typeof fixedValue.type === 'string') {
+            return convertFixedStateToString(fixedValue.type);
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * 强制应用固定列设置
+ * 在调用此函数之前已经确认了表格列的fixed属性但未生效时使用
+ */
+export function forceApplyFixedColumns<T = any, K extends string = string>(
+    columns: KyTableColumnType<T, K>[]
+): KyTableColumnType<T, K>[] {
+    // 克隆列，避免修改原始对象
+    const fixedColumns = [...columns];
+
+    // 遍历所有列，检查并应用fixed属性
+    for (const col of fixedColumns) {
+        // 先检查列自身的fixed属性
+        if (col.fixed) {
+            // 使用辅助函数转换fixed值，以确保格式正确
+            const convertedFixed = convertFixedStateToString(col.fixed);
+            if (convertedFixed) {
+                col.fixed = convertedFixed;
+                // 确保固定列有宽度
+                if (!col.width || (typeof col.width === 'number' && col.width < 100)) {
+                    col.width = 150;
+                }
+            }
+        }
+        // 检查columnOptionState中的fixed属性
+        else if (col.columnOptionState?.fixed) {
+            // 使用辅助函数转换fixed值
+            const convertedFixed = convertFixedStateToString(col.columnOptionState.fixed);
+            if (convertedFixed) {
+                col.fixed = convertedFixed;
+                // 确保固定列有宽度
+                if (!col.width || (typeof col.width === 'number' && col.width < 100)) {
+                    col.width = 150;
+                }
+            }
+        }
+    }
+
+    return fixedColumns;
+}
+
+/**
+ * 清除表格配置缓存
+ * 当表格配置出现问题需要重置时使用
+ */
+export function clearTableConfig(identifier: string): boolean {
+    try {
+        // 清除localStorage中的表格配置项
+        const storageKey = `tableColumnOption_${identifier}`;
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(storageKey);
+            console.log(`已清除表格配置缓存: ${storageKey}`);
+            return true;
+        }
+        return false;
+    } catch (err) {
+        console.error('清除表格配置缓存失败:', err);
+        return false;
+    }
+}
+
+/**
+ * 清除所有表格配置缓存
+ * 当表格配置出现严重问题时使用
+ */
+export function clearAllTableConfig(): boolean {
+    try {
+        if (typeof localStorage !== 'undefined') {
+            // 查找所有与表格配置相关的键
+            const keysToRemove: string[] = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('tableColumnOption_')) {
+                    keysToRemove.push(key);
+                }
+            }
+
+            // 删除所有相关键
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                console.log(`已清除表格配置缓存: ${key}`);
+            });
+
+            return keysToRemove.length > 0;
+        }
+        return false;
+    } catch (err) {
+        console.error('清除所有表格配置缓存失败:', err);
+        return false;
+    }
+}
+
+/**
+ * 直接为表格列设置正确的fixed属性
+ * 此函数用于解决列设置中fixed属性不生效的问题
+ */
+export function applyColumnFixed<T = any, K extends string = string>(
+    column: KyTableColumnType<T, K>
+): KyTableColumnType<T, K> {
+    // 创建列的副本，避免修改原始对象
+    const newColumn = { ...column };
+
+    // 检查列的fixed设置
+    if (newColumn.columnOptionState?.fixed) {
+        // 1. 从columnOptionState中获取fixed值
+        const fixedValue = newColumn.columnOptionState.fixed;
+
+        // 2. 根据fixed值设置列的fixed属性
+        if (String(fixedValue) === 'right' || String(fixedValue) === String(fixedStateSet.Right)) {
+            // 参考操作列的实现方式，直接设置fixed属性
+            newColumn.fixed = 'right';
+        } else if (String(fixedValue) === 'left' || String(fixedValue) === String(fixedStateSet.Left)) {
+            newColumn.fixed = 'left';
+        } else {
+            newColumn.fixed = undefined;
+        }
+
+        // 3. 如果是fixed列，确保有足够宽度
+        if (newColumn.fixed) {
+            if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
+                // 设置足够的宽度，与操作列保持一致
+                newColumn.width = 150;
+            }
+        }
+    }
+
+    // 4. 特殊处理：如果是操作列，总是固定在右侧
+    if (newColumn.key === 'operation') {
+        newColumn.fixed = 'right';
+        if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 150)) {
+            newColumn.width = 200;
+        }
+    }
+
+    // 5. 特殊处理：如果是用户名列，确保固定属性与操作列一致
+    if (
+        newColumn.key === 'username' ||
+        newColumn.dataIndex === 'username' ||
+        (typeof newColumn.title === 'string' && newColumn.title.includes('用户名'))
+    ) {
+        // 如果设置为右侧固定但没有生效，强制应用
+        if (newColumn.columnOptionState?.fixed === 'right' || String(newColumn.columnOptionState?.fixed) === 'right') {
+            newColumn.fixed = 'right';
+
+            // 确保有足够宽度
+            if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
+                newColumn.width = 150;
+            }
+        }
+    }
+
+    return newColumn;
 }
 
 export default {
     handleTableChange,
     createPaginationConfig,
     createSettingDrawerConfig,
-    ensureTableSortingConsistency
+    ensureTableSortingConsistency,
+    forceApplyFixedColumns,
+    clearTableConfig,
+    clearAllTableConfig,
+    applyColumnFixed
 }; 

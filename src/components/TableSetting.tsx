@@ -364,9 +364,27 @@ export function makeTableColumnState<T, K extends string>(data: KyTableColumnTyp
     const newItem = { ...item };
     const state = item.columnOptionState;
 
-    if (state?.fixed === fixedStateSet.Left) newItem.fixed = 'left';
-    else if (state?.fixed === fixedStateSet.Right) newItem.fixed = 'right';
-    else newItem.fixed = undefined;
+    if (state?.fixed === fixedStateSet.Left) {
+      newItem.fixed = 'left';
+      if (!newItem.width) {
+        newItem.width = 150;
+      }
+    }
+    else if (state?.fixed === fixedStateSet.Right) {
+      newItem.fixed = 'right';
+      if (!newItem.width) {
+        newItem.width = 150;
+      }
+    }
+    else {
+      newItem.fixed = undefined;
+    }
+
+    console.log(`列 ${newItem.key} 的fixed设置:`, {
+      stateFixed: state?.fixed,
+      resultFixed: newItem.fixed,
+      width: newItem.width
+    });
 
     if (state?.sortBy === SortSet.Asc) newItem.sortOrder = 'ascend';
     else if (state?.sortBy === SortSet.Desc) newItem.sortOrder = 'descend';
@@ -426,6 +444,26 @@ export function makeTableColumnOption<T, K extends string>(
         newItem.columnSort = info.sort!;
 
         newItem.hidden = info.hidden || info.disabled;
+
+        if (info.fixed === fixedStateSet.Left) {
+          newItem.fixed = 'left';
+          if (!newItem.width) {
+            newItem.width = 150;
+          }
+        } else if (info.fixed === fixedStateSet.Right) {
+          newItem.fixed = 'right';
+          if (!newItem.width) {
+            newItem.width = 150;
+          }
+        } else {
+          newItem.fixed = undefined;
+        }
+
+        console.log(`makeTableColumnOption: 列 ${newItem.key} 的fixed设置:`, {
+          infoFixed: info.fixed,
+          resultFixed: newItem.fixed,
+          width: newItem.width
+        });
 
         const hasSortAbility = newItem.columnOptionState?.sortBy !== SortSet.None &&
           newItem.columnOptionState?.sortBy !== undefined;
@@ -535,6 +573,33 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             }}
           >
             {t('kysion.common.restoreDefault')}
+          </Button>
+
+          {/* 添加缓存清理按钮 */}
+          <Button
+            type="default"
+            danger
+            icon={<Icon icon={'material-symbols:cleaning-services'} />}
+            onClick={() => {
+              // 清除当前identifier的表格列设置缓存
+              try {
+                const storageKey = `tableColumnOption_${props.identifier}`;
+                localStorage.removeItem(storageKey);
+                console.log(`已清除表格设置缓存: ${storageKey}`);
+
+                // 重新加载默认设置
+                if (props.getDefaultDataSource) {
+                  const defaultSetting = props.getDefaultDataSource(true);
+                  updateSettingStateArr(defaultSetting);
+                  message.success(t('kysion.common.clearCacheSuccess'));
+                }
+              } catch (e) {
+                console.error('清除缓存失败:', e);
+                message.error(t('kysion.common.clearCacheFailed'));
+              }
+            }}
+          >
+            {t('kysion.common.clearCache')}
           </Button>
         </Flex>
       );
@@ -793,12 +858,38 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
                 const colIndex = mySettingStateArr.findIndex((v) => v.title === row.title);
 
                 if (colIndex >= 0) {
-                  mySettingStateArr[colIndex] = {
+                  console.log(`列设置: 修改${row.title}列的固定状态:`, {
+                    列索引: colIndex,
+                    原固定值: mySettingStateArr[colIndex].fixed,
+                    新固定值: item[0],
+                    枚举映射: item,
+                    原始行数据: row
+                  });
+
+                  // 更新列设置
+                  const updatedState = {
                     ...mySettingStateArr[colIndex],
-                    fixed: item[0],
+                    fixed: item[0]
                   };
+
+                  // 更新到数组
+                  mySettingStateArr[colIndex] = updatedState;
+
+                  console.log('更新后的列设置:', updatedState);
                 }
-                updateSettingStateArr(mySettingStateArr);
+
+                // 立即应用更新
+                updateSettingStateArr([...mySettingStateArr], 0);
+
+                // 添加一个立即刷新处理
+                if (window && window.dispatchEvent) {
+                  window.dispatchEvent(new CustomEvent('kysion:table:fixed-changed', {
+                    detail: {
+                      columnTitle: row.title,
+                      newFixed: item[0]
+                    }
+                  }));
+                }
               },
             } as any;
           });
@@ -863,13 +954,6 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
           const sortByArr = Array.isArray(row.conf?.sortBy) ? row.conf?.sortBy : [row.conf?.sortBy];
           const items = sortByArr
             .filter((item) => item)
-            .map((item) => {
-              if (item === true) {
-                return [SortSet.Asc, SortSet.Desc, SortSet.None];
-              }
-              return item;
-            })
-            .flat()
             .map((item, index) => {
               const result = {
                 key: `sort-${item?.toString()}-${index}`,

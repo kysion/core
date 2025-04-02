@@ -51,5 +51,8 @@
   "kysion.user.column.state": "状态",
   "kysion.user.column.username": "用户名",
   "kysion.user.type.Admin": "管理员",
-  "kysion.user.type.SuperAdmin": "超级管理员"
+  "kysion.user.type.SuperAdmin": "超级管理员",
+  "kysion.common.clearCache": "清除缓存",
+  "kysion.common.clearCacheSuccess": "清除缓存成功",
+  "kysion.common.clearCacheFailed": "清除缓存失败"
 }
