@@ -79,4 +79,12 @@ export { RouteGuard, withRouteGuard } from './components/RouteGuard';
 export { KeepAliveRoute, KeepAliveProvider, withKeepAlive, useKeepAliveCache } from './components/KeepAliveRoute';
 export { RoutePreloader, withRoutePreloader } from './components/RoutePreloader';
 export { buildRoutes, RouterConfig, RouteProvider, useRoutes, RouteContext } from './components/RouteConfig';
-export { LazyImport } from './components/LazyImport'; 
+export { LazyImport } from './components/LazyImport';
+
+// 路由相关
+export * from './components/RouteConfig';
+export * from './components/RouteGuard';
+export * from './hooks/useAuthCheck';
+export * from './utils/routeUtils';
+export { default as RouteUtils } from './utils/routeUtils';
+export { default as useAuthCheck } from './hooks/useAuthCheck'; 
