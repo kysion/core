@@ -22,6 +22,8 @@
   "kysion.query.Equal": "Equal",
   "kysion.query.Like.Contain": "Contains",
   "kysion.query.Sort.None": "None",
+  "kysion.query.Sort.Asc": "Ascending",
+  "kysion.query.Sort.Desc": "Descending",
   "kysion.table.column.cell.tooltip": "Tooltip",
   "kysion.table.column.defaultSort": "Default Sort",
   "kysion.table.column.fixedSide": "Fixed Side",

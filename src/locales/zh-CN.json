@@ -23,6 +23,8 @@
   "kysion.query.Equal": "等于",
   "kysion.query.Like.Contain": "包含",
   "kysion.query.Sort.None": "无",
+  "kysion.query.Sort.Asc": "升序",
+  "kysion.query.Sort.Desc": "降序",
   "kysion.table.column.cell.tooltip": "提示",
   "kysion.table.column.defaultSort": "默认排序",
   "kysion.table.column.fixedSide": "侧边冻结",

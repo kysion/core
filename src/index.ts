@@ -87,4 +87,20 @@ export * from './components/RouteGuard';
 export * from './hooks/useAuthCheck';
 export * from './utils/routeUtils';
 export { default as RouteUtils } from './utils/routeUtils';
-export { default as useAuthCheck } from './hooks/useAuthCheck'; 
+export { default as useAuthCheck } from './hooks/useAuthCheck';
+
+// 表格相关组件和钩子
+export { KyTable } from './components/KyTable';
+export { useTable } from './hooks/table/useTable';
+export {
+    handleTableChange,
+    createPaginationConfig,
+    createSettingDrawerConfig
+} from './hooks/table/useTableUtils';
+export type {
+    TableColumnOption,
+    UseTableOptions
+} from './hooks/table/useTable';
+export type {
+    TableChangeParams
+} from './hooks/table/useTableUtils'; 

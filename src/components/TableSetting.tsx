@@ -359,70 +359,111 @@ export interface SettingTableProps<T, K extends string> {
   customHeader?: (() => React.ReactNode) | React.ReactNode | true;
 }
 
-export function makeTableColumnState<T, K extends string>(data: KyTableColumnType<T, K>[]) {
+export function makeTableColumnState<T, K extends string>(data: KyTableColumnType<T, K>[]): KyTableColumnType<T, K>[] {
   const newDataSource = data.filter((item) => item.columnOption && item.key !== 'operation').map((item) => {
+    const newItem = { ...item };
     const state = item.columnOptionState;
 
-    if (state?.fixed === fixedStateSet.Left) item.fixed = 'left';
+    if (state?.fixed === fixedStateSet.Left) newItem.fixed = 'left';
+    else if (state?.fixed === fixedStateSet.Right) newItem.fixed = 'right';
+    else newItem.fixed = undefined;
 
-    if (state?.fixed === fixedStateSet.Right) item.fixed = 'right';
+    if (state?.sortBy === SortSet.Asc) newItem.sortOrder = 'ascend';
+    else if (state?.sortBy === SortSet.Desc) newItem.sortOrder = 'descend';
+    else newItem.sortOrder = undefined;
 
-    if (state?.sortBy === SortSet.Asc) item.sortOrder = 'ascend';
+    const hasSortAbility = state?.sortBy !== SortSet.None && state?.sortBy !== undefined;
 
-    if (state?.sortBy === SortSet.Desc) item.sortOrder = 'descend';
+    if (hasSortAbility) {
+      newItem.sorter = true;
 
-    item.sorter = state?.sortBy !== SortSet.None && state?.sortBy !== undefined;
-
-    if (state?.sorter === true) {
-      item.sorter = {
-        multiple: 1,
-      };
+      if (state?.sorter === true) {
+        newItem.sorter = {
+          multiple: 1,
+        };
+      }
+    } else {
+      newItem.sorter = false;
     }
 
-    if ((item?.key as string) === 'operation') item.sorter = false;
+    if ((newItem?.key as string) === 'operation') newItem.sorter = false;
 
-    if (state?.hidden === true && state.disabled === true) item.hidden = true;
+    if (state?.hidden === true || state?.disabled === true) newItem.hidden = true;
+    else newItem.hidden = false;
 
-    return item;
+    return newItem;
   });
-
 
   const operation = data.find((item) => item.key === 'operation');
   if (operation) {
-    newDataSource.push(operation);
+    newDataSource.push({ ...operation });
   }
 
   return newDataSource;
 }
+
 export function makeTableColumnOption<T, K extends string>(
   data: KyTableColumnType<T, K>[],
   state: TableColumn[] = [],
-) {
+): KyTableColumnType<T, K>[] {
   const newDataSource = data
     .filter((item) => item.columnOption && item.key !== 'operation')
     .map((item) => {
+      const newItem = { ...item };
+
       const info = state.find((v: any) => v.key === (item.key || item.dataIndex));
 
       if (info) {
-        item.columnOptionState = {
-          ...item.columnOptionState,
+        newItem.columnOptionState = {
+          ...newItem.columnOptionState,
           ...info,
         } as any;
-        info.conf = item.columnOption;
-        item.columnSort = info.sort!;
-        item.hidden = info.hidden || info.disabled;
+
+        if (info.conf !== item.columnOption) {
+          info.conf = item.columnOption;
+        }
+
+        newItem.columnSort = info.sort!;
+
+        newItem.hidden = info.hidden || info.disabled;
+
+        const hasSortAbility = newItem.columnOptionState?.sortBy !== SortSet.None &&
+          newItem.columnOptionState?.sortBy !== undefined;
+
+        if (hasSortAbility) {
+          newItem.sorter = true;
+
+          if (newItem.columnOptionState?.sortBy === SortSet.Asc) {
+            newItem.sortOrder = 'ascend';
+          } else if (newItem.columnOptionState?.sortBy === SortSet.Desc) {
+            newItem.sortOrder = 'descend';
+          } else {
+            newItem.sortOrder = undefined;
+          }
+
+          if (newItem.columnOptionState?.sorter === true) {
+            newItem.sorter = {
+              multiple: 1,
+            };
+          }
+        } else {
+          newItem.sorter = false;
+          newItem.sortOrder = undefined;
+        }
+      } else {
+        newItem.sorter = newItem.sorter ?? false;
       }
-      item.sorter = item.sorter ?? item.columnOptionState?.sortBy !== undefined;
-      return { ...item };
+
+      return newItem;
     })
     .sort((a, b) => a.columnSort! - b.columnSort!);
 
   const operation = data.find((item) => item.key === 'operation');
   if (operation) {
-    newDataSource.push(operation);
+    newDataSource.push({ ...operation });
   }
 
-  return newDataSource as KyTableColumnType<T, K>[];
+  return newDataSource;
 }
 
 let canPreview = true;
@@ -567,11 +608,67 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         minWidth: 100,
         width: 100,
         align: 'center',
-        render: (text) => (
-          <Flex align="center" className="flex justify-center">
-            {typeof text === 'string' ? text : text.props?.localeKey ? <KyTranslate localeKey={text.props.localeKey} /> : text}
-          </Flex>
-        ),
+        render: (text, record: any) => {
+          console.log('列标题渲染:', { text, record, recordKeys: Object.keys(record) });
+
+          // 方案1: 优先尝试使用record.i18nTitle (用户可以在配置列时提供已翻译的标题)
+          if (record.i18nTitle) {
+            return (
+              <Flex align="center" className="flex justify-center">
+                {record.i18nTitle}
+              </Flex>
+            );
+          }
+
+          // 方案2: 尝试使用localeKey + t函数直接翻译
+          if (record.localeKey) {
+            const translated = t(record.localeKey);
+            if (translated && translated !== record.localeKey) {
+              return (
+                <Flex align="center" className="flex justify-center">
+                  {translated}
+                </Flex>
+              );
+            }
+            // 如果没有翻译成功，还是使用KyTranslate组件
+            return (
+              <Flex align="center" className="flex justify-center">
+                <KyTranslate localeKey={record.localeKey} />
+              </Flex>
+            );
+          }
+
+          // 方案3: 尝试从dataIndex生成国际化键并翻译
+          if (record.dataIndex) {
+            const autoLocaleKey = `kysion.common.column.${record.dataIndex}`;
+            const translatedText = t(autoLocaleKey);
+            if (translatedText && translatedText !== autoLocaleKey) {
+              return (
+                <Flex align="center" className="flex justify-center">
+                  {translatedText}
+                </Flex>
+              );
+            }
+          }
+
+          // 方案4: 检查text是否是React元素且有localeKey
+          if (text && typeof text === 'object' && 'props' in text && text.props?.localeKey) {
+            return (
+              <Flex align="center" className="flex justify-center">
+                <KyTranslate localeKey={text.props.localeKey} />
+              </Flex>
+            );
+          }
+
+          // 方案5: 使用title或备用值
+          const titleText = text || (record as any).key || 'Unnamed Column';
+
+          return (
+            <Flex align="center" className="flex justify-center">
+              {!titleText ? 'Unnamed Column' : typeof titleText === 'string' ? titleText : titleText.props?.localeKey ? <KyTranslate localeKey={titleText.props.localeKey} /> : String(titleText)}
+            </Flex>
+          )
+        },
       },
       {
         title: t('kysion.table.column.where'),
@@ -776,7 +873,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             .map((item, index) => {
               const result = {
                 key: `sort-${item?.toString()}-${index}`,
-                label: SortMap[item as SortSet],
+                label: t(SortMap[(item as SortSet) ?? SortSet.None] || 'kysion.query.Sort.None'),
                 checked: item === row.sortBy,
                 onClick: () => {
                   const colIndex = mySettingStateArr.findIndex((v) => v.title === row.title);
@@ -863,7 +960,7 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         render: (v, row: any) => (
           <Flex align="center" className="flex justify-center">
             <Tooltip
-              title={t('kysion.table.column.cell.tooltip') + (typeof row.title === 'string' ? row.title : row.title.props?.localeKey ? row.title.props.localeKey : row.title)}
+              title={t('kysion.table.column.cell.tooltip') + (!row.title ? '' : typeof row.title === 'string' ? row.title : row.title.props?.localeKey ? row.title.props.localeKey : row.title)}
             >
               <Switch
                 checkedChildren={t('kysion.common.yes')}
