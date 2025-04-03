@@ -292,7 +292,7 @@ export const KyTable: FC<KyTableProps> = ({
                     variant="filled"
                     className="ml-8px"
                     loading={refreshLoading}
-                    icon={<KyIcon fontSize={16} icon="bitcoin-icons:refresh-filled" />}
+                    icon={<KyIcon fontSize={24} icon="bitcoin-icons:refresh-filled" />}
                     onClick={onRefresh}
                 />
             </Tooltip>
@@ -304,7 +304,7 @@ export const KyTable: FC<KyTableProps> = ({
                     color="primary"
                     variant="filled"
                     className="ml-8px"
-                    icon={<KyIcon fontSize={16} icon="ant-design:setting-outlined" />}
+                    icon={<KyIcon fontSize={18} icon="ant-design:setting-outlined" />}
                     onClick={() => setSettingVisible(true)}
                 />
             </Tooltip>
