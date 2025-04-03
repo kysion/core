@@ -169,7 +169,7 @@ export const useTableActions = (): TableActions => {
             const index = tableColumnOptionArr.findIndex(item => item.name === name);
             if (index > -1) {
                 tableColumnOptionArr[index].isDeleted = true;
-                this.setTableColumnOption(tableColumnOptionArr[index]);
+                useTableActions().setTableColumnOption(tableColumnOptionArr[index]);
             }
         },
 
@@ -246,7 +246,7 @@ export const useTableActions = (): TableActions => {
                     updatedAt: Date.now()
                 };
 
-                this.setTableColumnOption(tableColumnOptionArr[index]);
+                useTableActions().setTableColumnOption(tableColumnOptionArr[index]);
             }
         },
 
@@ -282,7 +282,7 @@ export const useTableActions = (): TableActions => {
                         version: config.version || TABLE_CONFIG_VERSION
                     }));
 
-                    this.saveToRemote(updatedConfigs, callback);
+                    useTableActions().saveToRemote(updatedConfigs, callback);
                 }
             } catch (error) {
                 console.error('刷新表格配置失败:', error);
@@ -342,7 +342,7 @@ export const useTableActions = (): TableActions => {
                 // 检查版本是否需要升级
                 if (!tableColumnOptionConfig.version || tableColumnOptionConfig.version !== TABLE_CONFIG_VERSION) {
                     // 重置配置
-                    this.setTableColumnOption(defaultConfig);
+                    useTableActions().setTableColumnOption(defaultConfig);
                     return true;
                 }
 
