@@ -143,7 +143,7 @@ export function useColumnSearchProps<T>({
         })
         : [];
 
-      return searchOptionConf && searchOptionConf.searchColumn === dataIndex ? (
+      const result = searchOptionConf && searchOptionConf.searchColumn === dataIndex ? (
         <Flex align="center">
           <Highlighter
             highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
@@ -177,6 +177,12 @@ export function useColumnSearchProps<T>({
           )}
         </Flex>
       );
+
+      if (render) {
+        return render(result, row);
+      }
+
+      return result;
     },
   };
 }
