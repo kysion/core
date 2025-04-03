@@ -4,6 +4,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 export * from './api';
 export * from './store';
 export * from './hooks';
+export * from './components';
 export { useNotifyStore, useNotifyState, useNotifyActions } from './store/notify';
 
 export interface ApiConfig {
@@ -91,7 +92,6 @@ export { default as RouteUtils } from './utils/routeUtils';
 export { default as useAuthCheck } from './hooks/useAuthCheck';
 
 // 表格相关组件和钩子
-export { KyTable } from './components/KyTable';
 export { useTable } from './hooks/table/useTable';
 export {
     handleTableChange,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { KyTableColumnType } from '../../types/table';
 import { useTableActions } from '../../store';
-import { makeTableColumnOption, makeTableColumnState } from '../../components/TableSetting';
+import { makeTableColumnOption, makeTableColumnState } from '../../components/KyList/setting';
 
 /**
  * 表格列配置选项类型

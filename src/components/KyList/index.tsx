@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect, useState } from 'react';
 import { Button, Flex, Table, TableProps, Tooltip } from 'antd';
 import { KyIcon } from '../icon';
 import { PageContainer } from '../PageContainer';
-import { makeTableColumnState, SettingTableDrawer, TableColumn } from '../TableSetting';
+import { makeTableColumnState, SettingTableDrawer, TableColumn } from './setting';
 import { useTranslation } from 'react-i18next';
 import { FixedStateSet, KyTableColumnType } from '../../types/table';
 import type { ColumnsType } from 'antd/es/table';
@@ -10,6 +10,8 @@ import { KyTranslate } from '../KyTranslate';
 import { useTableActions } from '../../store';
 import React from 'react';
 
+export * from './table';
+export * from './setting';
 
 export interface KyListProps<T = any> extends Omit<TableProps<T>, 'columns' | 'title'> {
     // 基础属性
@@ -167,11 +169,8 @@ export const KyList: FC<KyListProps> = ({
             col.width = 80;
         }
 
-        console.log('column:' + (col.key || col.dataIndex), 'fixed:' + col.fixed);
         return col;
     }).filter(col => col.hidden !== true);
-
-    console.log('curColumns', curColumns);
 
     return (
         <PageContainer

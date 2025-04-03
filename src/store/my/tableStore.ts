@@ -48,7 +48,22 @@ const getCurrentCompanyId = () => {
     }
 };
 
-export const useTableActions = () => {
+// 定义返回类型接口
+interface TableActions {
+    cleanDuplicateConfigs: () => TableColumnOption[];
+    getCurrentUserId: () => React.Key;
+    getCurrentCompanyId: () => React.Key;
+    getTableConfig: (name: React.Key, defaultTableConfig: TableColumnOption) => TableColumnOption;
+    resetTableConfig: (name: React.Key) => void;
+    setTableColumnOption: (tableColumnOption: TableColumnOption, callback?: (saveState: boolean) => void) => TableColumnOption;
+    getTablePageSize: (name: React.Key) => number;
+    setTablePageSize: (name: React.Key, pageSize: number) => void;
+    refresh: (userId?: React.Key, unionMainId?: React.Key, callback?: (state: boolean) => void) => Promise<void>;
+    saveToRemote: (tableColumnOptionArr?: TableColumnOption[], callback?: (saveState: boolean) => void) => Promise<any>;
+    checkConfigUpgrade: (name: React.Key, defaultConfig: TableColumnOption) => Promise<boolean>;
+}
+
+export const useTableActions = (): TableActions => {
     const set = useTableStore.setState;
     const get = useTableStore.getState;
 

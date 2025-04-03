@@ -1,5 +1,5 @@
 import { KyTableColumnType, fixedStateSet } from '../../types/table';
-import { TableOnChangeFunc } from '../../components/TableSetting';
+import { TableOnChangeFunc } from '../../components/KyList/setting';
 
 /**
  * 表格变更参数类型

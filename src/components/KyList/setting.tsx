@@ -42,9 +42,8 @@ import { Filter, LikeWhereSet, Order, Query } from '@kysion/types';
 import {
   KyTableColumnType,
   FixedStateArr,
-  FixedStateMap,
-  fixedStateSet
-} from '../types/table';
+  FixedStateMap
+} from '../../types/table';
 import {
   LikeWhereMap,
   SortMap,
@@ -53,7 +52,7 @@ import {
   WhereSet,
 } from '@kysion/types';
 
-import { useTableActions, useMyProfileState } from '../store';
+import { useTableActions, useMyProfileState } from '../../store';
 import {
   ColumnTitle,
   FilterDropdownProps,
@@ -65,7 +64,7 @@ import Highlighter from 'react-highlight-words';
 import { CopyConfig } from 'antd/es/typography/Base';
 import { SearchOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import { KyTranslate } from './KyTranslate';
+import { KyTranslate } from '../KyTranslate';
 
 export type SearchOption<T> = {
   searchText: string;

@@ -3,7 +3,7 @@ import { Button, Flex, Table, TableProps, Tooltip, message } from 'antd';
 import { PageContainer } from '../PageContainer';
 import { KyIcon } from '../icon';
 import { useTranslation } from 'react-i18next';
-import { SettingTableDrawer, TableColumn } from '../TableSetting';
+import { SettingTableDrawer, TableColumn } from './setting';
 import { KyTableColumnType, fixedStateSet } from '../../types/table';
 import { KyTranslate } from '../KyTranslate';
 import { ensureTableSortingConsistency, forceApplyFixedColumns, applyColumnFixed } from '../../hooks/table/useTableUtils';
