@@ -1,8 +1,10 @@
 import { CompanyType, EmployeeType, PermissionType, UserInfoType } from '@kysion/types';
 import { createKyStore, createSelectors } from '@kysion/utils';
 import { Funs } from '@kysion/utils';
-import { KysionApis } from '../../api';
 import { StoreApi, UseBoundStore } from 'zustand';
+import { useTableActions } from './tableStore';
+import { KysionApis } from '../../api';
+
 export interface ProfileState {
     company: CompanyType;
     employee: EmployeeType;
@@ -41,19 +43,18 @@ export const useMyProfileActions = () => {
     const get = useMyProfileStore.getState;
 
     return {
-        login: async (user: UserInfoType, token: string, expireAt: string) => {
+        login: (user: UserInfoType, token: string, expireAt: string) => {
             set({ user, token, expireAt, isLoggedIn: true });
-            await useMyProfileActions().reload();
         },
-        reload: async () => {
-            await KysionApis.Settings.getModuleConfInfo();
-
+        refresh: async () => {
             await Promise.all([
+                useTableActions().refresh(),
+                KysionApis.MyCompany.my.setUrlPrefix(get().moduleConf.moduleName),
                 KysionApis.MyCompany.my.getCompany(),
                 KysionApis.MyCompany.my.getProfile(),
                 KysionApis.MyCompany.my.getTeams(),
                 KysionApis.MyCompany.my.getMyCompanyPermissionList(),
-            ]);
+            ])
         },
         logout: () => set({ user: new UserInfoType(), token: null, expireAt: '', isLoggedIn: false }),
         setCompany: (company: CompanyType) => set({ company }),

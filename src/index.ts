@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 // 导出所有API模块
 export * from './api';
 export * from './store';
+export * from './hooks';
 export { useNotifyStore, useNotifyState, useNotifyActions } from './store/notify';
 
 export interface ApiConfig {
