@@ -115,12 +115,12 @@ export function createPaginationConfig(
 export function createSettingDrawerConfig(
     visible: boolean,
     onVisibleChange: (visible: boolean) => void,
-    getDefaultDataSource?: () => any[]
+    getDefaultDataSource: () => any[]
 ) {
     return {
         visible,
         onVisibleChange,
-        getDefaultDataSource: getDefaultDataSource || (() => []),
+        getDefaultDataSource: getDefaultDataSource,
     };
 }
 
@@ -246,8 +246,6 @@ export function forceApplyFixedColumns<T = any, K extends string = string>(
     columns: KyTableColumnType<T, K>[]
 ): KyTableColumnType<T, K>[] {
     try {
-        console.log('强制应用固定列函数开始：列数量', columns.length);
-
         // 克隆列，避免修改原始对象
         const fixedColumns = [...columns];
 
@@ -274,7 +272,6 @@ export function forceApplyFixedColumns<T = any, K extends string = string>(
                     newCol.width = 200; // 操作列给更多宽度
                 }
                 operationCols.push(newCol);
-                console.log('识别到操作列：', newCol.key || newCol.dataIndex);
                 continue;
             }
 
@@ -344,17 +341,8 @@ export function forceApplyFixedColumns<T = any, K extends string = string>(
             ...sortColumns(operationCols) // 操作列放在最后
         ];
 
-        console.log('强制应用固定列后的结果：', {
-            左固定列: leftFixedCols.length,
-            普通列: normalCols.length,
-            右固定列: rightFixedCols.length,
-            操作列: operationCols.length,
-            总列数: result.length
-        });
-
         return result;
     } catch (e) {
-        console.error('强制应用固定列时出错:', e);
         // 出错时返回原始列表
         return columns;
     }
@@ -422,14 +410,6 @@ export function applyColumnFixed<T = any, K extends string = string>(
     const newColumn = { ...column };
 
     try {
-        // 记录原始fixed状态，便于调试
-        const originalFixed = {
-            columnFixed: newColumn.fixed,
-            optionStateFixed: newColumn.columnOptionState?.fixed,
-        };
-
-        console.log(`应用列固定: ${newColumn.key || newColumn.dataIndex}`, originalFixed);
-
         // 检查列的fixed设置
         if (newColumn.columnOptionState?.fixed) {
             // 1. 从columnOptionState中获取fixed值
@@ -439,13 +419,10 @@ export function applyColumnFixed<T = any, K extends string = string>(
             if (fixedValue === 'right' || fixedValue === String(fixedStateSet.Right)) {
                 // 参考操作列的实现方式，直接设置fixed属性
                 newColumn.fixed = 'right';
-                console.log(`列 ${newColumn.key || newColumn.dataIndex} 设置为右固定`);
             } else if (fixedValue === 'left' || fixedValue === String(fixedStateSet.Left)) {
                 newColumn.fixed = 'left';
-                console.log(`列 ${newColumn.key || newColumn.dataIndex} 设置为左固定`);
             } else {
                 newColumn.fixed = undefined;
-                console.log(`列 ${newColumn.key || newColumn.dataIndex} 取消固定`);
             }
 
             // 3. 如果是fixed列，确保有足够宽度
@@ -463,10 +440,8 @@ export function applyColumnFixed<T = any, K extends string = string>(
 
             if (fixedStr === 'right') {
                 newColumn.fixed = 'right';
-                console.log(`列 ${newColumn.key || newColumn.dataIndex} 保留右固定`);
             } else if (fixedStr === 'left') {
                 newColumn.fixed = 'left';
-                console.log(`列 ${newColumn.key || newColumn.dataIndex} 保留左固定`);
             }
 
             // 确保有足够宽度
@@ -481,7 +456,6 @@ export function applyColumnFixed<T = any, K extends string = string>(
             if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 150)) {
                 newColumn.width = 200;
             }
-            console.log('操作列固定在右侧');
         }
 
         // 5. 特殊处理：如果是用户名列，确保固定属性与操作列一致
@@ -498,16 +472,8 @@ export function applyColumnFixed<T = any, K extends string = string>(
                 if (!newColumn.width || (typeof newColumn.width === 'number' && newColumn.width < 120)) {
                     newColumn.width = 150;
                 }
-                console.log('用户名列固定在右侧');
             }
         }
-
-        // 记录最终fixed状态，便于比较
-        console.log(`列 ${newColumn.key || newColumn.dataIndex} 最终固定状态:`, {
-            原始: originalFixed,
-            最终: newColumn.fixed,
-            宽度: newColumn.width
-        });
     } catch (e) {
         console.error(`应用列固定属性时出错:`, e);
     }

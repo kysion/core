@@ -1,9 +1,9 @@
 import React, { FC, ReactNode, useState, useEffect } from 'react';
-import { Button, Flex, Table, TableProps, Tooltip } from 'antd';
+import { Button, Flex, Table, TableProps, Tooltip, message } from 'antd';
 import { PageContainer } from '../PageContainer';
 import { KyIcon } from '../icon';
 import { useTranslation } from 'react-i18next';
-import { SettingTableDrawer } from '../TableSetting';
+import { SettingTableDrawer, TableColumn } from '../TableSetting';
 import { KyTableColumnType, fixedStateSet } from '../../types/table';
 import { KyTranslate } from '../KyTranslate';
 import { ensureTableSortingConsistency, forceApplyFixedColumns, applyColumnFixed } from '../../hooks/table/useTableUtils';
@@ -54,7 +54,7 @@ export interface KyTableProps<T = any> extends Omit<TableProps<T>, 'columns' | '
     settingDrawer?: {
         visible?: boolean;
         onVisibleChange?: (visible: boolean) => void;
-        getDefaultDataSource?: () => any[];
+        getDefaultDataSource: (isDefault: boolean) => TableColumn[];
     };
 
     // 刷新功能
@@ -174,6 +174,13 @@ export const KyTable: FC<KyTableProps> = ({
 
     // 创建一个保留所有排序功能的列数组，同时修复fixed属性
     const allColumns = forceApplyFixedColumns([...propColumns]);
+
+    // 查找操作列
+    const operationColumn = propColumns.find(col =>
+        col.key === 'operation' ||
+        (typeof col.title === 'string' &&
+            (col.title.includes('操作') || col.title.toLowerCase().includes('operation')))
+    );
 
     // 创建一个用于显示的列数组，处理隐藏列，同时强制应用fixed属性
     const processedColumns = allColumns.map((col: any) => {
@@ -314,42 +321,35 @@ export const KyTable: FC<KyTableProps> = ({
     // 计算表格的scroll属性
     const tableScrollProps = {
         // 确保x值足够大以触发横向滚动条，这是固定列显示的必要条件
-        x: Math.max(
-            // 计算所有列宽度总和
-            columns
-                .filter(item => !item.hidden)
-                .map(item => {
-                    if (typeof item.width === 'number') return item.width;
-                    if (typeof item.width === 'string') return Number.parseInt(item.width, 10) || 100;
-                    return 100; // 未设置宽度的列默认100px
-                })
-                .reduce((a, b) => a + b, 0),
-            // 设置一个较大的最小值，确保出现横向滚动条
-            2000 // 增大最小宽度，确保足够触发横向滚动
-        ),
+        x: 'max-content',
         // 设置垂直方向的滚动区域，确保表格不会过高
         y: 500
     };
 
-    // 对所有列最后的处理，特别关注用户名列
-    const finalColumns = forceApplyFixedColumns(columns);
-
-    // 检测是否有固定列
-    const hasFixedColumns = finalColumns.some(col => col.fixed === 'left' || col.fixed === 'right');
-
-    // 打印固定列信息，便于调试
-    if (hasFixedColumns) {
-        console.log('表格包含固定列:',
-            finalColumns
-                .filter(col => col.fixed)
-                .map(col => ({
-                    key: col.key || col.dataIndex,
-                    title: col.title,
-                    fixed: col.fixed,
-                    width: col.width
-                }))
+    // 确保操作列位于最后并固定在右侧
+    const ensureOperationColumn = <T extends any>(columns: KyTableColumnType<T, any>[]) => {
+        // 过滤掉现有的操作列
+        const filteredColumns = columns.filter(col =>
+            !(col.key === 'operation' ||
+                (typeof col.title === 'string' &&
+                    (col.title.includes('操作') || col.title.toLowerCase().includes('operation'))))
         );
-    }
+
+        // 如果有操作列，添加到最后并确保它固定在右侧
+        if (operationColumn) {
+            const enhancedOperation = {
+                ...operationColumn,
+                fixed: 'right' as const, // 使用 'as const' 确保类型正确
+                width: operationColumn.width || 100
+            };
+            return [...filteredColumns, enhancedOperation] as KyTableColumnType<T, any>[];
+        }
+
+        return filteredColumns;
+    };
+
+    // 对所有列最后的处理，包括强制添加操作列
+    const finalColumns = ensureOperationColumn(forceApplyFixedColumns(columns));
 
     return (
         <PageContainer
@@ -362,14 +362,6 @@ export const KyTable: FC<KyTableProps> = ({
                     关键修复：创建一个隐藏的div元素，确保水平滚动的最小宽度足够触发滚动
                     这样fixed列才能正常工作 
                 */}
-                <div style={{
-                    position: 'absolute',
-                    width: tableScrollProps.x + 'px', // 使用计算出的宽度
-                    height: '1px',
-                    opacity: 0,
-                    pointerEvents: 'none',
-                    visibility: 'hidden'
-                }} />
 
                 <Table
                     locale={{

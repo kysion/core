@@ -1,8 +1,8 @@
-import { TableColumnOption } from "../../types/table";
+import { fixedStateSet, TableColumnOption } from "../../types/table";
 import { createKyStore, createSelectors } from "@kysion/utils";
 import { Funs } from "@kysion/utils";
 import { KysionApis } from "../../api";
-import { useMyProfileState, useMyProfileStore } from "./userStore";
+import { useMyProfileStore } from "./userStore";
 import { StoreApi } from "zustand/vanilla";
 import { UseBoundStore } from "zustand/react";
 
@@ -70,7 +70,7 @@ export const useTableActions = () => {
 
             for (const config of sortedConfigs) {
                 // 从名称中提取模块基本名称，移除可能的后缀如"_column_conf"
-                const basicName = config.name.toString().replace(/_column_conf$/, '');
+                const basicName = config.name;
 
                 if (!processedModules.has(basicName)) {
                     // 这是我们首次遇到这个模块的配置，保留它
@@ -84,9 +84,7 @@ export const useTableActions = () => {
 
             // 如果发现了冗余配置，更新状态
             if (removedConfigs.length > 0) {
-                console.warn(`发现并移除${removedConfigs.length}个冗余配置项:`,
-                    removedConfigs.map(c => c.name));
-                set({ tableColumnOptionArr: cleanedConfigs });
+                console.warn(`发现并移除${removedConfigs.length}个冗余配置项:`, removedConfigs.map(c => c.name));
             }
 
             return cleanedConfigs;
@@ -119,100 +117,55 @@ export const useTableActions = () => {
         getCurrentCompanyId,
 
         /**
-         * 直接从后端加载指定表格的配置
+         * 获取指定表格的配置
          * @param name 表格标识符
          * @returns 表格配置
          */
-        async getRemoteConfig(name: React.Key): Promise<TableColumnOption | null> {
-            try {
-                const userId = getCurrentUserId();
-                const unionMainId = getCurrentCompanyId();
+        getTableConfig(name: React.Key, defaultTableConfig: TableColumnOption) {
+            // 规范化表格标识符
+            const normalizedName = String(name).replace(/_column_conf$/, '');
+            const standardName = `${normalizedName}_column_conf`;
 
-                if (!userId) {
-                    console.warn('未登录用户无法获取远程配置');
-                    return null;
+            const tableColumnOptionArr = get().tableColumnOptionArr
+            // 先从本地存储中查找
+            const config = tableColumnOptionArr.find(item => item.name === standardName);
+            if (config && config.isDeleted !== true) {
+                return config;
+            }
+
+            defaultTableConfig.columnOptionArr = defaultTableConfig.columnOptionArr.map(item => {
+                return {
+                    ...item,
+                    fixed: item.name === 'operation' ? fixedStateSet.Right : item.fixed
                 }
+            });
 
-                // 规范化表格标识符
-                const normalizedName = name.toString().replace(/_column_conf$/, '');
-                const standardName = `${normalizedName}_column_conf`;
+            if (true === defaultTableConfig.isDeleted) {
+                return defaultTableConfig;
+            }
 
-                // 从后端获取配置
-                console.log(`尝试从后端获取表格配置[${standardName}]`, { userId, unionMainId });
-                const remoteSetting = await KysionApis.MyProfile.getSettingByName<TableColumnOption>({
-                    name: `table_setting_${standardName}`,
-                    userId,
-                    unionMainId
-                });
+            useTableActions().setTableColumnOption(defaultTableConfig);
 
-                if (!remoteSetting || !remoteSetting.values) {
-                    console.warn(`后端没有找到表格配置[${standardName}]`);
-                    return null;
-                }
+            return defaultTableConfig;
+        },
 
-                console.log(`成功从后端获取到表格配置[${standardName}]`, remoteSetting.values);
-
-                // 确保columnOptionArr是有效的数组
-                if (!remoteSetting.values.columnOptionArr || !Array.isArray(remoteSetting.values.columnOptionArr)) {
-                    console.warn(`远程配置的columnOptionArr无效`, remoteSetting.values);
-                    return null;
-                }
-
-                // 检查每个列配置项，确保它们是有效的
-                const validColumnOptions = (remoteSetting.values.columnOptionArr || []).filter(item => {
-                    return item && typeof item === 'object';
-                });
-
-                if (validColumnOptions.length === 0) {
-                    console.warn(`远程配置不包含有效的列配置项`);
-                    return null;
-                }
-
-                // 标准化配置
-                const remoteConfig = {
-                    ...remoteSetting.values,
-                    name: standardName, // 确保使用标准名称
-                    columnOptionArr: validColumnOptions,
-                    source: 'remote' as const,
-                    version: remoteSetting.values.version || TABLE_CONFIG_VERSION,
-                    updatedAt: Date.now()
-                };
-
-                console.log(`已处理远程配置，有效配置项: ${validColumnOptions.length}`, remoteConfig);
-
-                // 保存到本地
-                const tableColumnOptionArr = [...get().tableColumnOptionArr];
-
-                // 先删除已存在的同名配置
-                const filteredArr = tableColumnOptionArr.filter(item => {
-                    const itemNormalized = item.name.toString().replace(/_column_conf$/, '');
-                    return itemNormalized !== normalizedName;
-                });
-
-                // 添加新配置
-                filteredArr.push(remoteConfig);
-
-                // 更新本地存储
-                set({ tableColumnOptionArr: filteredArr });
-                console.log(`远程配置已保存到本地`, remoteConfig);
-
-                return remoteConfig;
-            } catch (error) {
-                console.error('从后端获取表格配置失败:', error);
-                return null;
+        resetTableConfig(name: React.Key) {
+            const tableColumnOptionArr = get().tableColumnOptionArr;
+            const index = tableColumnOptionArr.findIndex(item => item.name === name);
+            if (index > -1) {
+                tableColumnOptionArr[index].isDeleted = true;
+                this.setTableColumnOption(tableColumnOptionArr[index]);
             }
         },
 
         /**
          * 设置表格列配置
          * @param tableColumnOption 表格列配置
-         * @param isSave 是否保存到后端
          * @returns Promise
          */
-        async setTableColumnOption(tableColumnOption: TableColumnOption, isSave: boolean = false) {
+        setTableColumnOption(tableColumnOption: TableColumnOption, callback?: (saveState: boolean) => void) {
             try {
                 const now = Date.now();
-                const tableColumnOptionArr = [...get().tableColumnOptionArr];
 
                 // 规范化表格标识符
                 let name = tableColumnOption.name;
@@ -221,16 +174,6 @@ export const useTableActions = () => {
 
                 // 确保配置使用标准名称
                 tableColumnOption.name = standardName;
-
-                // 确保columnOptionArr是有效的数组
-                if (!tableColumnOption.columnOptionArr || !Array.isArray(tableColumnOption.columnOptionArr)) {
-                    tableColumnOption.columnOptionArr = [];
-                }
-
-                const index = tableColumnOptionArr.findIndex(item => {
-                    const itemNormalized = item.name.toString().replace(/_column_conf$/, '');
-                    return itemNormalized === normalizedName;
-                });
 
                 // 添加版本和时间戳信息
                 const updatedConfig = {
@@ -241,84 +184,25 @@ export const useTableActions = () => {
                     source: 'local' as const
                 };
 
-                console.log(`更新配置[${standardName}]`, updatedConfig);
+                const tableColumnOptionArr = get().tableColumnOptionArr.filter(item => item.isDeleted !== true);
+
+                // 查找并更新或添加配置
+                const index = tableColumnOptionArr.findIndex(item => item.name === standardName);
 
                 if (index > -1) {
-                    console.log(`更新现有配置[${standardName}]`);
+                    // 更新现有配置
                     tableColumnOptionArr[index] = updatedConfig;
                 } else {
-                    console.log(`添加新配置[${standardName}]`);
+                    // 添加新配置
                     tableColumnOptionArr.push(updatedConfig);
                 }
 
-                // 更新本地存储
-                set({ tableColumnOptionArr });
-                console.log(`配置已保存到本地[${standardName}]`);
-
-                // 如果需要保存到后端，则调用保存接口
-                if (isSave) {
-                    try {
-                        // 获取当前用户ID和公司ID
-                        const userId = getCurrentUserId();
-                        const unionMainId = getCurrentCompanyId();
-
-                        if (!userId) {
-                            console.warn(`未登录用户无法保存配置到后端`);
-                            return Promise.resolve({ data: updatedConfig.columnOptionArr, error: "未登录用户无法保存配置", success: false });
-                        }
-
-                        console.log(`正在保存配置到后端[${standardName}]`, { userId, unionMainId });
-                        // 只保存当前表格的配置
-                        await KysionApis.MyProfile.setSettingByName<TableColumnOption>({
-                            name: `table_setting_${standardName}`,
-                            values: updatedConfig,
-                            desc: `表格配置-${standardName}`,
-                            userId,
-                            unionMainId
-                        });
-                        console.log(`表格配置已保存到后端: ${standardName}`);
-                    } catch (error) {
-                        console.error('保存表格配置到后端失败:', error);
-                    }
-                }
-
-                return Promise.resolve({ data: updatedConfig.columnOptionArr, error: undefined, success: true });
+                // 保存到后端
+                useTableActions().saveToRemote(tableColumnOptionArr, callback);
             } catch (error) {
-                console.error('设置表格配置失败:', error);
-                return Promise.resolve({ data: [], error: error as any, success: false });
+                console.error('设置表格配置失败:', error, tableColumnOption);
             }
-        },
-
-        /**
-         * 获取表格列配置
-         * @param name 表格标识符
-         * @returns 表格列配置数组
-         */
-        getTableColumnOption(name: React.Key) {
-            // 规范化表格标识符，移除可能的后缀
-            const normalizedName = name.toString().replace(/_column_conf$/, '');
-
-            // 先尝试查找完全匹配的配置
-            let localConfig = get().tableColumnOptionArr.find(item =>
-                item.name === name || item.name === `${normalizedName}_column_conf`
-            );
-
-            // 如果没有完全匹配，尝试基本名称匹配
-            if (!localConfig) {
-                localConfig = get().tableColumnOptionArr.find(item =>
-                    item.name.toString().replace(/_column_conf$/, '') === normalizedName
-                );
-            }
-
-            // 如果本地存在配置，直接返回
-            if (localConfig) {
-                return localConfig.columnOptionArr.sort((a, b) => a.sort - b.sort);
-            }
-
-            // 本地没有配置，返回空数组
-            // 注意：实际加载配置的工作应由initTableConfig完成
-            console.log(`本地无配置[${name}]，应使用initTableConfig初始化`);
-            return [];
+            return tableColumnOption
         },
 
         /**
@@ -347,233 +231,35 @@ export const useTableActions = () => {
                     updatedAt: Date.now()
                 };
 
-                set({ tableColumnOptionArr });
-
-                // 获取当前用户ID和公司ID
-                const userId = getCurrentUserId();
-                const unionMainId = getCurrentCompanyId();
-
-                // 更新后端配置
-                KysionApis.MyProfile.setSettingByName<TableColumnOption>({
-                    name: `table_setting_${name}`,
-                    values: tableColumnOptionArr[index],
-                    desc: `表格配置-${name}`,
-                    userId,
-                    unionMainId
-                }).catch(error => {
-                    console.error('保存页面大小到后端失败:', error);
-                });
+                this.setTableColumnOption(tableColumnOptionArr[index]);
             }
         },
 
         /**
-         * 初始化表格配置
-         * @param name 表格标识符
-         * @param defaultConfig 默认配置
+         * 从后端重新加载所有表格配置
          */
-        async initTableConfig(name: React.Key, defaultConfig: TableColumnOption) {
-            try {
-                // 规范化表格标识符
-                const normalizedName = name.toString().replace(/_column_conf$/, '');
-                const standardName = `${normalizedName}_column_conf`;
-
-                // 使用标准化的名称修改defaultConfig
-                defaultConfig.name = standardName;
-
-                const userId = getCurrentUserId();
-                const unionMainId = getCurrentCompanyId();
-
-                // 执行一次冗余配置清理
-                cleanDuplicateConfigs();
-
-                const tableColumnOptionArr = [...get().tableColumnOptionArr];
-
-                // 查找所有与当前表格相关的配置
-                const relatedConfigs = tableColumnOptionArr.filter(item =>
-                    item.name === standardName ||
-                    item.name === normalizedName ||
-                    item.name.toString().replace(/_column_conf$/, '') === normalizedName
-                );
-
-                // 如果已存在相关配置，使用最新的一个
-                if (relatedConfigs.length > 0) {
-                    // 按更新时间排序
-                    const sortedConfigs = relatedConfigs.sort((a, b) =>
-                        (b.updatedAt || 0) - (a.updatedAt || 0)
-                    );
-
-                    const latestConfig = sortedConfigs[0];
-
-                    // 如果不是标准命名，重命名并更新
-                    if (latestConfig.name !== standardName) {
-                        console.log(`发现非标准命名配置[${latestConfig.name}]，已重命名为[${standardName}]`);
-
-                        // 删除所有相关配置
-                        const newTableColumnOptionArr = tableColumnOptionArr.filter(item =>
-                            !relatedConfigs.includes(item)
-                        );
-
-                        // 使用标准名称添加最新配置
-                        const updatedConfig = {
-                            ...latestConfig,
-                            name: standardName,
-                            updatedAt: Date.now()
-                        };
-
-                        newTableColumnOptionArr.push(updatedConfig);
-                        set({ tableColumnOptionArr: newTableColumnOptionArr });
-
-                        return updatedConfig.columnOptionArr.sort((a, b) => a.sort - b.sort);
-                    }
-
-                    // 已经是标准命名，直接返回
-                    return latestConfig.columnOptionArr.sort((a, b) => a.sort - b.sort);
-                }
-
-                // 本地没有配置，检查远程配置
-                console.log(`本地无配置，正在从远程获取[${standardName}]的配置`);
-
-                // 尝试从后端获取配置
-                const remoteSetting = await KysionApis.MyProfile.getSettingByName<TableColumnOption>({
-                    name: `table_setting_${standardName}`,
-                    userId,
-                    unionMainId
-                });
-
-                if (remoteSetting?.values && remoteSetting.values?.columnOptionArr?.length > 0) {
-                    console.log(`从远程获取到配置[${standardName}]`, remoteSetting.values);
-
-                    // 检查版本是否兼容
-                    if (remoteSetting.values.version && remoteSetting.values.version !== TABLE_CONFIG_VERSION) {
-                        console.warn(`远程配置版本(${remoteSetting.values.version})与当前版本(${TABLE_CONFIG_VERSION})不匹配，使用默认配置`);
-                        await this.resetTableConfig(standardName, defaultConfig, userId, unionMainId);
-                        return defaultConfig.columnOptionArr;
-                    }
-
-                    // 使用远程配置，但标记来源
-                    const remoteConfig = {
-                        ...remoteSetting.values,
-                        name: standardName, // 确保使用标准名称
-                        source: 'remote' as const,
-                        // 确保有版本信息
-                        version: remoteSetting.values.version || TABLE_CONFIG_VERSION
-                    };
-
-                    // 保存到本地
-                    tableColumnOptionArr.push(remoteConfig);
-                    set({ tableColumnOptionArr });
-
-                    return remoteConfig.columnOptionArr.sort((a, b) => a.sort - b.sort);
-                } else {
-                    // 没有远程配置，使用默认配置并保存
-                    console.log(`无远程配置，使用默认配置[${standardName}]`);
-                    const newDefaultConfig = {
-                        ...defaultConfig,
-                        name: standardName, // 确保使用标准名称
-                        version: TABLE_CONFIG_VERSION,
-                        updatedAt: Date.now(),
-                        source: 'default' as const
-                    };
-
-                    // 保存到本地
-                    tableColumnOptionArr.push(newDefaultConfig);
-                    set({ tableColumnOptionArr });
-
-                    // 保存到后端
-                    await KysionApis.MyProfile.setSettingByName<TableColumnOption>({
-                        name: `table_setting_${standardName}`,
-                        values: newDefaultConfig,
-                        desc: `表格配置-${standardName}`,
-                        userId,
-                        unionMainId
-                    });
-
-                    return newDefaultConfig.columnOptionArr;
-                }
-            } catch (error) {
-                console.error('初始化表格配置失败:', error);
-                // 出错时使用默认配置但不保存
-                return defaultConfig.columnOptionArr;
-            }
-        },
-
-        /**
-         * 重置表格配置到默认值
-         * @param name 表格标识符
-         * @param defaultConfig 默认配置
-         * @param userId 用户ID (可选参数)
-         * @param unionMainId 公司ID (可选参数)
-         */
-        async resetTableConfig(name: React.Key, defaultConfig: TableColumnOption, userId?: React.Key, unionMainId?: React.Key) {
-            try {
-                // 规范化表格标识符
-                const normalizedName = name.toString().replace(/_column_conf$/, '');
-                const standardName = `${normalizedName}_column_conf`;
-
-                // 确保defaultConfig使用标准名称
-                defaultConfig.name = standardName;
-
-                const currentUserId = userId || getCurrentUserId();
-                const currentCompanyId = unionMainId || getCurrentCompanyId();
-
-                // 执行一次冗余配置清理
-                cleanDuplicateConfigs();
-
-                const tableColumnOptionArr = [...get().tableColumnOptionArr];
-
-                // 删除所有与当前表格相关的配置
-                const newTableColumnOptionArr = tableColumnOptionArr.filter(item => {
-                    const itemNormalizedName = item.name.toString().replace(/_column_conf$/, '');
-                    return itemNormalizedName !== normalizedName;
-                });
-
-                // 准备默认配置
-                const newDefaultConfig = {
-                    ...defaultConfig,
-                    name: standardName,
-                    version: TABLE_CONFIG_VERSION,
-                    updatedAt: Date.now(),
-                    source: 'default' as const
-                };
-
-                // 更新本地存储
-                newTableColumnOptionArr.push(newDefaultConfig);
-                set({ tableColumnOptionArr: newTableColumnOptionArr });
-
-                // 清除后端存储的配置
-                await KysionApis.MyProfile.setSettingByName<TableColumnOption>({
-                    name: `table_setting_${standardName}`,
-                    values: newDefaultConfig,
-                    desc: `表格配置-${standardName}(重置默认)`,
-                    userId: currentUserId,
-                    unionMainId: currentCompanyId
-                });
-
-                console.log(`表格配置已重置[${standardName}]`);
-                return Promise.resolve({ data: newDefaultConfig.columnOptionArr, success: true });
-            } catch (error) {
-                console.error('重置表格配置失败:', error);
-                return Promise.reject(error);
-            }
-        },
-
-        /**
-         * 从后端刷新所有表格配置
-         * @deprecated 推荐使用initTableConfig初始化单个表格
-         */
-        async refresh(userId?: React.Key, unionMainId?: React.Key) {
+        async refresh(userId?: React.Key, unionMainId?: React.Key, callback?: (state: boolean) => void) {
             try {
                 const currentUserId = userId || getCurrentUserId();
                 const currentCompanyId = unionMainId || getCurrentCompanyId();
-                const result = await KysionApis.MyProfile.getSettingByName<IMyTableStateType>({
+                const result = await KysionApis.MyProfile.getSettingByName<TableColumnOption[]>({
                     name: 'my_table_setting',
                     userId: currentUserId,
                     unionMainId: currentCompanyId
-                });
+                }) ?? { values: [] };
 
-                if (result?.values?.tableColumnOptionArr) {
+                if (result?.values) {
+
+                    if (typeof result.values === 'string') {
+                        result.values = JSON.parse(result.values) ?? [];
+                    }
+
+                    if (result.values === null) {
+                        result.values = [];
+                    }
+
                     // 更新时间戳和来源标记
-                    const updatedConfigs = result.values.tableColumnOptionArr.map(config => ({
+                    const updatedConfigs = result.values.map(config => ({
                         ...config,
                         updatedAt: Date.now(),
                         source: 'remote' as const,
@@ -581,8 +267,7 @@ export const useTableActions = () => {
                         version: config.version || TABLE_CONFIG_VERSION
                     }));
 
-                    set({ tableColumnOptionArr: updatedConfigs });
-                    console.log('已从后端刷新所有表格配置');
+                    this.saveToRemote(updatedConfigs, callback);
                 }
             } catch (error) {
                 console.error('刷新表格配置失败:', error);
@@ -591,18 +276,26 @@ export const useTableActions = () => {
 
         /**
          * 保存所有表格配置到后端
-         * @deprecated 推荐使用setTableColumnOption单独保存配置
          */
-        save() {
+        async saveToRemote(tableColumnOptionArr?: TableColumnOption[], callback?: (saveState: boolean) => void) {
             const userId = getCurrentUserId();
             const unionMainId = getCurrentCompanyId();
 
-            return KysionApis.MyProfile.setSettingByName<IMyTableStateType>({
+            tableColumnOptionArr = tableColumnOptionArr ?? get().tableColumnOptionArr
+
+            // 清理冗余配置
+            cleanDuplicateConfigs();
+
+            set({ tableColumnOptionArr });
+
+            return KysionApis.MyProfile.setSettingByName<TableColumnOption[]>({
                 name: 'my_table_setting',
-                values: get(),
+                values: tableColumnOptionArr,
                 desc: '我的表格设置',
                 userId,
                 unionMainId
+            }).then(res => {
+                callback?.(res ? true : false);
             });
         },
 
@@ -622,24 +315,19 @@ export const useTableActions = () => {
             try {
                 // 从本地获取配置
                 const tableColumnOptionArr = [...get().tableColumnOptionArr];
-                const localConfigIndex = tableColumnOptionArr.findIndex(item => {
-                    const itemNormalized = item.name.toString().replace(/_column_conf$/, '');
-                    return itemNormalized === normalizedName;
-                });
+                const tableColumnOptionConfigIndex = tableColumnOptionArr.findIndex(item => standardName === item.name);
 
                 // 如果本地没有配置，直接返回
-                if (localConfigIndex === -1) {
+                if (tableColumnOptionConfigIndex === -1) {
                     return false;
                 }
 
-                const localConfig = tableColumnOptionArr[localConfigIndex];
+                const tableColumnOptionConfig = tableColumnOptionArr[tableColumnOptionConfigIndex];
 
                 // 检查版本是否需要升级
-                if (!localConfig.version || localConfig.version !== TABLE_CONFIG_VERSION) {
-                    console.log(`配置版本不一致，需要升级: ${localConfig.version || '无版本'} -> ${TABLE_CONFIG_VERSION}`);
-
+                if (!tableColumnOptionConfig.version || tableColumnOptionConfig.version !== TABLE_CONFIG_VERSION) {
                     // 重置配置
-                    await this.resetTableConfig(standardName, defaultConfig);
+                    this.setTableColumnOption(defaultConfig);
                     return true;
                 }
 

@@ -27,6 +27,7 @@ export interface TableColumnOption {
     version?: string;
     updatedAt?: number;
     source?: 'local' | 'remote' | 'default';
+    isDeleted?: boolean;
 }
 
 export interface TableParams {

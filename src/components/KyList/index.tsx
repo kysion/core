@@ -25,7 +25,7 @@ export interface KyListProps<T = any> extends Omit<TableProps<T>, 'columns' | 't
     settingDrawer?: {
         visible?: boolean;
         onVisibleChange?: (visible: boolean) => void;
-        getDefaultDataSource?: () => TableColumn[];
+        getDefaultDataSource: () => TableColumn[];
     };
 
     // 刷新功能
@@ -127,7 +127,7 @@ export const KyList: FC<KyListProps> = ({
             setTableColumnOption({
                 name: identifier,
                 columnOptionArr: data,
-            }, true);
+            });
         }
     };
 
@@ -164,7 +164,7 @@ export const KyList: FC<KyListProps> = ({
 
         // 确保固定列有明确的宽度
         if (col.fixed && !col.width) {
-            col.width = 150;
+            col.width = 80;
         }
 
         console.log('column:' + (col.key || col.dataIndex), 'fixed:' + col.fixed);
@@ -189,7 +189,6 @@ export const KyList: FC<KyListProps> = ({
                     size="small"
                     bordered
                     className="relative size-full"
-                    // scroll={{ x: 'max-content' }}
                     rowKey={(record) => {
                         return (record as any).id || (record as any).key || (record as any).index || JSON.stringify(record);
                     }}
@@ -199,7 +198,7 @@ export const KyList: FC<KyListProps> = ({
                             .filter((item) => item.width && !item.hidden)
                             .map((item) => {
                                 if (typeof item.width === 'number') return item.width;
-                                if (typeof item.width === 'string') return Number.parseInt(item.width, 10) ?? 100;
+                                if (typeof item.width === 'string') return Number.parseInt(item.width, 10) ?? 80;
                                 return 80;
                             })
                             .reduce((a, b) => a + b, 0),

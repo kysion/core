@@ -1,8 +1,12 @@
 {
   "common.notification": "消息&公告",
+  "kysion.common.clearCache": "清除缓存",
+  "kysion.common.clearCacheFailed": "清除缓存失败",
+  "kysion.common.clearCacheSuccess": "清除缓存成功",
   "kysion.common.enum.Disabled": "禁用",
   "kysion.common.enum.Enabled": "启用",
   "kysion.common.no": "否",
+  "kysion.common.noData": "暂无数据",
   "kysion.common.reset": "重置",
   "kysion.common.restoreDefault": "恢复默认",
   "kysion.common.save": "保存",
@@ -22,9 +26,9 @@
   "kysion.company.column.state": "状态",
   "kysion.query.Equal": "等于",
   "kysion.query.Like.Contain": "包含",
-  "kysion.query.Sort.None": "无",
   "kysion.query.Sort.Asc": "升序",
   "kysion.query.Sort.Desc": "降序",
+  "kysion.query.Sort.None": "无",
   "kysion.table.column.cell.tooltip": "提示",
   "kysion.table.column.defaultSort": "默认排序",
   "kysion.table.column.fixedSide": "侧边冻结",
@@ -34,6 +38,7 @@
   "kysion.table.column.groupSort": "按组排序",
   "kysion.table.column.hidden": "隐藏",
   "kysion.table.column.isDisabled": "是否禁用",
+  "kysion.table.column.resetSuccess": "重置列表偏好设置成功",
   "kysion.table.column.setting.preview": "预览",
   "kysion.table.column.show": "显示",
   "kysion.table.column.sort": "排序",
@@ -51,8 +56,5 @@
   "kysion.user.column.state": "状态",
   "kysion.user.column.username": "用户名",
   "kysion.user.type.Admin": "管理员",
-  "kysion.user.type.SuperAdmin": "超级管理员",
-  "kysion.common.clearCache": "清除缓存",
-  "kysion.common.clearCacheSuccess": "清除缓存成功",
-  "kysion.common.clearCacheFailed": "清除缓存失败"
+  "kysion.user.type.SuperAdmin": "超级管理员"
 }
