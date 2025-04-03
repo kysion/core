@@ -8,6 +8,14 @@ export class KysionEmployee {
         this.urlPrefix = params.urlPrefix;
     }
 
+    public setUrlPrefix(urlPrefix: string) {
+        this.urlPrefix = urlPrefix;
+    }
+
+    public getPrefix() {
+        return this.urlPrefix;
+    }
+
     // 创建员工|信息
     public createEmployee(data: Partial<EmployeeType> & { name: string; }) {
         return http.post<EmployeeType>(`/${this.urlPrefix}/employee/createEmployee`, data);

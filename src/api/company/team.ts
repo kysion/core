@@ -7,6 +7,14 @@ export class Team {
         this.urlPrefix = params.urlPrefix;
     }
 
+    public setUrlPrefix(urlPrefix: string) {
+        this.urlPrefix = urlPrefix;
+    }
+
+    public getPrefix() {
+        return this.urlPrefix;
+    }
+
     // 创建团队或小组｜信息
     public createTeam(data: {
         id: string | number;

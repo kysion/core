@@ -22,6 +22,14 @@ export class Financial {
         this.urlPrefix = params.urlPrefix;
     }
 
+    public setUrlPrefix(urlPrefix: string) {
+        this.urlPrefix = urlPrefix;
+    }
+
+    public getPrefix() {
+        return this.urlPrefix;
+    }
+
     // 审核发票
     public auditInvoiceDetail(data: { invoiceDetailId: string | number, AuditInfo: { state: 2 | 4, auditUserId: string | number; replyMsg: string } }) {
         return http.post<boolean>(`/${this.urlPrefix}/financial/auditInvoiceDetail`, data);

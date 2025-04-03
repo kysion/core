@@ -38,6 +38,10 @@ export class Company {
      */
     public setUrlPrefix(urlPrefix: string) {
         this.urlPrefix = urlPrefix;
+        this.my.setUrlPrefix(urlPrefix);
+        this.financial.setUrlPrefix(urlPrefix);
+        this.employee.setUrlPrefix(urlPrefix);
+        this.team.setUrlPrefix(urlPrefix);
     }
 
     /**

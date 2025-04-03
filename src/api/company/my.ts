@@ -23,6 +23,14 @@ export class My {
         this.urlPrefix = params.urlPrefix;
     }
 
+    public setUrlPrefix(urlPrefix: string) {
+        this.urlPrefix = urlPrefix;
+    }
+
+    public getPrefix() {
+        return this.urlPrefix;
+    }
+
     // 我的账单|列表
     public getAccountBills(params: Query) {
         return http.post<Records<AccountBillDetailType>>(`/${this.urlPrefix}/my/getAccountBills`, params);
