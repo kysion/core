@@ -99,7 +99,7 @@ export interface ColumnsTypeProps<T> {
   | ((props: FilterDropdownProps & { title?: string; dataIndex: keyof T }) => React.ReactNode);
 }
 
-export function useColumnSearchProps<T>({
+export function useTableColumnProps<T>({
   dataIndex,
   searchOption,
   title,
@@ -168,7 +168,7 @@ export function useColumnSearchProps<T>({
         </Flex>
       ) : (
         <Flex align="center" className="c-base-text">
-          {render ? render(val, row) : val}
+          {val}
           {copyable && newCopyable && (
             <Typography.Text
               className="m-l-2px c-red"

@@ -288,9 +288,9 @@ export const KyTable: FC<KyTableProps> = ({
         onRefresh && (
             <Tooltip key="refresh" title={t('kysion.common.refresh.tooltip')} placement="bottom">
                 <Button
-                    color="primary"
+                    color="blue"
                     variant="filled"
-                    className="ml-8px"
+                    className="ml-8px hover:text-[--color] hover:bg-[--color]/16!"
                     loading={refreshLoading}
                     icon={<KyIcon fontSize={24} icon="bitcoin-icons:refresh-filled" />}
                     onClick={onRefresh}
@@ -301,9 +301,9 @@ export const KyTable: FC<KyTableProps> = ({
         settingDrawer && (
             <Tooltip key="setting" title={t('kysion.table.column.setting.title')} placement="bottom">
                 <Button
-                    color="primary"
+                    color="blue"
                     variant="filled"
-                    className="ml-8px"
+                    className="ml-8px hover:text-[--color] hover:bg-[--color]/16!"
                     icon={<KyIcon fontSize={18} icon="ant-design:setting-outlined" />}
                     onClick={() => setSettingVisible(true)}
                 />
