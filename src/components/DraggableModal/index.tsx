@@ -22,7 +22,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
         const modalWidth = typeof modalProps.width === 'number' ? modalProps.width : 520;
         return {
             x: Math.max(0, (window.innerWidth - modalWidth) / 2),
-            y: Math.max(0, window.innerHeight / 3.8 - 200)
+            y: Math.max(0, window.innerHeight / 6.7)
         };
     };
 
