@@ -43,6 +43,8 @@ function deepCloneWithFunctions<T>(obj: T): T {
 export interface KyTableProps<T = any> extends Omit<TableProps<T>, 'columns' | 'title'> {
     // 基础属性
     title?: ReactNode;
+    tableHeader?: ReactNode;
+    tableFooter?: ReactNode;
     identifier: string;
     extraActions?: ReactNode[];
 
@@ -73,6 +75,8 @@ export const KyTable: FC<KyTableProps> = ({
     // 解构基础属性
     title,
     identifier,
+    tableHeader,
+    tableFooter,
     extraActions = [],
 
     // 解构列配置

@@ -16,6 +16,8 @@ export * from './setting';
 export interface KyListProps<T = any> extends Omit<TableProps<T>, 'columns' | 'title'> {
     // 基础属性
     title?: ReactNode;
+    tableHeader?: ReactNode;
+    tableFooter?: ReactNode;
     identifier: string;
     extraActions?: ReactNode[] | ((items: ReactNode[]) => ReactNode[]);
 
@@ -41,9 +43,10 @@ export interface KyListProps<T = any> extends Omit<TableProps<T>, 'columns' | 't
 export const KyList: FC<KyListProps> = ({
     // 解构基础属性
     title,
+    tableHeader,
+    tableFooter,
     identifier,
     extraActions = [],
-
     // 解构列配置
     columns: propColumns,
     onColumnsChange,
@@ -178,7 +181,7 @@ export const KyList: FC<KyListProps> = ({
             extra={(Array.isArray(extraActions) ? extraActions : extraActions(actionButtons)).filter(Boolean)}
             className={className}
         >
-            <Flex vertical className="relative size-full flex">
+            <Flex vertical className="relative size-full flex aaaabbb">
                 <Table
                     locale={{
                         filterConfirm: t('common.confirm'),
@@ -187,6 +190,8 @@ export const KyList: FC<KyListProps> = ({
                     {...tableProps}
                     size="small"
                     bordered
+                    title={tableHeader ? () => tableHeader : undefined}
+                    footer={tableFooter ? () => tableFooter : undefined}
                     className="relative size-full"
                     rowKey={(record) => {
                         return (record as any).id || (record as any).key || (record as any).index || JSON.stringify(record);
