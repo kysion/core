@@ -16,7 +16,7 @@ export const PageContainer: FC<PageContainerProps> = ({
 }) => {
     return (
         <Flex vertical gap="middle" className={`h-full ${className}`}>
-            <Flex justify="space-between" align="center" className="px-2">
+            <Flex justify="space-between" align="center" >
                 <Typography.Title level={4} className="!mb-0">
                     {title}
                 </Typography.Title>
