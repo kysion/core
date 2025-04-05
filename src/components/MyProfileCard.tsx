@@ -5,7 +5,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { AuthStateMap, authStateSet, CompanyType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr, SexMap, sexSet } from '@kysion/types';
+import { AuthStateMap, authStateSet, CompanyInfoType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr, SexMap, sexSet } from '@kysion/types';
 import { useTranslation } from 'react-i18next';
 
 export interface AuthRef {
@@ -15,7 +15,7 @@ export interface AuthRef {
 
 export interface CardInfoProps {
   userId: React.Key;
-  company?: CompanyType;
+  company?: CompanyInfoType;
   employee?: EmployeeType | undefined;
   userinfo?: UserInfoType;
   isAdmin?: boolean;
@@ -32,13 +32,13 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
     props.userinfo = props.employee.user;
   }
 
-  if(props.column === undefined) {
+  if (props.column === undefined) {
     props.column = 3;
   }
 
   const { t } = useTranslation();
 
-  const [company, _setCompany] = useState<CompanyType | undefined>(props.company ?? new CompanyType());
+  const [company, _setCompany] = useState<CompanyInfoType | undefined>(props.company ?? new CompanyInfoType());
   const [employee, _setEmployee] = useState<EmployeeType | undefined>(
     props.employee ?? new EmployeeType(),
   );
@@ -73,7 +73,7 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
     if (company.licenseState === authStateSet.Normal) {
       companyLicenseState = <><Tag color="success">{t(AuthStateMap.get(authStateSet.Normal)!.i18nLabel)}</Tag></>;
     }
-    if(company.licenseId === 0) {
+    if (company.licenseId === 0) {
       companyLicenseState = <><Tag color="volcano">{t(AuthStateMap.get(authStateSet.UnVerified)!.i18nLabel)}</Tag></>;
     }
     companyContactName = <>{company.contactName || unsetLabel}</>;
@@ -86,7 +86,7 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
     }
   };
   makeCompany();
-  
+
   let sex = <Skeleton.Input size="small" active={loading} />;
   let mobile = <Skeleton.Input size="small" active={loading} />;
   let realname = <Skeleton.Input size="small" active={loading} />;
@@ -95,8 +95,8 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
 
   function makeEmployee() {
     if (!employee) return;
-  
-    sex = employee.sex === 1 ? <>{ t(SexMap.get(sexSet.Male)!.i18nLabel) }</> : <>{ t(SexMap.get(sexSet.Female)!.i18nLabel) }</>;
+
+    sex = employee.sex === 1 ? <>{t(SexMap.get(sexSet.Male)!.i18nLabel)}</> : <>{t(SexMap.get(sexSet.Female)!.i18nLabel)}</>;
     if (employee.sex === 2 || !props.employee) {
       sex = <span className="text-gray-300">{unsetLabel}</span>;
     }
@@ -449,7 +449,7 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
           items={makeProfileDescriptionsItem()}
         ></Descriptions>
       </Flex>
-      { props.userinfo && props.company && <Divider /> }
+      {props.userinfo && props.company && <Divider />}
       {props.company && <>
         <Flex className="w-full" gap={24}>
           <Descriptions
