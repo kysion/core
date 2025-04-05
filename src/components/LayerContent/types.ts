@@ -1,3 +1,4 @@
+import { NotificationInstance } from 'antd/es/notification/interface';
 import { ReactNode } from 'react';
 
 /**
@@ -192,5 +193,6 @@ export type SetTopLayerContentFunction = (child: ReactNode | null | undefined, i
 declare global {
     interface Window {
         $setTopLayerContent?: SetTopLayerContentFunction;
+        $notification?: NotificationInstance;
     }
 } 
