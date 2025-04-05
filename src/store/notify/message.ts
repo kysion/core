@@ -32,7 +32,7 @@ const initialState: IMessageNotifyStateType = {
 };
 
 // 创建消息通知模块的store
-export const useMessageNotifyStore: UseBoundStore<StoreApi<IMessageNotifyStateType>> = createKyStore<IMessageNotifyStateType>(initialState);
+export const useMessageNotifyStore: UseBoundStore<StoreApi<IMessageNotifyStateType>> = createKyStore<IMessageNotifyStateType>(initialState, undefined, { name: 'notify/message' });
 // 创建消息通知模块的状态选择器
 export const useMessageNotifyState: UseBoundStore<StoreApi<IMessageNotifyStateType>> = createSelectors(useMessageNotifyStore);
 

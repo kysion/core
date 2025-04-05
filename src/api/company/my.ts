@@ -6,7 +6,7 @@ import {
     AccountTypeSet,
     AllowNegativeBalanceSet,
     BankCardType,
-    CompanyType,
+    CompanyInfoType,
     InvoiceInfoType,
     PermissionType,
     PermissionTypeSet,
@@ -65,8 +65,8 @@ export class My {
 
     // 获取当前用户公司信息
     public getCompany() {
-        return http.post<CompanyType>(`/${this.urlPrefix}/my/getCompany`).then(res => {
-            const company = res as CompanyType;
+        return http.post<CompanyInfoType>(`/${this.urlPrefix}/my/getCompany`).then(res => {
+            const company = res as CompanyInfoType;
             if (company) {
                 useMyProfileActions().setCompany(company);
             }

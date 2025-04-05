@@ -25,7 +25,7 @@ const initialState: IUsertStateType = {
     dataArr: new Records<UserInfoType>()
 };
 
-export const useUserStore: UseBoundStore<StoreApi<IUsertStateType>> = createKyStore<IUsertStateType>(initialState);
+export const useUserStore: UseBoundStore<StoreApi<IUsertStateType>> = createKyStore<IUsertStateType>(initialState, undefined, { name: 'user' });
 
 export const useUserState: UseBoundStore<StoreApi<IUsertStateType>> = createSelectors(useUserStore);
 

@@ -29,7 +29,7 @@ const initialState: IAnnouncementNotifyStateType = {
 };
 
 // 创建公告通知的状态管理 Store
-export const useAnnouncementNotifyStore: UseBoundStore<StoreApi<IAnnouncementNotifyStateType>> = createKyStore<IAnnouncementNotifyStateType>(initialState);
+export const useAnnouncementNotifyStore: UseBoundStore<StoreApi<IAnnouncementNotifyStateType>> = createKyStore<IAnnouncementNotifyStateType>(initialState, undefined, { name: 'notify/announcement' });
 
 // 创建状态选择器，用于获取状态
 export const useAnnouncementNotifyState: UseBoundStore<StoreApi<IAnnouncementNotifyStateType>> = createSelectors(useAnnouncementNotifyStore);

@@ -1,16 +1,16 @@
 import { TableParams } from "../../types/table";
-import { Query, Records, RoleInfoType } from "@kysion/types";
+import { Query, Records, CompanyInfoType } from "@kysion/types";
 import { KysionApis } from "../../api";
 import { createSelectors, createKyStore } from "@kysion/utils";
 import { StoreApi, UseBoundStore } from "zustand";
-export interface IRoletStateType {
+export interface IHeadCompanyStateType {
     isLoading: boolean;
     queryParams: Query;
     tableParams: TableParams;
-    dataArr: Records<RoleInfoType>;
+    dataArr: Records<CompanyInfoType>;
 }
 
-const initialState: IRoletStateType = {
+const initialState: IHeadCompanyStateType = {
     isLoading: false,
     queryParams: new Query({}),
     tableParams: {
@@ -22,16 +22,16 @@ const initialState: IRoletStateType = {
             // hideOnSinglePage: true,
         }
     },
-    dataArr: new Records<RoleInfoType>()
+    dataArr: new Records<CompanyInfoType>()
 };
 
-export const useRoleStore: UseBoundStore<StoreApi<IRoletStateType>> = createKyStore<IRoletStateType>(initialState, undefined, { name: 'role' });
+export const useHeadCompanyStore: UseBoundStore<StoreApi<IHeadCompanyStateType>> = createKyStore<IHeadCompanyStateType>(initialState, undefined, { name: 'company/headCompany' });
 
-export const useRoleState: UseBoundStore<StoreApi<IRoletStateType>> = createSelectors(useRoleStore);
+export const useHeadCompanyState: UseBoundStore<StoreApi<IHeadCompanyStateType>> = createSelectors(useHeadCompanyStore);
 
-export const useRoleActions = () => {
-    const set = useRoleStore.setState;
-    const get = useRoleStore.getState;
+export const useHeadCompanyActions = () => {
+    const set = useHeadCompanyStore.setState;
+    const get = useHeadCompanyStore.getState;
 
     return {
         setQueryParams(queryParams: Partial<Query>) {
@@ -57,12 +57,12 @@ export const useRoleActions = () => {
         },
         fetchList(queryParams: Partial<Query>) {
             set({ isLoading: true });
-            return KysionApis.Role.queryRoleList({ ...get().queryParams, ...queryParams }).then(res => {
+            return KysionApis.Org.HeadCompany.fetchCompanyList({ ...get().queryParams, ...queryParams }).then(res => {
                 if (res) {
-                    const data = res as Records<RoleInfoType>;
+                    const data = res as Records<CompanyInfoType>;
 
                     set({ dataArr: data })
-                    useRoleActions().setTableParams({
+                    useHeadCompanyActions().setTableParams({
                         pagination: {
                             ...get().tableParams.pagination,
                             current: data.pageNum,

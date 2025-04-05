@@ -20,7 +20,7 @@ const initialState: IMyTableStateType = {
 export const useTableStore: UseBoundStore<StoreApi<IMyTableStateType>> = createKyStore<IMyTableStateType>(initialState, {
     storageKey: 'myTablePreference',
     crypto: Funs.getEnv('APP_DEBUG_MODE', false, (v) => v === 'false')
-});
+}, { name: 'my/tableStore' });
 
 export const useTableState = createSelectors(useTableStore);
 
