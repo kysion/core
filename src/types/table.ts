@@ -42,7 +42,7 @@ export interface KyTableColumnType<T, TColumnKey extends string> extends ColumnT
         column?: TColumnKey;
         title?: string;
         canWhere: WhereType[];
-        likeWhere?: [LikeWhereSet.Contains, LikeWhereSet.Prefix, LikeWhereSet.Suffix];
+        likeWhere?: LikeWhereSet[];
         fixed?: FixedStateSet[] | undefined;
         hidden?: boolean | undefined;
         sortBy?: true | SortSet[] | undefined;
