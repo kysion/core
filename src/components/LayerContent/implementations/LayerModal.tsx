@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { message } from 'antd';
 import { DraggableModal } from '../../DraggableModal';
 import { ModalOptions } from '../types';
@@ -11,12 +11,23 @@ const LayerModal: React.FC<{
     options: ModalOptions;
     onClose: () => void;
 }> = React.memo(({ options, onClose }) => {
+    const [visible, setVisible] = useState(true);
+
+    // 处理关闭事件
+    const closeWithAnimation = () => {
+        setVisible(false);
+        // 延迟实际关闭以完成动画
+        setTimeout(() => {
+            onClose();
+        }, 300); // 动画大概持续300ms
+    };
+
     const handleOk = async () => {
         try {
             if (options.onOk) {
                 await options.onOk();
             }
-            onClose();
+            closeWithAnimation();
         } catch (error) {
             console.error('Modal onOk error:', error);
             message.error('操作失败');
@@ -30,11 +41,11 @@ const LayerModal: React.FC<{
     return (
         <DraggableModal
             title={options.title}
-            open={true}
+            open={visible}
             width={options.width || 520}
             onOk={handleOk}
-            onCancel={onClose}
-            maskClosable={false}
+            onCancel={closeWithAnimation}
+            maskClosable={options.maskClosable ?? false}
             destroyOnClose={true}
             footer={options.footer}
             okText={options.okText}
@@ -43,7 +54,7 @@ const LayerModal: React.FC<{
             cancelButtonProps={{ style: { display: showCancelButton ? 'inline-block' : 'none' } }}
         >
             {typeof options.content === 'function'
-                ? options.content(onClose)
+                ? options.content(closeWithAnimation)
                 : options.content}
         </DraggableModal>
     );

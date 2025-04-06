@@ -13,6 +13,8 @@ LayerContent 组件是一个用于管理全局弹窗、抽屉和模态框等层�
 - 🚀 性能优化，使用 React.memo 和 useMemo 减少不必要的重渲染
 - 🧩 模块化设计，分离关注点，便于扩展和维护
 - 💡 支持Hook和全局方法两种使用方式，满足不同场景需求
+- 🎭 支持点击蒙层关闭功能，增强用户交互体验
+- 🌈 优雅的关闭动画，提升用户体验
 
 ## 安装
 
@@ -51,6 +53,7 @@ const MyComponent = () => {
     showModal({
       title: '确认操作',
       content: '确定要执行此操作吗？',
+      maskClosable: true, // 允许点击蒙层关闭
       onOk: async () => {
         // 处理确认操作
         await doSomething();
@@ -79,6 +82,7 @@ const MyComponent = () => {
     showDrawer({
       title: '详情信息',
       width: 600,
+      maskClosable: true, // 允许点击蒙层关闭
       content: (close) => (
         <DetailForm 
           id="123" 
@@ -119,6 +123,7 @@ window.$notification?.success({
 window.$modal?.show({
   title: '确认操作',
   content: '确定要执行此操作吗？',
+  maskClosable: true, // 允许点击蒙层关闭
   onOk: async () => {
     await doSomething();
   }
@@ -128,6 +133,7 @@ window.$modal?.show({
 window.$drawer?.show({
   title: '详情信息',
   width: 600,
+  maskClosable: true, // 允许点击蒙层关闭
   content: (close) => (
     <DetailForm 
       id="123" 
@@ -184,15 +190,21 @@ window.$setTopLayerContent?.(
 
 参数：
 
-| 属性        | 说明                 | 类型                                    | 默认值    |
-| ----------- | ------------------- | --------------------------------------- | --------- |
-| title       | 标题                | string                                  | -         |
-| content     | 内容                | ReactNode                               | -         |
-| onOk        | 确认回调            | () => Promise<void> &#124; void         | -         |
-| onCancel    | 取消回调            | () => void                              | -         |
-| width       | 宽度                | number                                  | 520       |
-| identifier  | 唯一标识符          | React.Key                               | 自动生成   |
-| zIndex      | 层级                | number                                  | 1000      |
+| 属性          | 说明                 | 类型                                    | 默认值    |
+| ------------- | ------------------- | --------------------------------------- | --------- |
+| title         | 标题                | string                                  | -         |
+| content       | 内容                | ReactNode \| ((close: () => void) => ReactNode) | -    |
+| onOk          | 确认回调            | () => Promise<void> \| void             | -         |
+| onCancel      | 取消回调            | () => void                              | -         |
+| width         | 宽度                | number                                  | 520       |
+| identifier    | 唯一标识符          | React.Key                               | 自动生成   |
+| zIndex        | 层级                | number                                  | 1000      |
+| maskClosable  | 点击蒙层是否可关闭   | boolean                                 | false     |
+| showOkButton  | 是否显示确认按钮     | boolean                                | true      |
+| showCancelButton | 是否显示取消按钮   | boolean                                | true      |
+| okText        | 确认按钮文本         | string                                 | -         |
+| cancelText    | 取消按钮文本         | string                                 | -         |
+| footer        | 自定义页脚           | ReactNode \| null                       | -         |
 
 ### useDrawer
 
@@ -200,15 +212,18 @@ window.$setTopLayerContent?.(
 
 参数：
 
-| 属性        | 说明                 | 类型                                                   | 默认值    |
-| ----------- | ------------------- | ------------------------------------------------------ | --------- |
-| title       | 标题                | string                                                 | -         |
-| content     | 内容                | ReactNode &#124; ((close: () => void) => ReactNode)    | -         |
-| onClose     | 关闭回调            | () => void                                             | -         |
-| width       | 宽度                | number                                                 | 500       |
-| placement   | 位置                | 'left' &#124; 'right' &#124; 'top' &#124; 'bottom'     | 'right'   |
-| identifier  | 唯一标识符          | React.Key                                              | 自动生成   |
-| zIndex      | 层级                | number                                                 | 1000      |
+| 属性          | 说明                 | 类型                                                   | 默认值    |
+| ------------- | ------------------- | ------------------------------------------------------ | --------- |
+| title         | 标题                | string                                                 | -         |
+| content       | 内容                | ReactNode \| ((close: () => void) => ReactNode)        | -         |
+| onClose       | 关闭回调            | () => void                                             | -         |
+| width         | 宽度                | number                                                 | 500       |
+| placement     | 位置                | 'left' \| 'right' \| 'top' \| 'bottom'                 | 'right'   |
+| identifier    | 唯一标识符          | React.Key                                              | 自动生成   |
+| zIndex        | 层级                | number                                                 | 1000      |
+| maskClosable  | 点击蒙层是否可关闭   | boolean                                               | false     |
+| extra         | 标题栏右侧额外内容   | ReactNode                                             | -         |
+| styles        | 自定义样式          | { header?, body?, footer?, mask?, wrapper?, content? } | -         |
 
 ### GlobalLayerMethods
 
@@ -375,6 +390,35 @@ const UserForm = () => {
 };
 ```
 
+## 常见问题
+
+### 关闭动画问题
+
+**问题描述**：使用 LayerContent 时，弹窗或抽屉关闭没有动画，直接闪烁消失。
+
+**解决方案**：LayerContent 组件内置了关闭动画支持。关闭时会先执行动画，然后再从 DOM 中移除组件。默认的动画持续时间约为 300ms。
+
+如果您发现关闭动画失效，可能是由于以下原因：
+
+1. 直接调用 `hideContent` 而不是使用组件提供的关闭方法
+2. 自定义组件没有正确处理关闭逻辑
+
+确保在自定义组件中，关闭逻辑按照如下方式处理：
+
+```tsx
+const [visible, setVisible] = useState(true);
+
+const handleClose = () => {
+  setVisible(false);
+  // 延迟实际关闭以完成动画
+  setTimeout(() => {
+    onClose(); // 真正的关闭回调
+  }, 300);
+};
+
+return <Drawer open={visible} onClose={handleClose} {...props} />;
+```
+
 ## 架构设计
 
 LayerContent 组件采用了分层设计模式，具有以下几个主要部分：
@@ -396,6 +440,7 @@ LayerContent 组件采用了分层设计模式，具有以下几个主要部分�
 5. 为频繁使用的弹窗定义自己的钩子函数，提高代码复用性
 6. 使用自定义标识符管理特定的弹窗，方便后续操作
 7. 在弹窗内容组件中实现内部状态管理，减少外部依赖
+8. 适当使用 `maskClosable` 属性，提升用户体验
 
 ## 注意事项
 
@@ -404,6 +449,7 @@ LayerContent 组件采用了分层设计模式，具有以下几个主要部分�
 3. 弹窗内容应尽量独立，避免对外部状态的过度依赖
 4. 避免过多的嵌套弹窗，会导致用户体验下降
 5. 注意合理设置 zIndex 值，避免层级混乱
+6. 当需要等待异步操作完成再关闭弹窗时，应在处理完成后再调用关闭方法
 
 ## 内部实现说明
 
@@ -413,10 +459,12 @@ LayerContent 组件内部使用了 React Context API 来管理状态，并通过
 2. `useLayerContent` 提供核心操作方法 (showContent, hideContent, updateContent)
 3. 特定组件钩子 (useModal, useDrawer) 在内部使用 useLayerContent 并提供便捷API
 4. 全局方法通过 useEffect 注册到 window 对象上
+5. 关闭组件时，先触发关闭动画，然后延迟移除组件，确保动画顺利完成
 
 通过全局方法和Hook两种使用方式的结合，满足了不同场景的使用需求。
 
 ## 版本历史
 
+- **v2.1.0**：添加 maskClosable 支持，优化关闭动画，提升用户体验
 - **v2.0.0**：重构架构，优化性能，增强扩展性，增加全局方法支持
 - **v1.0.0**：初始版本，提供基本功能

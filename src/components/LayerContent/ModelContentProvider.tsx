@@ -1,9 +1,8 @@
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { ModelContentContextType, ModelContentItem } from './types';
-import { Flex } from 'antd';
+import { LayerContentContextType, LayerContentItem } from './types';
 
 // 创建上下文
-export const ModelContentContext = createContext<ModelContentContextType | null>(null);
+export const ModelContentContext = createContext<LayerContentContextType | null>(null);
 
 /**
  * 层级内容提供者组件
@@ -11,14 +10,14 @@ export const ModelContentContext = createContext<ModelContentContextType | null>
  */
 export const ModelContentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     // 保存所有层级内容
-    const [contents, setContents] = useState<ModelContentItem[]>([]);
+    const [contents, setContents] = useState<LayerContentItem[]>([]);
 
     /**
      * 显示内容
      * @param content 要显示的内容配置
      * @returns 内容的唯一标识符
      */
-    const showContent = useCallback((content: Omit<ModelContentItem, 'identifier'> & { identifier?: React.Key }) => {
+    const showContent = useCallback((content: Omit<LayerContentItem, 'identifier'> & { identifier?: React.Key }) => {
         const identifier = content.identifier || `layer-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
         const contentWithId = { ...content, identifier };
 
@@ -48,7 +47,7 @@ export const ModelContentProvider: React.FC<{ children: ReactNode }> = ({ childr
      * @param identifier 内容的唯一标识符
      * @param content 要更新的内容配置
      */
-    const updateContent = useCallback((identifier: React.Key, content: Partial<ModelContentItem>) => {
+    const updateContent = useCallback((identifier: React.Key, content: Partial<LayerContentItem>) => {
         setContents(prev => prev.map(item =>
             item.identifier === identifier ? { ...item, ...content } : item
         ));
@@ -74,7 +73,7 @@ export const ModelContentProvider: React.FC<{ children: ReactNode }> = ({ childr
  * 使用层级内容上下文的Hook
  * @throws 如果在ModelContentProvider外部使用，会抛出错误
  */
-export const useModelContent = (): ModelContentContextType => {
+export const useModelContent = (): LayerContentContextType => {
     const context = useContext(ModelContentContext);
     if (!context) {
         throw new Error('useModelContent must be used within a ModelContentProvider');

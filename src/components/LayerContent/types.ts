@@ -103,6 +103,12 @@ export interface DrawerOptions {
     zIndex?: number;
 
     /**
+     * 点击蒙层是否允许关闭
+     * @default false
+     */
+    maskClosable?: boolean;
+
+    /**
      * 抽屉标题栏右侧的额外内容
      */
     extra?: React.ReactNode;
@@ -158,6 +164,12 @@ export interface ModalOptions {
      * z-index
      */
     zIndex?: number;
+
+    /**
+     * 点击蒙层是否允许关闭
+     * @default false
+     */
+    maskClosable?: boolean;
 
     /**
      * 是否显示确认按钮
