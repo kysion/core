@@ -1,82 +1,19 @@
-import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { LayerContentContextType, LayerContentItem } from './types';
-
-// 创建上下文
-export const LayerContentContext = createContext<LayerContentContextType | null>(null);
+import React from "react";
+import { CoreLayerContentProvider } from "./CoreLayerContentProvider";
+import { NotificationProvider, MessageProvider } from "./providers";
 
 /**
  * 层级内容提供者组件
- * 用于管理全局层级内容（弹窗、抽屉、模态框等）
+ * 整合了所有子Provider，包括核心内容、通知和消息
  */
-export const LayerContentProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // 保存所有层级内容
-    const [contents, setContents] = useState<LayerContentItem[]>([]);
-
-    /**
-     * 显示内容
-     * @param content 要显示的内容配置
-     * @returns 内容的唯一标识符
-     */
-    const showContent = useCallback((content: Omit<LayerContentItem, 'identifier'> & { identifier?: React.Key }) => {
-        const identifier = content.identifier || `layer-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-        const contentWithId = { ...content, identifier };
-
-        setContents(prev => [
-            ...prev.filter(item => item.identifier !== identifier),
-            contentWithId
-        ]);
-
-        return identifier;
-    }, []);
-
-    /**
-     * 隐藏内容
-     * @param identifier 内容的唯一标识符
-     */
-    const hideContent = useCallback((identifier: React.Key) => {
-        setContents(prev => {
-            const item = prev.find(item => item.identifier === identifier);
-            // 调用onClose回调（如果存在）
-            item?.onClose?.();
-            return prev.filter(item => item.identifier !== identifier);
-        });
-    }, []);
-
-    /**
-     * 更新内容
-     * @param identifier 内容的唯一标识符
-     * @param content 要更新的内容配置
-     */
-    const updateContent = useCallback((identifier: React.Key, content: Partial<LayerContentItem>) => {
-        setContents(prev => prev.map(item =>
-            item.identifier === identifier ? { ...item, ...content } : item
-        ));
-    }, []);
-
-    // 按zIndex排序，确保渲染顺序正确
-    const sortedContents = [...contents].sort((a, b) => (b.zIndex || 1000) - (a.zIndex || 1000));
-
+export const LayerContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <LayerContentContext.Provider value={{ showContent, hideContent, updateContent, contents }}>
-            {children}
-            {/* 渲染所有内容项 */}
-            {sortedContents.length > 0 && sortedContents.map((item) => (
-                <div key={`layer-${item.identifier}`} style={{ zIndex: item.zIndex || 1000 }}>
-                    {item.child}
-                </div>
-            ))}
-        </LayerContentContext.Provider>
+        <CoreLayerContentProvider>
+            <NotificationProvider>
+                <MessageProvider>
+                    {children}
+                </MessageProvider>
+            </NotificationProvider>
+        </CoreLayerContentProvider>
     );
 };
-
-/**
- * 使用层级内容上下文的Hook
- * @throws 如果在LayerContentProvider外部使用，会抛出错误
- */
-export const useLayerContent = (): LayerContentContextType => {
-    const context = useContext(LayerContentContext);
-    if (!context) {
-        throw new Error('useLayerContent must be used within a LayerContentProvider');
-    }
-    return context;
-}; 

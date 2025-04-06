@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, Space, Typography } from 'antd';
-import { LayerContentProvider, GlobalLayerContentMethods, useDrawer, useModal, useLayerContent } from './index';
+import { ModelContentProvider, GlobalLayerContentMethods, useDrawer, useModal, useLayerContent } from './index';
 
 const { Title, Paragraph } = Typography;
 
@@ -184,7 +184,7 @@ const AdvancedDemo: React.FC = () => {
  */
 export const LayerContentExample: React.FC = () => {
     return (
-        <LayerContentProvider>
+        <ModelContentProvider>
             <GlobalLayerContentMethods />
 
             <Typography>
@@ -200,6 +200,6 @@ export const LayerContentExample: React.FC = () => {
                 <LegacyApiDemo />
                 <AdvancedDemo />
             </div>
-        </LayerContentProvider>
+        </ModelContentProvider>
     );
 }; 

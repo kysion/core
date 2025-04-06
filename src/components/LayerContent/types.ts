@@ -1,4 +1,5 @@
 import { NotificationInstance } from 'antd/es/notification/interface';
+import { MessageInstance } from 'antd/es/message/interface';
 import { ReactNode } from 'react';
 
 /**
@@ -185,6 +186,26 @@ export interface ModalOptions {
 }
 
 /**
+ * 全局Modal方法
+ */
+export interface GlobalModalMethods {
+    /**
+     * 显示模态框
+     */
+    show: (options: ModalOptions) => React.Key;
+}
+
+/**
+ * 全局Drawer方法
+ */
+export interface GlobalDrawerMethods {
+    /**
+     * 显示抽屉
+     */
+    show: (options: DrawerOptions) => React.Key;
+}
+
+/**
  * 旧版API兼容方法类型
  */
 export type SetTopLayerContentFunction = (child: ReactNode | null | undefined, identifier?: React.Key) => void;
@@ -194,5 +215,8 @@ declare global {
     interface Window {
         $setTopLayerContent?: SetTopLayerContentFunction;
         $notification?: NotificationInstance;
+        $message?: MessageInstance;
+        $modal?: GlobalModalMethods;
+        $drawer?: GlobalDrawerMethods;
     }
 } 

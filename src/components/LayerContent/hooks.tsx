@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import { Drawer, message } from 'antd';
 import { DraggableModal } from '../DraggableModal';
-import { useLayerContent } from './LayerContentProvider';
 import { DrawerOptions, ModalOptions, SetTopLayerContentFunction } from './types';
-
+import { useModelContent } from './ModelContentProvider';
 /**
  * 使用模态框的钩子
  * @returns 显示模态框的函数
  */
 export const useModal = () => {
-    const { showContent, hideContent } = useLayerContent();
+    const { showContent, hideContent } = useModelContent();
 
     return useCallback((options: ModalOptions): React.Key => {
         const id = options.identifier || `modal-${Date.now()}`;
@@ -75,7 +74,7 @@ export const useModal = () => {
  * @returns 显示抽屉的函数
  */
 export const useDrawer = () => {
-    const { showContent, hideContent } = useLayerContent();
+    const { showContent, hideContent } = useModelContent();
 
     return useCallback((options: DrawerOptions): React.Key => {
         const id = options.identifier || `drawer-${Date.now()}`;
@@ -119,7 +118,7 @@ export const useDrawer = () => {
  * 提供与旧版API兼容的window.$setTopLayerContent方法
  */
 export const useRegisterGlobalMethods = () => {
-    const { showContent, hideContent } = useLayerContent();
+    const { showContent, hideContent } = useModelContent();
 
     useEffect(() => {
         // 保存原始方法（如果存在）
