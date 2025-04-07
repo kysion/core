@@ -97,7 +97,6 @@ export const RouteGuard: FC<RouteGuardProps> = ({
         enableCache = true,
         cacheTTL = DEFAULT_CACHE_TTL,
         loginPath = '/auth/login',
-        homePath = '/dashboard'
     } = options;
 
     // 缓存路由路径，避免不必要的重新渲染

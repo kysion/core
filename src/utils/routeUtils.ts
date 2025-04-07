@@ -42,7 +42,7 @@ export const RouteUtils = {
     smartRedirect: (
         isAuthenticated: boolean,
         defaultAuthPath: string = '/auth/login',
-        defaultAppPath: string = '/dashboard'
+        defaultAppPath: string = '/workbench'
     ): string => {
         return isAuthenticated ? defaultAppPath : defaultAuthPath;
     },
