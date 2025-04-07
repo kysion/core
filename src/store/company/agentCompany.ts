@@ -1,78 +1,16 @@
-import { TableParams } from "../../types/table";
-import { Query, Records, CompanyInfoType } from "@kysion/types";
 import { KysionApis } from "../../api";
-import { createSelectors, createKyStore } from "@kysion/utils";
-import { StoreApi, UseBoundStore } from "zustand";
-export interface IAgentCompanyStateType {
-    isLoading: boolean;
-    queryParams: Query;
-    tableParams: TableParams;
-    dataArr: Records<CompanyInfoType>;
-}
+import { createCompanyModule } from "./baseCompany";
 
-const initialState: IAgentCompanyStateType = {
-    isLoading: false,
-    queryParams: new Query({}),
-    tableParams: {
-        pagination: {
-            current: 1,
-            pageSize: 20,
-            showSizeChanger: true,
-            position: ['bottomCenter'],
-            // hideOnSinglePage: true,
-        }
-    },
-    dataArr: new Records<CompanyInfoType>()
-};
+// 创建代理公司模块
+const agentCompanyModule = createCompanyModule({
+    name: 'company/agentCompany',
+    getApi: () => KysionApis.Org.Agent
+});
 
-export const useAgentCompanyStore: UseBoundStore<StoreApi<IAgentCompanyStateType>> = createKyStore<IAgentCompanyStateType>(initialState, undefined, { name: 'company/agentCompany' });
+// 导出相应的 store, state 和 actions
+export const useAgentCompanyStore = agentCompanyModule.store;
+export const useAgentCompanyState = agentCompanyModule.state;
+export const useAgentCompanyActions = agentCompanyModule.actions;
 
-export const useAgentCompanyState: UseBoundStore<StoreApi<IAgentCompanyStateType>> = createSelectors(useAgentCompanyStore);
-
-export const useAgentCompanyActions = () => {
-    const set = useAgentCompanyStore.setState;
-    const get = useAgentCompanyStore.getState;
-
-    return {
-        setQueryParams(queryParams: Partial<Query>) {
-            set({ queryParams: { ...get().queryParams, ...queryParams } });
-        },
-        setIsLoading(isLoading: boolean) {
-            set({ isLoading });
-        },
-        setTableParams(tableParams: Partial<TableParams>) {
-            set({
-                tableParams: {
-                    ...get().tableParams,
-                    ...tableParams,
-                    pagination: {
-                        ...get().tableParams.pagination,
-                        ...tableParams.pagination
-                    }
-                },
-            });
-        },
-        removeItem(id: React.Key) {
-            set({ dataArr: { ...get().dataArr, records: get().dataArr.records.filter(item => item.id !== id) } });
-        },
-        fetchList(queryParams: Partial<Query>) {
-            set({ isLoading: true });
-            return KysionApis.Org.Agent.fetchCompanyList({ ...get().queryParams, ...queryParams }).then(res => {
-                if (res) {
-                    const data = res as Records<CompanyInfoType>;
-
-                    set({ dataArr: data })
-                    useAgentCompanyActions().setTableParams({
-                        pagination: {
-                            ...get().tableParams.pagination,
-                            current: data.pageNum,
-                            pageSize: data.pageSize,
-                            total: data.total,
-                        },
-                    });
-                }
-                return res;
-            }).finally(() => set({ isLoading: false }));
-        },
-    }
-}
+// 重新导出基础类型
+export type { IBaseCompanyStateType as IAgentCompanyStateType } from "./baseCompany";
