@@ -47,8 +47,12 @@ export class Company {
     /**
      * 查询企业列表
      */
-    public fetchCompanyList(params: Query) {
-        return http.post<Records<CompanyInfoType>>(`/${this.urlPrefix}/queryCompanyList`, params);
+    public async fetchCompanyList(params: Query) {
+        const response = await http.post<Records<CompanyInfoType>>(`/${this.urlPrefix}/queryCompanyList`, params);
+        if (response) {
+            return response as Records<CompanyInfoType>;
+        }
+        return new Records<CompanyInfoType>();
     }
 
     /**
