@@ -2,7 +2,7 @@ import { fixedStateSet, TableColumnOption } from "../../types/table";
 import { createKyStore, createSelectors } from "@kysion/utils";
 import { Funs } from "@kysion/utils";
 import { KysionApis } from "../../api";
-import { useMyProfileStore } from "./userStore";
+import { useMyProfileStore } from "./profileStore";
 import { StoreApi } from "zustand/vanilla";
 import { UseBoundStore } from "zustand/react";
 

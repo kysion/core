@@ -6,7 +6,15 @@ import { StoreApi, UseBoundStore } from "zustand";
 // 基础公司配置接口
 export interface BaseCompanyConfig {
     name: string; // 存储名称，用于持久化
-    getApi: () => { fetchCompanyList: (params: any) => Promise<any> }; // 获取API的函数，延迟到调用时
+    getApi: () => { fetchCompanyList: (params: any) => Promise<Records<CompanyInfoType>> }; // 获取API的函数，延迟到调用时
+}
+
+export interface IBaseCompanyActions {
+    setQueryParams: (queryParams: Partial<Query>) => void;
+    setLoading: (isLoading: boolean) => void;
+    setTableParams: (tableParams: Partial<TableParams>) => void;
+    removeItem: (id: React.Key) => void;
+    fetchList: (queryParams: Partial<Query>) => Promise<Records<CompanyInfoType>>;
 }
 
 // 基础状态类型
@@ -14,7 +22,13 @@ export interface IBaseCompanyStateType {
     isLoading: boolean;
     queryParams: Query;
     tableParams: TableParams;
-    dataArr: Records<CompanyInfoType>;
+    dataSource: Records<CompanyInfoType>;
+}
+
+export interface IBaseCompanyStore {
+    store: UseBoundStore<StoreApi<IBaseCompanyStateType>>;
+    state: ReturnType<typeof createSelectors<UseBoundStore<StoreApi<IBaseCompanyStateType>>>>;
+    actions: () => IBaseCompanyActions;
 }
 
 // 初始状态
@@ -29,11 +43,11 @@ export const baseInitialState: IBaseCompanyStateType = {
             position: ['bottomCenter'],
         }
     },
-    dataArr: new Records<CompanyInfoType>()
+    dataSource: new Records<CompanyInfoType>(),
 };
 
 // 创建公司模块工厂
-export function createCompanyModule(config: BaseCompanyConfig) {
+export function createCompanyModule(config: BaseCompanyConfig): IBaseCompanyStore {
     const store = createKyStore<IBaseCompanyStateType>(
         baseInitialState,
         undefined,
@@ -42,7 +56,7 @@ export function createCompanyModule(config: BaseCompanyConfig) {
 
     const state = createSelectors(store);
 
-    const actions = () => {
+    const actions = (): IBaseCompanyActions => {
         const set = store.setState;
         const get = store.getState;
 
@@ -50,7 +64,7 @@ export function createCompanyModule(config: BaseCompanyConfig) {
             setQueryParams(queryParams: Partial<Query>) {
                 set({ queryParams: { ...get().queryParams, ...queryParams } });
             },
-            setIsLoading(isLoading: boolean) {
+            setLoading(isLoading: boolean) {
                 set({ isLoading });
             },
             setTableParams(tableParams: Partial<TableParams>) {
@@ -66,7 +80,7 @@ export function createCompanyModule(config: BaseCompanyConfig) {
                 });
             },
             removeItem(id: React.Key) {
-                set({ dataArr: { ...get().dataArr, records: get().dataArr.records.filter(item => item.id !== id) } });
+                set({ dataSource: { ...get().dataSource, records: get().dataSource.records.filter(item => item.id !== id) } });
             },
             fetchList(queryParams: Partial<Query>) {
                 set({ isLoading: true });
@@ -76,7 +90,9 @@ export function createCompanyModule(config: BaseCompanyConfig) {
                     if (res) {
                         const data = res as Records<CompanyInfoType>;
 
-                        set({ dataArr: data })
+                        console.log('data', data);
+
+                        set({ dataSource: data })
                         actions().setTableParams({
                             pagination: {
                                 ...get().tableParams.pagination,
@@ -86,7 +102,7 @@ export function createCompanyModule(config: BaseCompanyConfig) {
                             },
                         });
                     }
-                    return res;
+                    return new Records<CompanyInfoType>();
                 }).finally(() => set({ isLoading: false }));
             },
         }

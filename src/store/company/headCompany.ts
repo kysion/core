@@ -2,8 +2,8 @@ import { KysionApis } from "../../api";
 import { createCompanyModule } from "./baseCompany";
 
 // 创建总公司模块
-const headCompanyModule = createCompanyModule({
-    name: 'company/headCompany',
+export const headCompanyModule = createCompanyModule({
+    name: 'headCompany',
     getApi: () => KysionApis.Org.HeadCompany
 });
 

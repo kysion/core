@@ -1,5 +1,6 @@
 import { KyTableColumnType, fixedStateSet } from '../../types/table';
 import { TableOnChangeFunc } from '../../components/KyList/setting';
+import { Query } from '@kysion/types';
 
 /**
  * 表格变更参数类型
@@ -33,17 +34,12 @@ export interface TableChangeParams<T = any, K extends string = string> {
     /**
      * 处理更新查询参数的方法
      */
-    setQueryParams: (params: any) => void;
-
-    /**
-     * 设置页面大小的方法
-     */
-    setTablePageSize: (pageSize: number) => void;
+    setQueryParams: (queryParams: Partial<Query>) => void;
 
     /**
      * 获取数据的方法
      */
-    fetchList: (params: any) => void;
+    fetchList: (queryParams: Partial<Query>) => void;
 }
 
 /**
@@ -57,7 +53,6 @@ export function handleTableChange<T = any, K extends string = string>({
     extra,
     dataColumnStateArr,
     setQueryParams,
-    setTablePageSize,
     fetchList
 }: TableChangeParams<T, K>) {
     // 使用TableOnChangeFunc处理表格变更
@@ -70,7 +65,7 @@ export function handleTableChange<T = any, K extends string = string>({
     });
 
     // 更新页面大小设置
-    setTablePageSize(pagination.pageSize ?? 10);
+    query.pageSize = pagination.pageSize ?? 10;
 
     // 更新查询参数
     setQueryParams({
@@ -91,12 +86,11 @@ export function createPaginationConfig(
     tableParams: any,
     dataArr: any,
     getPageSize: () => number,
-    getPageSizeOptions: () => string[]
 ) {
     return {
         current: tableParams.pagination?.current ?? 1,
         pageSize: tableParams.pagination?.pageSize ?? getPageSize(),
-        pageSizeOptions: getPageSizeOptions(),
+        pageSizeOptions: [10, 20, 50, 100],
         showSizeChanger: true,
         total: dataArr.total,
         showTotal: (total: number, range: [number, number]) => {

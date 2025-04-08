@@ -1,4 +1,4 @@
-import { CompanyInfoType, EmployeeType, PermissionType, UserInfoType } from '@kysion/types';
+import { CompanyInfoType, EmployeeType, PermissionType, UserInfoType, UserTypeSet } from '@kysion/types';
 import { createKyStore, createSelectors } from '@kysion/utils';
 import { Funs } from '@kysion/utils';
 import { StoreApi, UseBoundStore } from 'zustand';
@@ -55,6 +55,9 @@ export const useMyProfileActions = () => {
                 KysionApis.MyCompany.my.getTeams(),
                 KysionApis.MyCompany.my.getMyCompanyPermissionList(),
             ])
+        },
+        hasPermission: ({ identifier, allowUserTypeArr }: { identifier: string, allowUserTypeArr?: UserTypeSet[] }) => {
+            return true;
         },
         logout: () => set({ user: new UserInfoType(), token: null, expireAt: '', isLoggedIn: false }),
         setCompany: (company: CompanyInfoType) => set({ company }),

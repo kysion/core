@@ -1,9 +1,9 @@
 import { KysionApis } from "../../api";
-import { createCompanyModule } from "./baseCompany";
+import { createCompanyModule, IBaseCompanyStore } from "./baseCompany";
 
 // 创建代理公司模块
-const agentCompanyModule = createCompanyModule({
-    name: 'company/agentCompany',
+export const agentCompanyModule: IBaseCompanyStore = createCompanyModule({
+    name: 'agentCompany',
     getApi: () => KysionApis.Org.Agent
 });
 
