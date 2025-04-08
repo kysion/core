@@ -1,5 +1,5 @@
 import { KyRouteConfig } from '../types/route';
-import { useMyProfileStore } from '../store/my/userStore';
+import { useMyProfileStore } from '../store/my/profileStore';
 
 /**
  * 路由工具函数库 - 提供路由相关的通用工具函数
