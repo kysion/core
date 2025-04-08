@@ -9,6 +9,7 @@ export * from './MyProfileCard';
 export * from './DraggableModal';
 export * from './LazyImport';
 export * from './icon';
+export * from './table';
 
 // 导出LayerContent组件
 export * from './LayerContent';
