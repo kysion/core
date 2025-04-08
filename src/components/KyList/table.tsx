@@ -254,7 +254,6 @@ export const KyTable: FC<KyTableProps> = ({
     useEffect(() => {
         const handleFixedChange = (event: any) => {
             if (onColumnsChange) {
-                console.log('收到fixed属性变化事件:', event.detail);
                 // 创建新的列设置
                 const updatedColumns = forceApplyFixedColumns([...propColumns]);
 
@@ -278,7 +277,6 @@ export const KyTable: FC<KyTableProps> = ({
             import('../../hooks/table/useTableUtils').then(({ clearTableConfig }) => {
                 const cleared = clearTableConfig(identifier);
                 if (cleared) {
-                    console.log(`已自动清除表格配置缓存: ${identifier}`);
                     // 刷新页面以应用新配置
                     window.location.href = window.location.href.split('?')[0];
                 }

@@ -352,7 +352,6 @@ export function clearTableConfig(identifier: string): boolean {
         const storageKey = `tableColumnOption_${identifier}`;
         if (typeof localStorage !== 'undefined') {
             localStorage.removeItem(storageKey);
-            console.log(`已清除表格配置缓存: ${storageKey}`);
             return true;
         }
         return false;
@@ -381,7 +380,6 @@ export function clearAllTableConfig(): boolean {
             // 删除所有相关键
             keysToRemove.forEach(key => {
                 localStorage.removeItem(key);
-                console.log(`已清除表格配置缓存: ${key}`);
             });
 
             return keysToRemove.length > 0;

@@ -70,7 +70,7 @@ const DEFAULT_CACHE_TTL = 60000; // 默认缓存有效期1分钟
 // 日志控制函数
 function routeLog(level: LogLevel, currentLevel: LogLevel, ...args: any[]) {
     if (level <= currentLevel) {
-        console.log(...args);
+        console.info(...args);
     }
 }
 

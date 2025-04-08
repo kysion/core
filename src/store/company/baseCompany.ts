@@ -89,9 +89,6 @@ export function createCompanyModule(config: BaseCompanyConfig): IBaseCompanyStor
                 return api.fetchCompanyList({ ...get().queryParams, ...queryParams }).then(res => {
                     if (res) {
                         const data = res as Records<CompanyInfoType>;
-
-                        console.log('data', data);
-
                         set({ dataSource: data })
                         actions().setTableParams({
                             pagination: {

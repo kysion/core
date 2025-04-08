@@ -1,13 +1,10 @@
 // 添加获取当前用户ID和公司ID的方法
 export function getCurrentUserId(): string | null {
     try {
-        console.log('获取当前用户ID...');
-
         // 尝试从URL参数获取
         const urlParams = new URLSearchParams(window.location.search);
         const userIdFromUrl = urlParams.get('userId');
         if (userIdFromUrl) {
-            console.log('从URL参数获取到用户ID:', userIdFromUrl);
             return userIdFromUrl;
         }
 
@@ -17,13 +14,11 @@ export function getCurrentUserId(): string | null {
             const data = localStorage.getItem(key);
             if (data) {
                 try {
-                    console.log(`尝试从localStorage[${key}]解析用户ID`);
                     const parsed = JSON.parse(data);
                     // 检查多种可能的字段
                     const possibleIdFields = ['id', 'userId', 'user_id', 'uid', 'ID'];
                     for (const field of possibleIdFields) {
                         if (parsed && parsed[field]) {
-                            console.log(`从localStorage[${key}].${field}获取到用户ID:`, parsed[field]);
                             return parsed[field];
                         }
                     }
@@ -34,7 +29,6 @@ export function getCurrentUserId(): string | null {
                         if (parsed && parsed[obj]) {
                             for (const field of possibleIdFields) {
                                 if (parsed[obj][field]) {
-                                    console.log(`从localStorage[${key}].${obj}.${field}获取到用户ID:`, parsed[obj][field]);
                                     return parsed[obj][field];
                                 }
                             }
@@ -48,13 +42,11 @@ export function getCurrentUserId(): string | null {
 
         // 方法2: 尝试从cookie获取用户信息
         const cookies = document.cookie.split(';');
-        console.log('检查cookies中的用户ID，所有cookies:', cookies);
 
         const cookieKeys = ['userId', 'user_id', 'uid', 'token', 'auth'];
         for (const cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
             if (cookieKeys.includes(name) && value) {
-                console.log(`从cookie[${name}]获取到用户ID:`, value);
                 return value;
             }
         }
@@ -74,7 +66,6 @@ export function getCurrentUserId(): string | null {
                     const tokenData = JSON.parse(jsonPayload);
                     if (tokenData.userId || tokenData.sub) {
                         const userId = tokenData.userId || tokenData.sub;
-                        console.log('从JWT token中提取用户ID:', userId);
                         return userId;
                     }
                 }
@@ -85,12 +76,10 @@ export function getCurrentUserId(): string | null {
 
         // 方法4: 尝试从全局变量中获取
         if (window && (window as any).userId) {
-            console.log('从全局变量window.userId获取用户ID:', (window as any).userId);
             return (window as any).userId;
         }
 
         if (window && (window as any).currentUser && (window as any).currentUser.id) {
-            console.log('从全局变量window.currentUser获取用户ID:', (window as any).currentUser.id);
             return (window as any).currentUser.id;
         }
 
@@ -105,13 +94,10 @@ export function getCurrentUserId(): string | null {
 
 export function getCurrentCompanyId(): string | null {
     try {
-        console.log('获取当前公司ID...');
-
         // 尝试从URL参数获取
         const urlParams = new URLSearchParams(window.location.search);
         const companyIdFromUrl = urlParams.get('companyId') || urlParams.get('orgId') || urlParams.get('tenantId');
         if (companyIdFromUrl) {
-            console.log('从URL参数获取到公司ID:', companyIdFromUrl);
             return companyIdFromUrl;
         }
 
@@ -121,14 +107,12 @@ export function getCurrentCompanyId(): string | null {
             const data = localStorage.getItem(key);
             if (data) {
                 try {
-                    console.log(`尝试从localStorage[${key}]解析公司ID`);
                     const parsed = JSON.parse(data);
 
                     // 检查多种可能的字段
                     const possibleIdFields = ['id', 'companyId', 'company_id', 'orgId', 'org_id', 'organizationId', 'tenantId'];
                     for (const field of possibleIdFields) {
                         if (parsed && parsed[field]) {
-                            console.log(`从localStorage[${key}].${field}获取到公司ID:`, parsed[field]);
                             return parsed[field];
                         }
                     }
@@ -139,7 +123,6 @@ export function getCurrentCompanyId(): string | null {
                         if (parsed && parsed[obj]) {
                             for (const field of possibleIdFields) {
                                 if (parsed[obj][field]) {
-                                    console.log(`从localStorage[${key}].${obj}.${field}获取到公司ID:`, parsed[obj][field]);
                                     return parsed[obj][field];
                                 }
                             }
@@ -153,13 +136,11 @@ export function getCurrentCompanyId(): string | null {
 
         // 方法2: 尝试从cookie获取公司信息
         const cookies = document.cookie.split(';');
-        console.log('检查cookies中的公司ID...', cookies.length);
 
         const cookieKeys = ['companyId', 'company_id', 'orgId', 'org_id', 'tenantId'];
         for (const cookie of cookies) {
             const [name, value] = cookie.trim().split('=');
             if (cookieKeys.includes(name.trim()) && value) {
-                console.log(`从cookie[${name}]获取到公司ID:`, value);
                 return value;
             }
         }
@@ -180,7 +161,6 @@ export function getCurrentCompanyId(): string | null {
                     const companyIdFields = ['companyId', 'orgId', 'tenantId', 'organization', 'org'];
                     for (const field of companyIdFields) {
                         if (tokenData[field]) {
-                            console.log(`从JWT token中提取公司ID[${field}]:`, tokenData[field]);
                             return tokenData[field];
                         }
                     }
@@ -192,12 +172,10 @@ export function getCurrentCompanyId(): string | null {
 
         // 方法4: 尝试从全局变量中获取
         if (window && (window as any).companyId) {
-            console.log('从全局变量window.companyId获取公司ID:', (window as any).companyId);
             return (window as any).companyId;
         }
 
         if (window && (window as any).company && (window as any).company.id) {
-            console.log('从全局变量window.company获取公司ID:', (window as any).company.id);
             return (window as any).company.id;
         }
 

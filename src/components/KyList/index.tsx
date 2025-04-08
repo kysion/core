@@ -77,8 +77,6 @@ export const KyList: FC<KyListProps> = ({
 
     // 处理列变化
     const handleColumnsChange = (data: TableColumn[]) => {
-        console.log('data', data);
-
         // 创建一个Map来存储data中的columnSort
         const sortMap = new Map(data.map(item => [(item as any).key, item.sort]));
 

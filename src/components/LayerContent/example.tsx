@@ -39,12 +39,12 @@ const ModalDemo: React.FC = () => {
             title: '确认操作',
             content: '这是一个模态框示例，您确定要执行此操作吗？',
             onOk: async () => {
-                console.log('用户点击了确认');
+                console.info('用户点击了确认');
                 // 模拟异步操作
                 await new Promise(resolve => setTimeout(resolve, 1000));
             },
             onCancel: () => {
-                console.log('用户取消了操作');
+                console.info('用户取消了操作');
             }
         });
     };
@@ -72,7 +72,6 @@ const DrawerDemo: React.FC = () => {
             content: (close) => (
                 <DemoForm
                     onSave={(data) => {
-                        console.log('表单数据:', data);
                         setResult(data);
                         close();
                     }}

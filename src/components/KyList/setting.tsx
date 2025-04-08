@@ -695,8 +695,6 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
     }));
 
     const onDragEnd = ({ active, over }: DragEndEvent) => {
-      console.log('Drag event:', { active, over });
-
       if (active.id !== over?.id) {
         const activeIndex = mySettingStateArr.findIndex((record) => {
           const recordKey = (record as any).key || record.title;

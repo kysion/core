@@ -89,7 +89,7 @@ export class MyProfile {
             if (!res || res?.values === null) return null;
             return res;
         }).catch((err) => {
-            console.log('err', err);
+            console.error('err', err);
         });
     }
 
