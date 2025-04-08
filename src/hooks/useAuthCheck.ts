@@ -1,5 +1,5 @@
 import { KyRouteConfig } from '../types/route';
-import { useMyProfileStore } from '../store/my/userStore';
+import { useMyProfileStore } from '../store/my/profileStore';
 
 /**
  * 权限检查Hook - 提供可复用的权限验证功能
