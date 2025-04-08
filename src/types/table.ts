@@ -38,6 +38,7 @@ export interface TableParams {
 }
 
 export interface KyTableColumnType<T, TColumnKey extends string> extends ColumnType<T> {
+    type?: 'selection';
     columnOption?: {
         column?: TColumnKey;
         title?: string;
