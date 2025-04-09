@@ -55,11 +55,15 @@ export class KysionEmployee {
     }
 
     // 查询员工|列表
-    public queryEmployeeList(params: Query) {
+    public async queryEmployeeList(params: Query) {
         if (!params.include) {
             params.include = ['*'];
         }
-        return http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/employee/queryEmployeeList`, params);
+        const response = await http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/queryEmployeeList`, params);
+        if (response) {
+            return response as Records<EmployeeInfoType>;
+        }
+        return new Records<EmployeeInfoType>();
     }
 
     // 设置员工角色
