@@ -56,10 +56,11 @@ export class KysionEmployee {
 
     // 查询员工|列表
     public async queryEmployeeList(params: Query) {
-        if (!params.include) {
+        if (!params.include || params.include.length === 0) {
             params.include = ['*'];
         }
-        const response = await http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/queryEmployeeList`, params);
+        console.log('params', params);
+        const response = await http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/employee/queryEmployeeList`, params);
         if (response) {
             return response as Records<EmployeeInfoType>;
         }
