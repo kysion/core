@@ -1,5 +1,5 @@
 import { http } from "../base";
-import { EmployeeType, Query, Records } from "@kysion/types";
+import { EmployeeInfoType, Query, Records } from "@kysion/types";
 import { EmployeeStateSet } from "@kysion/types";
 
 export class KysionEmployee {
@@ -17,8 +17,8 @@ export class KysionEmployee {
     }
 
     // 创建员工|信息
-    public createEmployee(data: Partial<EmployeeType> & { name: string; }) {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/employee/createEmployee`, data);
+    public createEmployee(data: Partial<EmployeeInfoType> & { name: string; }) {
+        return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/createEmployee`, data);
     }
 
     // 删除员工|信息
@@ -28,17 +28,17 @@ export class KysionEmployee {
 
     // 根据ID获取员工|信息
     public getEmployeeById(param: { id: string | number, include?: string[] }) {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/employee/getEmployeeById`, param);
+        return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/getEmployeeById`, param);
     }
 
     // 获取员工详情|信息
     public getEmployeeDetail(param: { id: string | number, include?: string[] }) {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/employee/getEmployeeDetailById`, param);
+        return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/getEmployeeDetailById`, param);
     }
 
     // 根据角色ID获取所有所属员工|列表
     public getEmployeeListByRoleId(param: { roleId: string | number, include?: string[], isExport: boolean }) {
-        return http.post<Records<EmployeeType>>(`/${this.urlPrefix}/employee/getEmployeeListByRoleId`, {
+        return http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/employee/getEmployeeListByRoleId`, {
             id: param.roleId,
             include: param.include
         });
@@ -59,7 +59,7 @@ export class KysionEmployee {
         if (!params.include) {
             params.include = ['*'];
         }
-        return http.post<Records<EmployeeType>>(`/${this.urlPrefix}/employee/queryEmployeeList`, params);
+        return http.post<Records<EmployeeInfoType>>(`/${this.urlPrefix}/employee/queryEmployeeList`, params);
     }
 
     // 设置员工角色
@@ -73,7 +73,7 @@ export class KysionEmployee {
     }
 
     // 更新员工|信息
-    public updateEmployee(data: Partial<EmployeeType> & { name: string; }) {
-        return http.post<EmployeeType>(`/${this.urlPrefix}/employee/updateEmployee`, data);
+    public updateEmployee(data: Partial<EmployeeInfoType> & { name: string; }) {
+        return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/updateEmployee`, data);
     }
 }
