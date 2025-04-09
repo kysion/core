@@ -99,16 +99,9 @@ export interface ColumnsTypeProps<T> {
   | ((props: FilterDropdownProps & { title?: string; dataIndex: keyof T }) => React.ReactNode);
 }
 
-export function useTableColumnProps<T>({
-  dataIndex,
-  searchOption,
-  title,
-  render,
-  onFilter,
-  onMaskValueText,
-  copyable,
-  filterDropDown,
-}: ColumnsTypeProps<T>): TableColumnType<T> {
+export function useTableColumnProps<T>(options: ColumnsTypeProps<T>): TableColumnType<T> {
+  const { dataIndex, searchOption, title, render, onFilter, onMaskValueText, copyable, filterDropDown } = options;
+
   const filterDropdownDom =
     filterDropDown && typeof filterDropDown === 'function'
       ? (props: any) => filterDropDown({ ...props, title, dataIndex })
@@ -552,6 +545,8 @@ export function makeTableColumnOption<T, K extends string>(
               newItem.sorter = false;
               newItem.sortOrder = undefined;
             }
+
+            console.log('newItem', hasSortAbility, newItem.sorter, newItem.sortOrder, newItem.columnOptionState?.sortBy);
           } catch (e) {
             newItem.sorter = false;
             newItem.sortOrder = undefined;
