@@ -14,7 +14,7 @@ export interface IKyTableActionResult {
     /**
      * 操作类型
      */
-    actionType: 'view' | 'edit' | 'delete';
+    actionType: 'view' | 'edit' | 'delete' | 'save' | 'add';
 
     /**
      * 数据ID
