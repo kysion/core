@@ -5,7 +5,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { AuthStateMap, authStateSet, CompanyInfoType, EmployeeType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr, SexMap, sexSet } from '@kysion/types';
+import { AuthStateMap, authStateSet, CompanyInfoType, EmployeeInfoType, EnabledStateMap, enabledStateSet, UserInfoType, UserStatusTypeArr, SexMap, sexSet } from '@kysion/types';
 import { useTranslation } from 'react-i18next';
 
 export interface AuthRef {
@@ -16,7 +16,7 @@ export interface AuthRef {
 export interface CardInfoProps {
   userId: React.Key;
   company?: CompanyInfoType;
-  employee?: EmployeeType | undefined;
+  employee?: EmployeeInfoType | undefined;
   userinfo?: UserInfoType;
   isAdmin?: boolean;
   isSuperAdmin?: boolean;
@@ -39,8 +39,8 @@ export const MyProfileCard = forwardRef<AuthRef, CardInfoProps>((props, ref) => 
   const { t } = useTranslation();
 
   const [company, _setCompany] = useState<CompanyInfoType | undefined>(props.company ?? new CompanyInfoType());
-  const [employee, _setEmployee] = useState<EmployeeType | undefined>(
-    props.employee ?? new EmployeeType(),
+  const [employee, _setEmployee] = useState<EmployeeInfoType | undefined>(
+    props.employee ?? new EmployeeInfoType(),
   );
   const [userinfo, _setUserinfo] = useState<UserInfoType | undefined>(props.userinfo);
   const [loading, _setLoading] = useState(!props.userinfo && !props.employee);
