@@ -1,8 +1,10 @@
-import { Filter, LikeWhereSet, SortSet, ValueOf, WhereType } from "@kysion/types";
+import { Filter, LikeWhereSet, Query, Records, SortSet, ValueOf, WhereType } from "@kysion/types";
+import { createSelectors } from "@kysion/utils";
 import type { GetProp, TablePaginationConfig, TableProps } from 'antd';
 import { CopyConfig } from "antd/es/typography/Base";
 import type { ColumnType, SorterResult } from 'antd/lib/table/interface';
 import { ReactNode } from "react";
+import { StoreApi, UseBoundStore } from "zustand";
 
 export const fixedStateSet = {
     None: 'none',
@@ -28,6 +30,27 @@ export interface TableColumnOption {
     updatedAt?: number;
     source?: 'local' | 'remote' | 'default';
     isDeleted?: boolean;
+}
+
+export interface ITableStateType<T> {
+    isLoading: boolean;
+    queryParams: Query;
+    tableParams: TableParams;
+    dataSource: Records<T>;
+}
+
+export interface IKyTableStore<T> {
+    store: UseBoundStore<StoreApi<ITableStateType<T>>>;
+    state: ReturnType<typeof createSelectors<UseBoundStore<StoreApi<ITableStateType<T>>>>>;
+    actions: () => IKyTableActions<T>;
+}
+
+export interface IKyTableActions<T> {
+    setQueryParams: (queryParams: Partial<Query>) => void;
+    setLoading: (isLoading: boolean) => void;
+    setTableParams: (tableParams: Partial<TableParams>) => void;
+    removeItem: (id: React.Key) => void;
+    fetchList: (queryParams: Partial<Query>) => Promise<Records<T>>;
 }
 
 export interface TableParams {
