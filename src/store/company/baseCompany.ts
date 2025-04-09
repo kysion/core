@@ -1,4 +1,4 @@
-import { TableParams } from "../../types/table";
+import { IKyTableActions, TableParams } from "../../types/table";
 import { Query, Records, CompanyInfoType } from "@kysion/types";
 import { createSelectors, createKyStore } from "@kysion/utils";
 import { StoreApi, UseBoundStore } from "zustand";
@@ -9,13 +9,7 @@ export interface BaseCompanyConfig {
     getApi: () => { fetchCompanyList: (params: any) => Promise<Records<CompanyInfoType>> }; // 获取API的函数，延迟到调用时
 }
 
-export interface IBaseCompanyActions {
-    setQueryParams: (queryParams: Partial<Query>) => void;
-    setLoading: (isLoading: boolean) => void;
-    setTableParams: (tableParams: Partial<TableParams>) => void;
-    removeItem: (id: React.Key) => void;
-    fetchList: (queryParams: Partial<Query>) => Promise<Records<CompanyInfoType>>;
-}
+
 
 // 基础状态类型
 export interface IBaseCompanyStateType {
@@ -28,7 +22,7 @@ export interface IBaseCompanyStateType {
 export interface IBaseCompanyStore {
     store: UseBoundStore<StoreApi<IBaseCompanyStateType>>;
     state: ReturnType<typeof createSelectors<UseBoundStore<StoreApi<IBaseCompanyStateType>>>>;
-    actions: () => IBaseCompanyActions;
+    actions: () => IKyTableActions<CompanyInfoType>;
 }
 
 // 初始状态
@@ -56,7 +50,7 @@ export function createCompanyModule(config: BaseCompanyConfig): IBaseCompanyStor
 
     const state = createSelectors(store);
 
-    const actions = (): IBaseCompanyActions => {
+    const actions = (): IKyTableActions<CompanyInfoType> => {
         const set = store.setState;
         const get = store.getState;
 

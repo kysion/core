@@ -1,4 +1,4 @@
-import { CompanyInfoType, EmployeeType, PermissionType, UserInfoType, UserTypeSet } from '@kysion/types';
+import { CompanyInfoType, EmployeeInfoType, PermissionType, UserInfoType, UserTypeSet } from '@kysion/types';
 import { createKyStore, createSelectors } from '@kysion/utils';
 import { Funs } from '@kysion/utils';
 import { StoreApi, UseBoundStore } from 'zustand';
@@ -7,7 +7,7 @@ import { KysionApis } from '../../api';
 
 export interface ProfileState {
     company: CompanyInfoType;
-    employee: EmployeeType;
+    employee: EmployeeInfoType;
     permission?: PermissionType;
     user: UserInfoType;
     isAdmin: boolean;
@@ -22,7 +22,7 @@ export interface ProfileState {
 const initialState: ProfileState = {
     user: new UserInfoType(),
     company: new CompanyInfoType(),
-    employee: new EmployeeType(),
+    employee: new EmployeeInfoType(),
     isAdmin: false,
     isSuperAdmin: false,
     token: null,
@@ -61,7 +61,7 @@ export const useMyProfileActions = () => {
         },
         logout: () => set({ user: new UserInfoType(), token: null, expireAt: '', isLoggedIn: false }),
         setCompany: (company: CompanyInfoType) => set({ company }),
-        setEmployee: (employee: EmployeeType) => set({ employee }),
+        setEmployee: (employee: EmployeeInfoType) => set({ employee }),
         setPermission: (permission: PermissionType) => set({ permission }),
         setUser: (user: UserInfoType) => set({ user }),
         setIsAdmin: (isAdmin: boolean) => set({ isAdmin }),
