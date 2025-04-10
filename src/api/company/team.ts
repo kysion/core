@@ -1,5 +1,5 @@
 import { http } from "../base";
-import { InviteCodeType, Query, Records, TeamType } from "@kysion/types";
+import { InviteCodeType, Query, Records, TeamInfoType } from "@kysion/types";
 
 export class Team {
     private urlPrefix: string;
@@ -25,7 +25,7 @@ export class Team {
         remark?: string;
         include?: string[];
     }) {
-        return http.post<TeamType>(`/${this.urlPrefix}/team/createTeam`, data);
+        return http.post<TeamInfoType>(`/${this.urlPrefix}/team/createTeam`, data);
     }
 
     // 删除团队或小组｜信息
@@ -43,12 +43,12 @@ export class Team {
 
     // 根据ID获取团队或小组｜信息
     public getTeamById(data: { id: string | number; include?: string[] }) {
-        return http.post<TeamType>(`/${this.urlPrefix}/team/getTeamById`, data);
+        return http.post<TeamInfoType>(`/${this.urlPrefix}/team/getTeamById`, data);
     }
 
     // 查看团队邀约码
     public getTeamInviteCode(data: { teamId: string | number }) {
-        return http.post<{ team: TeamType; inviteRes: InviteCodeType }>(`/${this.urlPrefix}/team/getTeamInviteCode`, data);
+        return http.post<{ team: TeamInfoType; inviteRes: InviteCodeType }>(`/${this.urlPrefix}/team/getTeamInviteCode`, data);
     }
 
     // 判断团队名称是否存在
@@ -62,8 +62,17 @@ export class Team {
     }
 
     // 查询团队或小组｜列表
-    public queryTeamList(params: Query) {
-        return http.post<Records<TeamType>>(`/${this.urlPrefix}/team/queryTeamList`, params);
+    public async queryTeamList(params: Query) {
+
+        if (!params.include || params.include.length === 0) {
+            params.include = ['*'];
+        }
+        console.log('params', params);
+        const response = await http.post<Records<TeamInfoType>>(`/${this.urlPrefix}/team/queryTeamList`, params);
+        if (response) {
+            return response as Records<TeamInfoType>;
+        }
+        return new Records<TeamInfoType>();
     }
 
     // 移除团队成员
@@ -100,6 +109,6 @@ export class Team {
 
     // 更新团队或小组｜信息
     public updateTeam(data: { id: string | number; name?: string; remark?: string; include?: string[] }) {
-        return http.post<TeamType>(`/${this.urlPrefix}/team/updateTeam`, data);
+        return http.post<TeamInfoType>(`/${this.urlPrefix}/team/updateTeam`, data);
     }
 } 

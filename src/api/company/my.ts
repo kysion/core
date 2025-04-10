@@ -13,7 +13,7 @@ import {
     ProfileType,
     Query,
     Records,
-    TeamType,
+    TeamInfoType,
 } from "@kysion/types";
 import { useMyProfileActions } from "../../store";
 
@@ -95,7 +95,7 @@ export class My {
 
     public getTeams(data?: { include?: string[] }) {
         data = data || { include: ['*'] };
-        return http.post<TeamType[]>(`/${this.urlPrefix}/my/getTeams`, data);
+        return http.post<TeamInfoType[]>(`/${this.urlPrefix}/my/getTeams`, data);
     }
 
     public setAvatar(data: { imageId: string | number }) {
