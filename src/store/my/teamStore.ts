@@ -10,6 +10,24 @@ export const myTeamModule: IBaseTableStore<TeamInfoType> = createTableModule<Tea
     }
 });
 
+export const makeTeamTypeName = (parentTeam?: TeamInfoType) => {
+
+    let typeName = 'kysion.department.moduleName';
+    let ownerLabel = 'kysion.team.column.ownerEmployeeId';
+    let captainLabel = 'kysion.team.column.captainEmployeeId';
+
+    if (parentTeam?.type === 0) {
+        typeName = 'kysion.team.moduleName';
+        ownerLabel = 'kysion.team.column.captainEmployeeId';
+        captainLabel = 'kysion.team.column.captainEmployeeLeader';
+    } else if (parentTeam?.type === 1) {
+        typeName = 'kysion.team.group';
+        ownerLabel = 'kysion.team.column.captainEmployeeLeader';
+        captainLabel = 'kysion.team.column.captainGroupEmployeeId';
+    }
+
+    return { typeName, ownerLabel, captainLabel };
+}
 
 // 导出代理公司员工相关 hooks
 export const useMyTeamStore = myTeamModule.store;

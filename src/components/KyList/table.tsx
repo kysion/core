@@ -288,7 +288,7 @@ export const KyTable: FC<KyTableProps> = ({
     const actionButtons = [
         // 刷新按钮
         onRefresh && (
-            <Tooltip key="refresh" title={t('kysion.common.refresh.tooltip')} placement="bottom">
+            <Tooltip key="refresh" title={t('kysion.common.refresh.tooltip')}>
                 <Button
                     color="blue"
                     variant="filled"
@@ -301,7 +301,7 @@ export const KyTable: FC<KyTableProps> = ({
         ),
         // 设置按钮
         settingDrawer && (
-            <Tooltip key="setting" title={t('kysion.table.column.setting.title')} placement="bottom">
+            <Tooltip key="setting" title={t('kysion.table.column.setting.title')}>
                 <Button
                     color="blue"
                     variant="filled"
