@@ -77,10 +77,10 @@ export class Team {
     }
 
     // 移除团队成员
-    public removeTeamMember(data: { teamId: string | number; employeeId: string | number }) {
+    public removeTeamMember(data: { teamId: string | number; employeeId?: string | number; employeeIds?: (string | number)[] }) {
         return http.post<boolean>(`/${this.urlPrefix}/team/removeTeamMember`, {
             id: data.teamId,
-            employeeId: data.employeeId
+            employeeIds: data.employeeIds
         });
     }
 
@@ -93,10 +93,10 @@ export class Team {
     }
 
     // 设置团队成员
-    public setTeamMember(data: { teamId: string | number; employeeId: string | number }) {
+    public setTeamMember(data: { teamId: string | number; employeeId?: string | number; employeeIds?: (string | number)[] }) {
         return http.post<boolean>(`/${this.urlPrefix}/team/setTeamMember`, {
             id: data.teamId,
-            employeeId: data.employeeId
+            employeeIds: data.employeeIds
         });
     }
 
