@@ -66,8 +66,9 @@ export class Team {
 
         if (!params.include || params.include.length === 0) {
             params.include = ['*'];
+            params.isExport = true;
         }
-        console.log('params', params);
+
         const response = await http.post<Records<TeamInfoType>>(`/${this.urlPrefix}/team/queryTeamList`, params);
         if (response) {
             return response as Records<TeamInfoType>;
