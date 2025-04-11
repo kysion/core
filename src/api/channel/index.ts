@@ -3,22 +3,22 @@ import { ChannelInfoType, Query, Records } from "@kysion/types";
 
 export class Channel {
     public static fetchChannelList(query: Query) {
-        return http.post<Records<ChannelInfoType>>('/platformInfo/queryPlatformInfo', query);
+        return http.post<Records<ChannelInfoType>>('/channel/queryChannelInfo', query);
     }
 
     public static createChannelInfo(data: ChannelInfoType) {
-        return http.post<ChannelInfoType>('/platformInfo/createPlatformInfo', data);
+        return http.post<ChannelInfoType>('/channel/createChannelInfo', data);
     }
 
     public static updateChannelInfo(data: ChannelInfoType) {
-        return http.post<ChannelInfoType>('/platformInfo/updatePlatformInfo', data);
+        return http.post<ChannelInfoType>('/channel/updateChannelInfo', data);
     }
 
-    public static deletePlatformInfo(data: { id: React.Key }) {
-        return http.post<boolean>('/platformInfo/deletePlatformInfo', data);
+    public static deleteChannelInfo(data: { id: React.Key }) {
+        return http.post<boolean>('/channel/deleteChannelInfo', data);
     }
 
-    public static getPlatformInfoById(data: { id: React.Key }) {
-        return http.post<ChannelInfoType>('/platformInfo/getPlatformInfoById', data);
+    public static getChannelInfoById(data: { id: React.Key }) {
+        return http.post<ChannelInfoType>('/channel/getChannelInfoById', data);
     }
 }

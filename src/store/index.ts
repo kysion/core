@@ -2,11 +2,12 @@ import { createKyStore as createStore } from '@kysion/utils';
 
 export const createKyStore = createStore;
 
+export * from './categoryStore';
+export * from './channelStore';
+export * from './industryStore';
 export * from './my';
 export * from './notify';
-export * from './user';
-export * from './role';
 export * from './org';
-export * from './industryStore';
-export * from './categoryStore';
+export * from './role';
 export * from './tableModule/tableModule';
+export * from './user';
