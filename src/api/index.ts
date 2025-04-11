@@ -14,17 +14,18 @@ import { Comment } from './comment';
 import { Common } from './common';
 import { Company, companyMap } from './company';
 import { DeliveryCompany } from './delivery';
+import { Goods } from './goods';
 import { Iconify } from './iconify';
+import { Industry } from './industry';
 import { License } from './license';
 import { Menu } from './menu';
 import { Message } from './message';
-import { MyProfile, MyCompany } from './my';
+import { MyCompany, MyProfile } from './my';
 import { Org } from './org';
 import { Permission } from './permission';
 import { Role } from './role';
 import { Settings } from './settings';
 import { User } from './user';
-import { Industry } from './industry';
 
 /**
  * 导出兼容原项目的API集合
@@ -41,20 +42,21 @@ export const KysionApis = {
     License,
 
     // 其他模块
-    Auth,
-    Audit,
     Announcement,
+    Audit,
+    Auth,
     Category,
     Channel,
     Comment,
     Common,
     DeliveryCompany,
+    Goods,
     Iconify,
     Industry,
     Menu,
     Message,
-    MyProfile,
     MyCompany,
+    MyProfile,
     Permission,
     Role,
     Settings,

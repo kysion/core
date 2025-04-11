@@ -11,3 +11,4 @@ export * from './org';
 export * from './role';
 export * from './tableModule/tableModule';
 export * from './user';
+export * from './goodsStore';
