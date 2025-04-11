@@ -7,6 +7,7 @@ export * from './auth';
 export * from './category';
 export * from './comment';
 export * from './audit';
+export * from './industry';
 
 // 用户相关
 export * from './user';

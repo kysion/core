@@ -24,6 +24,7 @@ import { Permission } from './permission';
 import { Role } from './role';
 import { Settings } from './settings';
 import { User } from './user';
+import { Industry } from './industry';
 
 /**
  * 导出兼容原项目的API集合
@@ -49,6 +50,7 @@ export const KysionApis = {
     Common,
     DeliveryCompany,
     Iconify,
+    Industry,
     Menu,
     Message,
     MyProfile,

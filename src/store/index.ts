@@ -7,4 +7,6 @@ export * from './notify';
 export * from './user';
 export * from './role';
 export * from './org';
+export * from './industryStore';
+export * from './categoryStore';
 export * from './tableModule/tableModule';
