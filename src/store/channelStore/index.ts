@@ -2,7 +2,7 @@ import { ChannelInfoType, Query, Records } from "@kysion/types";
 import { KysionApis } from "../../api";
 import { IBaseTableStore, createTableModule } from "../tableModule/tableModule";
 
-// 创建代理公司员工模块
+// 创建渠道模块
 export const channelModule: IBaseTableStore<ChannelInfoType> = createTableModule<ChannelInfoType>({
     name: 'channel',
     getApi: {
