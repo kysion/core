@@ -26,6 +26,7 @@ import { Permission } from './permission';
 import { Role } from './role';
 import { Settings } from './settings';
 import { User } from './user';
+import { Orders } from './orders';
 
 /**
  * 导出兼容原项目的API集合
@@ -57,6 +58,7 @@ export const KysionApis = {
     Message,
     MyCompany,
     MyProfile,
+    Orders,
     Permission,
     Role,
     Settings,

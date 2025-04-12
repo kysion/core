@@ -7,6 +7,7 @@ export * from './channelStore';
 export * from './industryStore';
 export * from './my';
 export * from './notify';
+export * from './orderStore';
 export * from './org';
 export * from './role';
 export * from './tableModule/tableModule';
