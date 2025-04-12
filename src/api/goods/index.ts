@@ -80,7 +80,7 @@ export class Goods {
    * 设置商品销售状态
    * @param data 包含商品ID及销售状态的对象
    */
-  public static setState(data: { id: React.Key; saleState: GoodsSaleStateSet }) {
+  public static setState(data: { id: React.Key; state: GoodsSaleStateSet }) {
     return http.post<boolean>('/goods/setState', data);
   }
 
