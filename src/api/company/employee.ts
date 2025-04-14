@@ -33,6 +33,7 @@ export class KysionEmployee {
 
     // 获取员工详情|信息
     public getEmployeeDetail(param: { id: string | number, include?: string[] }) {
+        param.include = param.include || ['*'];
         return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/getEmployeeDetailById`, param);
     }
 
