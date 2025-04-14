@@ -1,24 +1,25 @@
+
+import { DeliveryInfoType, Query, Records } from "@kysion/types";
 import { http } from "../base";
-import { DeliveryCompanyType, Query, Records } from "@kysion/types";
 
-export class DeliveryCompany {
-    public static createDeliveryCompany(data: DeliveryCompanyType) {
-        return http.post<DeliveryCompanyType>('/deliveryCompany/createDeliveryCompany', data);
+export class Delivery {
+    public static createDelivery(data: DeliveryInfoType) {
+        return http.post<DeliveryInfoType>('/delivery/createDelivery', data);
     }
 
-    public static deleteDeliveryCompany(data: { id: string | number }) {
-        return http.post<boolean>('/deliveryCompany/deleteDeliveryCompany', data);
+    public static deleteDelivery(data: { id: string | number }) {
+        return http.post<boolean>('/delivery/deleteDelivery', data);
     }
 
-    public static getDeliveryCompanyById(data: { id: string | number }) {
-        return http.post<DeliveryCompanyType>('/deliveryCompany/getDeliveryCompanyById', data);
+    public static getDeliveryById(data: { id: string | number }) {
+        return http.post<DeliveryInfoType>('/delivery/getDeliveryById', data);
     }
 
-    public static queryDeliveryCompanyList(params: Query) {
-        return http.post<Records<DeliveryCompanyType>>('/deliveryCompany/queryDeliveryCompany', params);
+    public static queryDeliveryList(params: Query) {
+        return http.post<Records<DeliveryInfoType>>('/delivery/queryDelivery', params);
     }
 
-    public static updateDeliveryCompany(data: DeliveryCompanyType) {
-        return http.post<DeliveryCompanyType>('/deliveryCompany/updateDeliveryCompany', data);
+    public static updateDelivery(data: DeliveryInfoType) {
+        return http.post<DeliveryInfoType>('/delivery/updateDelivery', data);
     }
 } 
