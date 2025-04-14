@@ -28,6 +28,7 @@ export class Finance {
      * @returns 账单列表
      */
     public static queryBillsList(query: Query) {
+        query.include = query.include ?? ['*'];
         return http.post<Records<FdBillsType>>(`/platform/finance/account/queryBillsList`, query);
     }
 
@@ -56,6 +57,7 @@ export class Finance {
      * @returns 发票列表
      */
     public static queryFdBankCardList(query: Query) {
+        query.include = query.include ?? ['*'];
         return http.post<Records<FdBankCardType>>(`/platform/finance/account/queryFdBankCardList`, query);
     }
 
@@ -65,6 +67,7 @@ export class Finance {
      * @returns 发票列表
      */
     public static queryFdInvoiceList(query: Query) {
+        query.include = query.include ?? ['*'];
         return http.post<Records<FdInvoiceInfoType>>(`/platform/finance/account/queryFdInvoiceList`, query);
     }
 }

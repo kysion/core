@@ -546,7 +546,6 @@ export function makeTableColumnOption<T, K extends string>(
               newItem.sortOrder = undefined;
             }
 
-            console.log('newItem', hasSortAbility, newItem.sorter, newItem.sortOrder, newItem.columnOptionState?.sortBy);
           } catch (e) {
             newItem.sorter = false;
             newItem.sortOrder = undefined;
