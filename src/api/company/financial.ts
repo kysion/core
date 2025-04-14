@@ -2,18 +2,18 @@ import { http } from "../base";
 import {
     AccountInfoType,
     AccountLimitStatusSet,
-    ApplyInvoiceType,
-    BankCardType,
+    FdApplyInvoiceType,
+    FdBankCardType,
     BankCardTypeSet,
-    AccountBillDetailType,
-    InvoiceInfoType,
+    FdBillsDetailType,
+    FdInvoiceInfoType,
     InvoiceStateSet,
-    MakeInvoiceDetailType,
+    FdMakeInvoiceDetailType,
     MakeInvoiceTypeSet,
     Query,
     Records,
     CurrencyType,
-    AccountBillType
+    FdBillsType
 } from "@kysion/types";
 
 export class Financial {
@@ -57,48 +57,48 @@ export class Financial {
 
     // 获取财务账号金额明细
     public getAccountDetailByAccountId(accountId: string | number) {
-        return http.post<AccountBillDetailType>(`/${this.urlPrefix}/financial/getAccountDetailByAccountId`, {
+        return http.post<FdBillsDetailType>(`/${this.urlPrefix}/financial/getAccountDetailByAccountId`, {
             accountId
         });
     }
 
     // 申请开发票
-    public applyInvoice(data: Partial<InvoiceInfoType> & {
+    public applyInvoice(data: Partial<FdInvoiceInfoType> & {
         taxId: string; taxName: string; billIds: string; amount: number; rate: number; rateMount: number; remark: string;
         type: MakeInvoiceTypeSet;
         state: InvoiceStateSet;
     }) {
-        return http.post<InvoiceInfoType>(`/${this.urlPrefix}/financial/invoiceDetailRegister`, data);
+        return http.post<FdInvoiceInfoType>(`/${this.urlPrefix}/financial/invoiceDetailRegister`, data);
     }
 
     // 添加发票抬头
-    public addInvoiceTemplate(data: Partial<InvoiceInfoType> & { name: string; taxId: string; }) {
-        return http.post<InvoiceInfoType>(`/${this.urlPrefix}/financial/invoiceRegister`, data);
+    public addInvoiceTemplate(data: Partial<FdInvoiceInfoType> & { name: string; taxId: string; }) {
+        return http.post<FdInvoiceInfoType>(`/${this.urlPrefix}/financial/invoiceRegister`, data);
     }
 
     // 开发票
-    public makeInviceDetail(data: Partial<MakeInvoiceDetailType> & { invoiceDetailId: number; type: MakeInvoiceTypeSet; }) {
+    public makeInviceDetail(data: Partial<FdMakeInvoiceDetailType> & { invoiceDetailId: number; type: MakeInvoiceTypeSet; }) {
         return http.post<boolean>(`/${this.urlPrefix}/financial/makeInvoiceDetail`, data);
     }
 
     // 获取银行卡列表
     public queryBankCardList(params: Query) {
-        return http.post<Records<BankCardType>>(`/${this.urlPrefix}/financial/queryBankCardList`, params);
+        return http.post<Records<FdBankCardType>>(`/${this.urlPrefix}/financial/queryBankCardList`, params);
     }
 
     //获取发票抬头|列表
     public queryInvoiceTemplateList(params: Query & { userId: string | number }) {
-        return http.post<Records<InvoiceInfoType>>(`/${this.urlPrefix}/financial/queryInvoice`, params);
+        return http.post<Records<FdInvoiceInfoType>>(`/${this.urlPrefix}/financial/queryInvoice`, params);
     }
 
     // 获取发票详情|列表
     public queryInvoiceDetailList(params: Query) {
-        return http.post<Records<ApplyInvoiceType>>(`/${this.urlPrefix}/financial/queryInvoiceDetailList`, params);
+        return http.post<Records<FdApplyInvoiceType>>(`/${this.urlPrefix}/financial/queryInvoiceDetailList`, params);
     }
 
     // 添加银行卡
-    public addBankCard(data: Partial<BankCardType> & { bankName: string, cardType: BankCardTypeSet, cardNumber: string, holderName: string }) {
-        return http.post<BankCardType>(`/${this.urlPrefix}/financial/registerBankCard`, data);
+    public addBankCard(data: Partial<FdBankCardType> & { bankName: string, cardType: BankCardTypeSet, cardNumber: string, holderName: string }) {
+        return http.post<FdBankCardType>(`/${this.urlPrefix}/financial/registerBankCard`, data);
     }
 
     // 设置财务账号是否允许存在负余额
@@ -135,6 +135,6 @@ export class Financial {
     }
 
     public queryAccountBills(params: { accountId: string | number }) {
-        return http.post<Records<AccountBillType>>(`/${this.urlPrefix}/financial/queryAccountBills`, params);
+        return http.post<Records<FdBillsType>>(`/${this.urlPrefix}/financial/queryAccountBills`, params);
     }
 } 

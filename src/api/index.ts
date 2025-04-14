@@ -13,7 +13,7 @@ import { Channel } from './channel';
 import { Comment } from './comment';
 import { Common } from './common';
 import { Company, companyMap } from './company';
-import { DeliveryCompany } from './delivery';
+import { Delivery } from './delivery';
 import { Goods } from './goods';
 import { Iconify } from './iconify';
 import { Industry } from './industry';
@@ -50,7 +50,7 @@ export const KysionApis = {
     Channel,
     Comment,
     Common,
-    DeliveryCompany,
+    Delivery,
     Goods,
     Iconify,
     Industry,

@@ -1,13 +1,13 @@
 import { useActionState } from "react";
 import { http } from "../base";
 import {
-    AccountBillDetailType,
+    FdBillsDetailType,
     AccountInfoType,
     AccountTypeSet,
     AllowNegativeBalanceSet,
-    BankCardType,
+    FdBankCardType,
     CompanyInfoType,
-    InvoiceInfoType,
+    FdInvoiceInfoType,
     PermissionType,
     PermissionTypeSet,
     ProfileType,
@@ -33,7 +33,7 @@ export class My {
 
     // 我的账单|列表
     public getAccountBills(params: Query) {
-        return http.post<Records<AccountBillDetailType>>(`/${this.urlPrefix}/my/getAccountBills`, params);
+        return http.post<Records<FdBillsDetailType>>(`/${this.urlPrefix}/my/getAccountBills`, params);
     }
 
     // 我的财务账号|列表
@@ -45,12 +45,12 @@ export class My {
 
     // 我的银行卡｜列表
     public getBankCards() {
-        return http.post<Records<BankCardType>>(`/${this.urlPrefix}/my/getBankCards`);
+        return http.post<Records<FdBankCardType>>(`/${this.urlPrefix}/my/getBankCards`);
     }
 
     // 我的发票抬头｜列表
     public getInvoices() {
-        return http.post<Records<InvoiceInfoType>>(`/${this.urlPrefix}/my/getInvoices`);
+        return http.post<Records<FdInvoiceInfoType>>(`/${this.urlPrefix}/my/getInvoices`);
     }
 
     // 修改我的财务账号｜信息
