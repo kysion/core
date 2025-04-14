@@ -4,6 +4,7 @@ export const createKyStore = createStore;
 
 export * from './categoryStore';
 export * from './channelStore';
+export * from './financeStore';
 export * from './industryStore';
 export * from './my';
 export * from './notify';

@@ -14,6 +14,7 @@ import { Comment } from './comment';
 import { Common } from './common';
 import { Company, companyMap } from './company';
 import { Delivery } from './delivery';
+import { Finance } from './finance';
 import { Goods } from './goods';
 import { Iconify } from './iconify';
 import { Industry } from './industry';
@@ -51,6 +52,7 @@ export const KysionApis = {
     Comment,
     Common,
     Delivery,
+    Finance,
     Goods,
     Iconify,
     Industry,
