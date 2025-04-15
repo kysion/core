@@ -29,7 +29,7 @@ export class Finance {
      */
     public static queryBillsList(query: Query) {
         query.include = query.include ?? ['*'];
-        return http.post<Records<FdBillsType>>(`/platform/finance/account/queryBillsList`, query);
+        return http.post<Records<FdBillsType>>(`/platform/finance/bills/queryBillsList`, query);
     }
 
     /**
