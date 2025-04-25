@@ -1,4 +1,5 @@
 // 导出已有组件
+export * from './BeianIcpNo';
 export * from './Common';
 export * from './RouteConfig';
 export * from './KyTranslate';
