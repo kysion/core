@@ -18,8 +18,11 @@ export class Finance {
      * @param param 查询参数
      * @returns 财务账号
      */
-    public static getFdAccountById(param: { id: number }) {
-        return http.post<AccountInfoViewType>(`/platform/finance/account/getFdAccountById`, param);
+    public static getFdAccountById(param: { id: number, include?: string[] }) {
+        return http.post<AccountInfoViewType>(`/platform/finance/account/getFdAccountById`, {
+            ...param,
+            include: param.include ?? ['*']
+        });
     }
 
     /**
