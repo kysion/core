@@ -1,7 +1,7 @@
 import { http } from "../base";
 import { CompanyStateSet, CompanyInfoType, Query, Records } from "@kysion/types";
 import { My } from "./my";
-import { Financial } from "./financial";
+import { Finance } from "./finance";
 import { KysionEmployee } from "./employee";
 import { Team } from "./team";
 
@@ -11,14 +11,14 @@ export const companyMap: Record<string, Company> = {};
 export class Company {
     protected urlPrefix: string;
     public readonly my: My;
-    public readonly financial: Financial;
+    public readonly financial: Finance;
     public readonly employee: KysionEmployee;
     public readonly team: Team;
 
     constructor(params: { urlPrefix: string }) {
         this.urlPrefix = params.urlPrefix || 'company';
         this.my = new My({ urlPrefix: this.urlPrefix });
-        this.financial = new Financial({ urlPrefix: this.urlPrefix });
+        this.financial = new Finance({ urlPrefix: this.urlPrefix });
         this.employee = new KysionEmployee({ urlPrefix: this.urlPrefix });
         this.team = new Team({ urlPrefix: this.urlPrefix });
 

@@ -12,11 +12,11 @@ import {
     MakeInvoiceTypeSet,
     Query,
     Records,
-    CurrencyType,
+    CurrencyInfoType,
     FdBillsType
 } from "@kysion/types";
 
-export class Financial {
+export class Finance {
     private urlPrefix: string;
     constructor(params: { urlPrefix: string }) {
         this.urlPrefix = params.urlPrefix;
@@ -119,19 +119,9 @@ export class Financial {
         });
     }
 
-    // 获取币种列表
-    public queryCurrencyList(query?: Query) {
-        return http.post<Records<CurrencyType>>(`/${this.urlPrefix}/financial/queryCurrencyList`, query);
-    }
-
     // 设置财务账号货币单位
     public setAccountCurrencyCode(data: { accountId: string | number; currencyCode: string }) {
         return http.post(`/${this.urlPrefix}/financial/setAccountCurrencyCode`, data);
-    }
-
-    // 获取货币单位信息
-    public getCurrencyByCode(currencyCode: string) {
-        return http.post<CurrencyType>(`/${this.urlPrefix}/financial/getCurrencyByCode`, { currencyCode });
     }
 
     public queryAccountBills(params: { accountId: string | number }) {
