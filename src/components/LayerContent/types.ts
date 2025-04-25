@@ -82,7 +82,12 @@ export interface DrawerOptions {
      * 宽度
      * @default 500
      */
-    width?: number;
+    width?: number | string;
+
+    /**
+     * 高度
+     */
+    height?: number | string;
 
     /**
      * 位置

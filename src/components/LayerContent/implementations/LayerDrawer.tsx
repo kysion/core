@@ -26,6 +26,7 @@ const LayerDrawer: React.FC<{
             title={options.title}
             open={visible}
             width={options.width || 500}
+            height={options.height}
             placement={options.placement || 'right'}
             onClose={handleClose}
             maskClosable={options.maskClosable ?? false}
