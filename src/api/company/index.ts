@@ -11,14 +11,14 @@ export const companyMap: Record<string, Company> = {};
 export class Company {
     protected urlPrefix: string;
     public readonly my: My;
-    public readonly financial: Finance;
+    public readonly finance: Finance;
     public readonly employee: KysionEmployee;
     public readonly team: Team;
 
     constructor(params: { urlPrefix: string }) {
         this.urlPrefix = params.urlPrefix || 'company';
         this.my = new My({ urlPrefix: this.urlPrefix });
-        this.financial = new Finance({ urlPrefix: this.urlPrefix });
+        this.finance = new Finance({ urlPrefix: this.urlPrefix });
         this.employee = new KysionEmployee({ urlPrefix: this.urlPrefix });
         this.team = new Team({ urlPrefix: this.urlPrefix });
 
@@ -39,7 +39,7 @@ export class Company {
     public setUrlPrefix(urlPrefix: string) {
         this.urlPrefix = urlPrefix;
         this.my.setUrlPrefix(urlPrefix);
-        this.financial.setUrlPrefix(urlPrefix);
+        this.finance.setUrlPrefix(urlPrefix);
         this.employee.setUrlPrefix(urlPrefix);
         this.team.setUrlPrefix(urlPrefix);
     }
