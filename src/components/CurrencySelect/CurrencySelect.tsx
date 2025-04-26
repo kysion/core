@@ -29,6 +29,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
     const [options, setOptions] = useState<SelectOptionType<CurrencyInfoType>[]>([]);
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(false);
+    const [dataLoaded, setDataLoaded] = useState(false);
     const optionsRef = useRef<SelectOptionType<CurrencyInfoType>[]>([]);
 
     // 将当前options同步到ref
@@ -37,6 +38,8 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
     }, [options]);
 
     const fetchCurrencies = useCallback(async (searchText?: string) => {
+        if (loading) return;
+
         setLoading(true);
         try {
             // 构建查询条件
@@ -70,6 +73,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
                 ];
             }
 
+            console.log('Fetching currencies...');
             const response = await KysionApis.System.Finance.queryCurrencyList(query);
             const data = response as Records<CurrencyInfoType>;
 
@@ -85,13 +89,15 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
                         } as SelectOptionType<CurrencyInfoType>
                     });
                 setOptions([...currentOptions, ...newOptions]);
+                setDataLoaded(true);
+                console.log('Currencies loaded:', [...currentOptions, ...newOptions].length);
             }
         } catch (error) {
             console.error('Failed to fetch currencies:', error);
         } finally {
             setLoading(false);
         }
-    }, [showSymbol]);
+    }, []);
 
     // 获取初始选中货币信息
     const fetchInitialCurrency = useCallback(async () => {
@@ -139,19 +145,13 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
 
     // 初始加载
     useEffect(() => {
-        let isActive = true;
-
-        if (isActive) {
-            if (value) {
-                fetchInitialCurrency();
-            } else {
-                fetchCurrencies();
-            }
+        if (value) {
+            // 如果有初始值，先加载当前选中货币的信息
+            fetchInitialCurrency();
         }
 
-        return () => {
-            isActive = false;
-        };
+        // 不管有没有初始值，都需要预加载货币列表
+        fetchCurrencies();
     }, []);
 
     const handleSearch = (searchText: string) => {
@@ -162,6 +162,13 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
         onChange?.(newValue);
     };
 
+    // 下拉框打开时确保数据已加载
+    const handleDropdownVisibleChange = (open: boolean) => {
+        if (open && (!dataLoaded || options.length === 0)) {
+            fetchCurrencies();
+        }
+    };
+
     return (
         <Select
             {...selectProps}
@@ -170,6 +177,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
             loading={loading || initialLoading}
             onSearch={handleSearch}
             onChange={handleChange}
+            onDropdownVisibleChange={handleDropdownVisibleChange}
             showSearch
             filterOption={false}
             placeholder={placeholder || t('kysion.common.select.placeholder')}

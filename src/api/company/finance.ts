@@ -102,7 +102,7 @@ export class Finance {
     }
 
     // 设置财务账号是否允许存在负余额
-    public setAccountAllowExceed(data: { accountId: string | number, allowExceed: boolean }) {
+    public setAccountAllowExceed(data: { accountId: string | number, allowExceed: number }) {
         return http.post<boolean>(`/${this.urlPrefix}/finance/setAccountAllowExceed`, data);
     }
 
@@ -112,10 +112,10 @@ export class Finance {
     }
 
     // 修改财务账号限制状态
-    public updateAccountLimitState(data: { accountId: string | number, state: AccountLimitStatusSet }) {
+    public updateAccountLimitState(data: { accountId: string | number, LimitState: AccountLimitStatusSet }) {
         return http.post<boolean>(`/${this.urlPrefix}/finance/updateAccountLimitState`, {
             accountId: data.accountId,
-            isEnabled: data.state,
+            LimitState: data.LimitState,
         });
     }
 
