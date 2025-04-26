@@ -1,6 +1,6 @@
 {
   "name": "@kysion/core",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Kysion Admin 核心功能包，提供基础组件、布局、主题等核心功能",
   "main": "dist/lib/index.js",
   "module": "dist/es/index.js",
@@ -35,23 +35,23 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@iconify/json": "^2.2.326",
+    "@iconify/json": "^2.2.332",
     "@iconify/react": "^5.2.1",
     "@iconify/types": "^2.0.0",
     "@kysion/types": "workspace:*",
     "@kysion/utils": "workspace:*",
     "@types/react-dom": "^19.1.2",
-    "antd": "^5.24.6",
-    "axios": "^1.8.4",
+    "antd": "^5.24.8",
+    "axios": "^1.9.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
-    "i18next": "^24.2.3",
+    "i18next": "^25.0.1",
     "lodash": "^4.17.21",
     "react": "^19.1.0",
     "react-dom": "19.1.0",
     "react-highlight-words": "^0.21.0",
-    "react-i18next": "^15.4.1",
-    "react-router-dom": "^7.5.0",
+    "react-i18next": "^15.5.1",
+    "react-router-dom": "^7.5.2",
     "zustand": "^5.0.3"
   },
   "peerDependencies": {
@@ -59,10 +59,10 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.16",
-    "@types/node": "^22.14.1",
-    "@types/react": "^19.1.1",
+    "@types/node": "^22.15.2",
+    "@types/react": "^19.1.2",
     "@types/react-highlight-words": "^0.20.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.1"
+    "vitest": "^3.1.2"
   }
 }
