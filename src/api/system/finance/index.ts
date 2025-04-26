@@ -5,6 +5,8 @@ export class Finance {
 
     // 获取币种列表
     public static queryCurrencyList(query?: Query) {
+        query = query ?? new Query();
+        query.isExport = true;
         return http.post<Records<CurrencyInfoType>>(`/system/finance/queryCurrencyList`, query);
     }
 
