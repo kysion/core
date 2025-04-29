@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SettingTableDrawer, TableColumn } from './setting';
 import { KyTableColumnType, fixedStateSet } from '../../types/table';
 import { KyTranslate } from '../KyTranslate';
-import { ensureTableSortingConsistency, forceApplyFixedColumns, applyColumnFixed } from '../../hooks/table/useTableUtils';
+import { ensureTableSortingConsistency, forceApplyFixedColumns, applyColumnFixed, clearTableConfig } from '../../hooks/table/useTableUtils';
 
 // 用于深克隆对象，但保留函数和React组件
 function deepCloneWithFunctions<T>(obj: T): T {
@@ -274,13 +274,11 @@ export const KyTable: FC<KyTableProps> = ({
     // 组件首次加载或identifier变更时，清除缓存并重新初始化
     useEffect(() => {
         if (typeof window !== 'undefined' && window.location.search.includes('clearCache=true')) {
-            import('../../hooks/table/useTableUtils').then(({ clearTableConfig }) => {
-                const cleared = clearTableConfig(identifier);
-                if (cleared) {
-                    // 刷新页面以应用新配置
-                    window.location.href = window.location.href.split('?')[0];
-                }
-            });
+            const cleared = clearTableConfig(identifier);
+            if (cleared) {
+                // 刷新页面以应用新配置
+                window.location.href = window.location.href.split('?')[0];
+            }
         }
     }, [identifier]);
 
