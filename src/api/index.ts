@@ -34,7 +34,7 @@ import { System } from './system';
  */
 export const KysionApis = {
     // 企业模块
-    Member: companyMap['member'] || new Company({ urlPrefix: 'member' }),
+    MemberCustomer: companyMap['member'] || new Company({ urlPrefix: 'member' }),
     Merchant: companyMap['merchant'] || new Company({ urlPrefix: 'merchant' }),
     Agent: companyMap['agent'] || new Company({ urlPrefix: 'agent' }),
     HeadCompany: companyMap['headCompany'] || new Company({ urlPrefix: 'headCompany' }),

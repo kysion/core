@@ -1,5 +1,6 @@
 import { KyRouteConfig } from '../types/route';
 import { useMyProfileStore } from '../store/my/profileStore';
+import { useMyProfileActions } from '../store/my/profileStore';
 
 /**
  * 路由工具函数库 - 提供路由相关的通用工具函数
@@ -30,6 +31,26 @@ export const RouteUtils = {
     isAuthenticated: (): boolean => {
         const { token, isLoggedIn } = useMyProfileStore.getState();
         return isLoggedIn || !!token;
+    },
+
+    /**
+     * 清除认证状态 - 用于处理token过期或无效的情况
+     * 将清除存储中的认证相关信息
+     */
+    clearAuth: (): void => {
+        try {
+            // 使用actions中定义的logout方法
+            const { logout } = useMyProfileActions();
+            logout();
+        } catch (error) {
+            console.error('清除认证状态失败:', error);
+            // 兜底方案：直接设置认证状态
+            useMyProfileStore.setState({
+                token: null,
+                isLoggedIn: false,
+                expireAt: ''
+            });
+        }
     },
 
     /**
