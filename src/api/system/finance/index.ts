@@ -17,7 +17,7 @@ export class Finance {
 
     // 获取财务账号充值详情
     public static getAccountRechargeViewById(params: { id: number }) {
-        return http.get<any>('/system/finance/getAccountRechargeViewById', params)
+        return http.post<any>('/system/finance/getAccountRechargeViewById', params)
     }
 
     public static queryAccountRechargeView(params: Query) {
