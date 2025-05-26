@@ -1,5 +1,5 @@
 import React, { ReactNode, useRef, useState, useContext, createContext, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 type CacheItem = {
     component: ReactNode;

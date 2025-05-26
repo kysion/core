@@ -1,6 +1,6 @@
 import { ComponentType, ReactElement } from "react";
 import { LazyComponent } from "../components/LazyImport";
-import { RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router";
 import { UserTypeSet } from "@kysion/types";
 
 export interface RouteMeta {

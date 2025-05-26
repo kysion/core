@@ -194,7 +194,7 @@ export function createTableModule<T extends { id: React.Key }>(config: BaseTable
              * @param id 要移除的数据项id
              */
             removeItem(id: React.Key) {
-                set({ dataSource: { ...get().dataSource, records: get().dataSource.records.filter(item => item.id !== id) } });
+                set({ dataSource: { ...get().dataSource, records: get().dataSource.records.filter((item: T) => item.id !== id) } });
             },
 
             /**

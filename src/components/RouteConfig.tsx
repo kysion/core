@@ -1,6 +1,6 @@
 import { KyRouteConfig } from "../types/route"
-import React, { ComponentType, LazyExoticComponent, ReactElement, ReactNode } from "react"
-import { Outlet, RouteObject } from "react-router-dom"
+import React, { ComponentType, LazyExoticComponent, ReactElement, ReactNode, Suspense } from "react"
+import { Outlet, RouteObject } from "react-router"
 import { LazyImport } from "./LazyImport"
 import { ErrorBoundary } from "./ErrorBoundary"
 import { RouteGuard } from "./RouteGuard"
@@ -147,7 +147,7 @@ interface RouteProviderProps {
 }
 
 // 导入所需类型
-import { createBrowserRouter, createHashRouter, RouterProvider, Navigate } from "react-router-dom";
+import { createBrowserRouter, createHashRouter, RouterProvider, Navigate } from "react-router";
 
 export const RouterConfig: React.FC<{
     routes: KyRouteConfig[];
@@ -172,10 +172,11 @@ export const RouterConfig: React.FC<{
 
         // 提供路由
         return (
-            <RouterProvider
-                router={router}
-                fallbackElement={fallback}
-            />
+            <Suspense fallback={fallback}>
+                <RouterProvider
+                    router={router}
+                />
+            </Suspense>
         );
     };
 

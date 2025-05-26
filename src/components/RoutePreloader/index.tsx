@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { KyRouteConfig } from '../../types/route';
 
 interface RoutePreloaderProps {

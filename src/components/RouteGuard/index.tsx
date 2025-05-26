@@ -1,5 +1,5 @@
 import React, { FC, ReactElement, ReactNode, useEffect, useState, useMemo } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router';
 import { Spin, Result, Button } from 'antd';
 import { KyRouteConfig, RouteGuard as RouteGuardType } from '../../types/route';
 import { RouteUtils } from '../../utils/routeUtils';
