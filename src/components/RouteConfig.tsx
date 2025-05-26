@@ -44,6 +44,21 @@ export const buildRoutes = (
             ...restProps,
         }
 
+        // 如果上层已经提供 Component 并且未提供 element，直接使用，不再额外包装，防止在 Router 之外实例化
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (!element && (item as any).Component) {
+            // 保证路径、子路由等正常递归处理
+            if (children && children.length > 0) {
+                routeObject.children = buildRoutes(children, options);
+            }
+            // 直接复用原组件
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            routeObject.Component = (item as any).Component;
+            return routeObject;
+        }
+
         // 递归构建子路由
         if (children && children.length > 0) {
             routeObject.children = buildRoutes(children, options)
@@ -55,81 +70,68 @@ export const buildRoutes = (
             return routeObject
         }
 
-        // 处理 element
-        let routeElement: ReactNode
+        const buildWrappedNode = (node: ReactNode): ReactNode => {
+            let wrapped = node;
 
-        if (isLazyComponent(element)) {
-            // React.lazy 组件
-            routeElement = (
-                <LazyImport
-                    lazy={element as LazyExoticComponent<ComponentType>}
-                    prefetch={lazyOptions?.prefetch}
-                    fallback={lazyOptions?.fallback}
-                />
-            )
-        } else {
-            routeElement = element as ReactElement ?? <Outlet />
-        }
-
-        // 处理组件缓存
-        if (meta?.keepAlive) {
-            routeElement = (
-                <KeepAliveRoute
-                    cacheKey={routeObject.path}
-                    keepAlive={meta.keepAlive}
-                >
-                    {routeElement}
-                </KeepAliveRoute>
-            )
-        }
-
-        // 权限控制和路由守卫
-        routeElement = (
-            <RouteGuard
-                route={item}
-                authCheck={options?.authCheck}
-                getUserInfo={options?.getUserInfo}
-                onRouteChange={options?.onRouteChange}
-            >
-                {routeElement}
-            </RouteGuard>
-        )
-
-        // 错误边界
-        routeElement = CustomErrorBoundary ? (
-            <CustomErrorBoundary>
-                {routeElement}
-            </CustomErrorBoundary>
-        ) : (
-            <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
-                {routeElement}
-            </ErrorBoundary>
-        )
-
-        // 中间件处理
-        if (middlewares && Array.isArray(middlewares) && middlewares.length > 0) {
-            // 创建中间件链
-            let middlewareChain: ReactNode = routeElement
-
-            for (let i = middlewares.length - 1; i >= 0; i--) {
-                const middleware = middlewares[i]
-
-                if (isLazyComponent(middleware)) {
-                    middlewareChain = (
-                        <LazyImport lazy={middleware as LazyExoticComponent<ComponentType>}>
-                            {middlewareChain}
-                        </LazyImport>
-                    )
-                } else {
-                    middlewareChain = React.createElement(middleware as ComponentType, {}, middlewareChain)
-                }
+            // 处理组件缓存
+            if (meta?.keepAlive) {
+                wrapped = (
+                    <KeepAliveRoute cacheKey={routeObject.path} keepAlive={meta.keepAlive}>
+                        {wrapped}
+                    </KeepAliveRoute>
+                );
             }
 
-            routeElement = middlewareChain
-        }
+            // 权限控制
+            wrapped = (
+                <RouteGuard route={item} authCheck={options?.authCheck} getUserInfo={options?.getUserInfo} onRouteChange={options?.onRouteChange}>
+                    {wrapped}
+                </RouteGuard>
+            );
 
-        // 设置最终的路由元素
-        routeObject.element = routeElement
+            // 错误边界
+            wrapped = CustomErrorBoundary ? (
+                <CustomErrorBoundary>{wrapped}</CustomErrorBoundary>
+            ) : (
+                <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>{wrapped}</ErrorBoundary>
+            );
+
+            // 中间件
+            if (middlewares && Array.isArray(middlewares) && middlewares.length > 0) {
+                let chain: ReactNode = wrapped;
+                for (let i = middlewares.length - 1; i >= 0; i--) {
+                    const mw = middlewares[i];
+                    if (isLazyComponent(mw)) {
+                        chain = <LazyImport lazy={mw as LazyExoticComponent<ComponentType>}>{chain}</LazyImport>;
+                    } else {
+                        chain = React.createElement(mw as ComponentType, {}, chain);
+                    }
+                }
+                wrapped = chain;
+            }
+
+            return wrapped;
+        };
+
+        if (isLazyComponent(element)) {
+            const LazyComp = element as LazyExoticComponent<ComponentType>;
+            const Wrapper: React.FC = () => buildWrappedNode(
+                <LazyImport lazy={LazyComp} prefetch={lazyOptions?.prefetch} fallback={lazyOptions?.fallback} />
+            );
+            routeObject.Component = Wrapper;
+        } else if (typeof element === 'function') {
+            const Base = element as ComponentType;
+            const Wrapper: React.FC = () => buildWrappedNode(<Base />);
+            routeObject.Component = Wrapper;
+        } else if (React.isValidElement(element)) {
+            // ReactElement 已经创建，但仍需包装
+            const Wrapper: React.FC = () => buildWrappedNode(element as ReactElement);
+            routeObject.Component = Wrapper;
+        } else {
+            // fallback
+            const Wrapper: React.FC = () => buildWrappedNode(<Outlet />);
+            routeObject.Component = Wrapper;
+        }
 
         // 返回路由对象
         return routeObject

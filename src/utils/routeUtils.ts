@@ -1,3 +1,4 @@
+import React from 'react';
 import { KyRouteConfig } from '../types/route';
 import { useMyProfileStore } from '../store/my/profileStore';
 import { useMyProfileActions } from '../store/my/profileStore';
