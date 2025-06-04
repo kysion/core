@@ -46,7 +46,8 @@ const LayerModal: React.FC<{
             onOk={handleOk}
             onCancel={closeWithAnimation}
             maskClosable={options.maskClosable ?? false}
-            destroyOnClose={true}
+            destroyOnHidden={true}
+            styles={options.styles}
             footer={options.footer}
             okText={options.okText}
             cancelText={options.cancelText}

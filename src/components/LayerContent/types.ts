@@ -187,6 +187,18 @@ export interface ModalOptions {
     showCancelButton?: boolean;
 
     /**
+     * 自定义样式
+     */
+    styles?: {
+        header?: React.CSSProperties;
+        body?: React.CSSProperties;
+        footer?: React.CSSProperties;
+        mask?: React.CSSProperties;
+        wrapper?: React.CSSProperties;
+        content?: React.CSSProperties;
+    };
+
+    /**
      * 自定义页脚内容
      */
     footer?: React.ReactNode | null;
