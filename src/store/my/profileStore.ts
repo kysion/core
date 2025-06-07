@@ -1,4 +1,4 @@
-import { CompanyInfoType, EmployeeInfoType, PermissionType, UserInfoType, UserTypeSet } from '@kysion/types';
+import { CompanyInfoType, EmployeeInfoType, InviteCodeType, PermissionType, UserInfoType, UserTypeSet } from '@kysion/types';
 import { createKyStore, createSelectors } from '@kysion/utils';
 import { Funs } from '@kysion/utils';
 import { StoreApi, UseBoundStore } from 'zustand';
@@ -17,6 +17,7 @@ export interface ProfileState {
     expireAt: string;
     isLoggedIn: boolean;
     moduleConf: { moduleName: string, moduleType: number };
+    inviteInfo: InviteCodeType;
 }
 
 const initialState: ProfileState = {
@@ -29,6 +30,7 @@ const initialState: ProfileState = {
     expireAt: '',
     isLoggedIn: false,
     moduleConf: { moduleName: '', moduleType: 0 },
+    inviteInfo: new InviteCodeType(),
 };
 
 export const useMyProfileStore: UseBoundStore<StoreApi<ProfileState>> = createKyStore<ProfileState>(initialState, {
@@ -54,7 +56,8 @@ export const useMyProfileActions = () => {
                 KysionApis.MyCompany.my.getProfile(),
                 KysionApis.MyCompany.my.getTeams(),
                 KysionApis.MyCompany.my.getMyCompanyPermissionList(),
-            ])
+                KysionApis.Invite.myCustomerInvite(),
+            ]);
         },
         hasPermission: ({ identifier, allowUserTypeArr }: { identifier: string, allowUserTypeArr?: UserTypeSet[] }) => {
             return true;

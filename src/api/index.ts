@@ -29,6 +29,7 @@ import { Settings } from './settings';
 import { User } from './user';
 import { Orders } from './orders';
 import { System } from './system';
+import { Invite } from './invite';
 /**
  * 导出兼容原项目的API集合
  */
@@ -59,6 +60,7 @@ export const KysionApis = {
     Goods,
     Iconify,
     Industry,
+    Invite,
     Menu,
     Message,
     MyCompany,
