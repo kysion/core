@@ -30,7 +30,7 @@ const LayerDrawer: React.FC<{
             placement={options.placement || 'right'}
             onClose={handleClose}
             maskClosable={options.maskClosable ?? false}
-            destroyOnClose={true}
+            destroyOnHidden={true}
             extra={options.extra}
             styles={{
                 ...options.styles
