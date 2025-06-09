@@ -148,7 +148,7 @@ export interface ModalOptions {
     /**
      * 宽度
      */
-    width?: number;
+    width?: number | string;
 
     /**
      * 内容，可以是 React 节点或返回 React 节点的函数
