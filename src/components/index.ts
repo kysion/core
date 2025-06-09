@@ -12,6 +12,7 @@ export * from './LazyImport';
 export * from './icon';
 export * from './table';
 export * from './CurrencySelect';
+export * from './MembershipLevelSelect';
 
 // 导出LayerContent组件
 export * from './LayerContent';

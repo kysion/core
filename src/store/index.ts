@@ -14,4 +14,5 @@ export * from './role';
 export * from './tableModule/tableModule';
 export * from './user';
 export * from './goodsStore/index';
+export * from './memberLevelStore';
 export * from './system';

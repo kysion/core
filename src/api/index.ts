@@ -30,6 +30,7 @@ import { User } from './user';
 import { Orders } from './orders';
 import { System } from './system';
 import { Invite } from './invite';
+import { MemberLevel } from './member-level';
 /**
  * 导出兼容原项目的API集合
  */
@@ -61,6 +62,7 @@ export const KysionApis = {
     Iconify,
     Industry,
     Invite,
+    MemberLevel,
     Menu,
     Message,
     MyCompany,
