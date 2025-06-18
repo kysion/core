@@ -93,7 +93,14 @@ export class Company {
     /**
      * 设置企业状态
      */
-    public setCompanyState(data: { id: string | number; state: CompanyStateSet }) {
-        return http.post<boolean>(`/${this.urlPrefix}/setCompanyState`, data);
+    public async setCompanyState(data: { id: string | number; state: CompanyStateSet }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/setCompanyState`, data) as boolean;
+    }
+
+    /**
+     * 设置佣金比例
+     */
+    public async setCommissionRate(data: { id: string | number; commissionRate: number }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/setCommissionRate`, data) as boolean;
     }
 }

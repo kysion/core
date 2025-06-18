@@ -22,8 +22,8 @@ export class KysionEmployee {
     }
 
     // 删除员工|信息
-    public deleteEmployee(data: { id: string | number }) {
-        return http.post<boolean>(`/${this.urlPrefix}/employee/deleteEmployee`, data);
+    public async deleteEmployee(data: { id: string | number }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/employee/deleteEmployee`, data) as boolean;
     }
 
     // 根据ID获取员工|信息
@@ -51,8 +51,8 @@ export class KysionEmployee {
     }
 
     // 判断工号是否存在
-    public hasEmployeeByNo(param: { no: string; excludeId?: (string | number)[] }) {
-        return http.post<boolean>(`/${this.urlPrefix}/api/partner/employee/hasEmployeeByNo`, param);
+    public async hasEmployeeByNo(param: { no: string; excludeId?: (string | number)[] }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/api/partner/employee/hasEmployeeByNo`, param) as boolean;
     }
 
     // 查询员工|列表
@@ -69,17 +69,24 @@ export class KysionEmployee {
     }
 
     // 设置员工角色
-    public setEmployeeRole(params: { userId: string | number, roleIds: (string | number)[] }) {
-        return http.post<boolean>(`/${this.urlPrefix}/employee/setEmployeeRoles`, params);
+    public async setEmployeeRole(params: { userId: string | number, roleIds: (string | number)[] }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/employee/setEmployeeRoles`, params) as boolean;
     }
 
     // 设置员工状态
-    public setEmployeeState(params: { id: string | number, state: EmployeeStateSet }) {
-        return http.post<boolean>(`/${this.urlPrefix}/employee/setEmployeeState`, params);
+    public async setEmployeeState(params: { id: string | number, state: EmployeeStateSet }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/employee/setEmployeeState`, params) as boolean;
     }
 
     // 更新员工|信息
     public updateEmployee(data: Partial<EmployeeInfoType> & { name: string; }) {
         return http.post<EmployeeInfoType>(`/${this.urlPrefix}/employee/updateEmployee`, data);
+    }
+
+    /**
+     * 设置佣金比例
+     */
+    public async setCommissionRate(data: { userId: string | number; commissionRate: number }) {
+        return await http.post<boolean>(`/${this.urlPrefix}/employee/setCommissionRate`, data) as boolean;
     }
 }
