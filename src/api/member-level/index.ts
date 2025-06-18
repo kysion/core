@@ -22,7 +22,7 @@ export class MemberLevel {
         orderWaitingMinLimitAt?: number;
         orderWaitingMaxLimitAt?: number;
     }) {
-        return http.post<boolean>('/memberLevel/memberLevelConfig/createMemberLevel', data);
+        return http.post<boolean>('/memberLevel/memberLevelConfig/createMemberLevelConfig', data);
     }
 
     // 删除会员等级
