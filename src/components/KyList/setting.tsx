@@ -526,7 +526,8 @@ export function makeTableColumnOption<T, K extends string>(
               newItem.columnOptionState?.sortBy !== undefined;
 
             if (hasSortAbility) {
-              newItem.sorter = true;
+              if (newItem.sorter === undefined)
+                newItem.sorter = true;
 
               if (newItem.columnOptionState?.sortBy === SortSet.Asc) {
                 newItem.sortOrder = 'ascend';
@@ -536,11 +537,11 @@ export function makeTableColumnOption<T, K extends string>(
                 newItem.sortOrder = undefined;
               }
 
-              if (newItem.columnOptionState?.sorter === true) {
-                newItem.sorter = {
-                  multiple: 1,
-                };
-              }
+              // if (newItem.columnOptionState?.sorter === true) {
+              //   newItem.sorter = {
+              //     multiple: 1,
+              //   };
+              // }
             } else {
               newItem.sorter = false;
               newItem.sortOrder = undefined;
@@ -1094,7 +1095,6 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
         render: (text, row) => {
           const sortByArr = Array.isArray(row.conf?.sortBy) ? row.conf?.sortBy : [row.conf?.sortBy];
           const items = sortByArr
-            .filter((item) => item)
             .map((item, index) => {
               const result = {
                 key: `sort-${item?.toString()}-${index}`,
@@ -1157,8 +1157,8 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
             <Switch
               checkedChildren={t('kysion.common.yes')}
               unCheckedChildren={t('kysion.common.no')}
-              checked={v === true}
-              defaultChecked={v === true}
+              checked={typeof v !== 'boolean' && v !== undefined}
+              defaultChecked={typeof v !== 'boolean' && v !== undefined}
               disabled={row.sortBy === SortSet.None}
               onClick={(checked) => {
                 const colIndex = mySettingStateArr.findIndex((item) => item.title === row.title);
@@ -1166,7 +1166,9 @@ export const SettingTable = forwardRef<SettingTableRef, SettingTableProps<any, a
                 if (colIndex >= 0) {
                   mySettingStateArr[colIndex] = {
                     ...mySettingStateArr[colIndex],
-                    sorter: checked,
+                    sorter: checked == true ? {
+                      multiple: 1,
+                    } : undefined,
                   };
                 }
 
