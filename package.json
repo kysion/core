@@ -1,6 +1,6 @@
 {
   "name": "@kysion/core",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Kysion Admin 核心功能包，提供基础组件、布局、主题等核心功能",
   "main": "dist/lib/index.js",
   "module": "dist/es/index.js",
@@ -35,14 +35,14 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@iconify/json": "^2.2.341",
+    "@iconify/json": "^2.2.350",
     "@iconify/react": "^6.0.0",
     "@iconify/types": "^2.0.0",
     "@kysion/types": "workspace:*",
     "@kysion/utils": "workspace:*",
-    "@types/react-dom": "^19.1.5",
-    "antd": "^5.25.3",
-    "axios": "^1.9.0",
+    "@types/react-dom": "^19.1.6",
+    "antd": "^5.26.1",
+    "axios": "^1.10.0",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
     "i18next": "^25.2.1",
@@ -50,19 +50,20 @@
     "react": "^19.1.0",
     "react-dom": "19.1.0",
     "react-highlight-words": "^0.21.0",
-    "react-i18next": "^15.5.2",
-    "react-router": "^7.6.1",
+    "react-i18next": "^15.5.3",
+    "react-router": "^7.6.2",
     "zustand": "^5.0.5"
   },
   "peerDependencies": {
+    "react": "^19.1.0",
     "typescript": ">=5.8.3"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.17",
-    "@types/node": "^22.15.21",
-    "@types/react": "^19.1.5",
+    "@types/lodash": "^4.17.18",
+    "@types/node": "^24.0.3",
+    "@types/react": "^19.1.8",
     "@types/react-highlight-words": "^0.20.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.4"
+    "vitest": "^3.2.4"
   }
 }
