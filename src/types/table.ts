@@ -55,9 +55,8 @@ export interface IKyTableActions<T> {
 
 export interface TableParams {
     pagination?: TablePaginationConfig;
-    sortField?: SorterResult<any>['field'];
-    sortOrder?: SorterResult<any>['order'];
     filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
+    sorter?: Parameters<GetProp<TableProps, 'onChange'>>[2];
 }
 
 export interface KyTableColumnType<T, TColumnKey extends string> extends ColumnType<T> {
@@ -85,7 +84,7 @@ export interface KyTableColumnType<T, TColumnKey extends string> extends ColumnT
         hidden?: boolean | undefined;
         sortBy?: true | SortSet | undefined;
         sort?: number | undefined;
-        sorter?: boolean | undefined;
+        sorter?: boolean | undefined | { multiple: 1 };
         disabled?: boolean | undefined;
     };
     makeColumnSearchProps?({
