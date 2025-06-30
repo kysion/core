@@ -144,7 +144,7 @@ export const useTableActions = (): TableActions => {
             const tableColumnOptionArr = get().tableColumnOptionArr
             // 先从本地存储中查找
             const config = tableColumnOptionArr.find(item => item.name === standardName);
-            if (config && config.isDeleted !== true) {
+            if (config && config.isDeleted !== true && defaultTableConfig.isDeleted !== true) {
                 return config;
             }
 
@@ -154,10 +154,6 @@ export const useTableActions = (): TableActions => {
                     fixed: item.name === 'operation' ? fixedStateSet.Right : item.fixed
                 }
             });
-
-            if (true === defaultTableConfig.isDeleted) {
-                return defaultTableConfig;
-            }
 
             useTableActions().setTableColumnOption(defaultTableConfig);
 
@@ -199,6 +195,7 @@ export const useTableActions = (): TableActions => {
                     source: 'local' as const
                 };
 
+                // 过滤掉已删除的配置项
                 const tableColumnOptionArr = get().tableColumnOptionArr.filter(item => item.isDeleted !== true);
 
                 // 查找并更新或添加配置
