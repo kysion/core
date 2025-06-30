@@ -23,7 +23,8 @@ const initialState: IAnnouncementNotifyStateType = {
             showSizeChanger: true, // 是否显示分页大小调整器
             position: ['bottomCenter'], // 分页器位置
             // hideOnSinglePage: true, // 单页时是否隐藏分页器（被注释）
-        }
+        },
+        sorter: []
     },
     dataArr: new Records<AnnouncementType>(), // 初始化公告数据为空
 };
