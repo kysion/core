@@ -124,7 +124,13 @@ export class Finance {
         return http.post(`/${this.urlPrefix}/finance/setAccountCurrencyCode`, data);
     }
 
+    // 查询财务账号账单
     public queryAccountBills(params: { accountId: string | number }) {
         return http.post<Records<FdBillsType>>(`/${this.urlPrefix}/finance/queryAccountBills`, params);
+    }
+
+    // 财务账号金额冲正
+    public reversedAmount(params: { accountId: string | number; amount: number }) {
+        return http.post<boolean>(`/${this.urlPrefix}/finance/reversedAmount`, params);
     }
 } 
