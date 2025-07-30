@@ -41,4 +41,9 @@ export class User {
     public static updateHeartbeatAt(data: { timeout: number }) {
         return http.post<boolean>('/user/updateHeartbeatAt', { heartbeat_at: data.timeout });
     }
+
+    // 设置用户父级ID
+    public static setParentUserId(data: { userId: string | number; newParentUserId: string | number }) {
+        return http.post<boolean>('/user/setParentUserId', data);
+    }
 } 
